@@ -383,6 +383,16 @@
 	color = "#ffddaa" // rgb: 255, 221, 170 - a light cream
 	strength = 20
 
+/datum/reagent/ethanol/communion_wine
+	name = "Communion Wine"
+	description = "Red wine diluted with water. Some Christians believe it to be the blood of Jesus Christ when part of the holy communion ritual."
+	taste_description = "bitter sweetness"
+	color = "#a06f4f" // rgb: 160, 111, 79
+	strength = 8
+
+	glass_name = "communion wine"
+	glass_desc = "Recreational use prohibited."
+
 /datum/reagent/ethanol/herbal
 	name = "Herbal Liquor"
 	description = "A complex blend of herbs, spices and roots mingle in this old Earth classic."

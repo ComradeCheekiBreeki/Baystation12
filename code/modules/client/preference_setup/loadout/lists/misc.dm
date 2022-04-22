@@ -244,13 +244,13 @@
 /datum/gear/bible/New()
 	..()
 	var/books = list()
-	books["bible (adjustable)"] = /obj/item/storage/bible
 	books["Bible"] = /obj/item/storage/bible/bible
 	books["Tanakh"] = /obj/item/storage/bible/tanakh
-	books["Quran"] = /obj/item/storage/bible/quran
+	books["Qur'an"] = /obj/item/storage/bible/quran
+	books["Qur'an & Hadith"] = /obj/item/storage/bible/quran_hadith
 	books["Kitab-i-Aqdas"] = /obj/item/storage/bible/aqdas
-	books["Kojiki"] = /obj/item/storage/bible/kojiki
 	books["Guru Granth Sahib"] = /obj/item/storage/bible/guru
+	books["Kojiki"] = /obj/item/storage/bible/kojiki
 	gear_tweaks += new/datum/gear_tweak/path(books)
 
 /datum/gear/swiss

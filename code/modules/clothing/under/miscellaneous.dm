@@ -553,14 +553,6 @@
 	worn_state = "mai_yang"
 	body_parts_covered = UPPER_TORSO|LOWER_TORSO|LEGS
 
-/obj/item/clothing/under/abaya
-	name = "abaya"
-	desc = "A loose-fitting, robe-like dress."
-	icon_state = "abaya"
-	item_state = "abaya"
-	worn_state = "abaya"
-	body_parts_covered = UPPER_TORSO|LOWER_TORSO|LEGS|ARMS
-
 /obj/item/clothing/under/blazer
 	name = "blue blazer"
 	desc = "A bold but yet conservative outfit, red corduroys, navy blazer and a tie."

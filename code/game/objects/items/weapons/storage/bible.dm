@@ -2,6 +2,7 @@
 	name = "bible"
 	desc = "Apply to head repeatedly."
 	icon_state ="bible"
+	icon = 'icons/obj/bibles.dmi'
 	throw_speed = 1
 	throw_range = 5
 	w_class = ITEM_SIZE_NORMAL
@@ -9,8 +10,9 @@
 	max_storage_space = 4
 	var/mob/affecting = null
 	var/deity_name = "Christ"
-	var/renamed = 0
-	var/icon_changed = 0
+	// var/renamed = 0
+	// var/icon_changed = 0
+	// see below for why these are commented out
 
 /obj/item/storage/bible/booze
 	name = "bible"
@@ -25,44 +27,37 @@
 
 /obj/item/storage/bible/bible
 	name = "\improper Bible"
-	desc = "The central religious text of Christianity."
-	renamed = 1
-	icon_changed = 1
+	desc = "The central religious text of the Christian religions. It contains the writings of the Israelites and the chronicle of Jesus and his disciples."
 
 /obj/item/storage/bible/tanakh
 	name = "\improper Tanakh"
-	desc = "The central religious text of Judaism."
-	icon_state = "torah"
-	renamed = 1
-	icon_changed = 1
+	desc = "The central religious text of Judaism. It contains the Law of Moses, the Israelite prophets and the writings of the Israelites."
+	icon_state = "tanakh"
 
 /obj/item/storage/bible/quran
-	name = "\improper Quran"
-	desc = "The central religious text of Islam."
-	icon_state = "koran"
-	renamed = 1
-	icon_changed = 1
+	name = "\improper Qur'an"
+	desc = "The central religious text of Islam. It containins the divine revelation of the Prophet Muhammad."
+	icon_state = "quran"
 
-/obj/item/storage/bible/kojiki
-	name = "\improper Kojiki"
-	desc = "A collection of myths from ancient Japan."
-	icon_state = "kojiki"
-	renamed = 1
-	icon_changed = 1
+/obj/item/storage/bible/quran_hadith
+	name = "\improper Qur'an and Hadith"
+	desc = "The central religious text of Islam. It containins the divine revelation of the Prophet Muhammad. This version also contains the Hadith, what some Muslims believe to be the writings and experiences of the Prophet Muhammad."
+	icon_state = "quran"
 
 /obj/item/storage/bible/aqdas
 	name = "\improper Kitab-i-Aqdas"
-	desc = "The central religious text of the Baha'i Faith."
-	icon_state = "ninestar"
-	renamed = 1
-	icon_changed = 1
+	desc = "The central religious text of the Baha'i Faith. It contains the writings of the founder of the Baha'i Faith, Baha'u'llah."
+	icon_state = "aqdas"
 
 /obj/item/storage/bible/guru
 	name = "\improper Guru Granth Sahib"
-	desc = "The central religious text of the Sikh Faith."
+	desc = "The central religious text of Sikhism. It is the collection and revision of the writings of the ten human Gurus, considered to be the final true writing of the religion."
 	icon_state = "guru"
-	renamed = 1
-	icon_changed = 1
+
+/obj/item/storage/bible/kojiki
+	name = "\improper Kojiki"
+	desc = "A chronicle of ancient Japanese myths and legends. Many of its aspects are part of the Japanese Shinto religion."
+	icon_state = "kojiki"
 
 /obj/item/storage/bible/attack(mob/living/carbon/human/M, mob/living/carbon/human/user)
 	if(user == M || !ishuman(user) || !ishuman(M))
@@ -102,6 +97,10 @@
 				if(user.get_cultural_value(TAG_RELIGION) == H.get_cultural_value(TAG_RELIGION))
 					to_chat(H, SPAN_NOTICE("You feel calm and relaxed, at one with the universe."))
 
+/*
+
+Commenting these verbs out because they're really not that useful and haven't been updated in ages (i.e need a total rework)
+
 /obj/item/storage/bible/verb/rename_bible()
 	set name = "Rename Bible"
 	set category = "Object"
@@ -137,3 +136,4 @@
 						break
 				if(i == 0)
 					icon_changed = 1
+*/
