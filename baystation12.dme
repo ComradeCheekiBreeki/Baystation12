@@ -3169,5 +3169,8 @@
 #include "interface\interface.dm"
 #include "interface\skin.dmf"
 #include "maps\_maps.dm"
+#include "maps\away\military_satellite\military_satellite.dm"
+#include "maps\away\military_satellite\milsat_areas.dm"
+#include "maps\away\military_satellite\milsat_objects.dm"
 #include "~code\global_init.dm"
 // END_INCLUDE

@@ -1,5 +1,5 @@
 /area/milsat
-	icon = "maps/away/military_satellite/military_satellite_sprites.dmi"
+	icon = 'maps/away/military_satellite/military_satellite_sprites.dmi'
 
 //the interior areas and gantry areas are listed from top to bottom like a sandwich
 //interiors
@@ -8,7 +8,10 @@
 
 /area/milsat/interior/upper
 	name = "\improper Military Satellite"
-	icon_state = "telecomms"
+
+/area/milsat/interior/gunnery
+	name = "\improper Military Satellite Gunnery"
+	icon_state = "gunnery"
 
 /area/milsat/interior/main
 	name = "\improper Military Satellite"
