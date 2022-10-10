@@ -21,6 +21,7 @@
 	w_class = ITEM_SIZE_SMALL
 	icon = 'icons/obj/playing_cards.dmi'
 	var/list/cards = list()
+	abstract_type = /obj/item/deck
 
 /obj/item/deck/inherit_custom_item_data(datum/custom_item/citem)
 	. = ..()
@@ -49,37 +50,59 @@
 
 /obj/item/deck/cards
 	name = "deck of cards"
-	desc = "A simple deck of playing cards."
+	desc = "A simple deck 52 French-suited playing cards."
 	icon_state = "deck"
+	var/list/suits = list(
+		"hearts_red",
+		"diamonds_red",
+		"clubs_black",
+		"spades_black"
+	)
+	var/list/pips = list(
+		"ace",
+		"two",
+		"three",
+		"four",
+		"five",
+		"six",
+		"seven",
+		"eight",
+		"nine",
+		"ten"
+	)
+	var/list/faces = list(
+		"jack",
+		"king",
+		"queen"
+	)
 
 /obj/item/deck/cards/New()
 	..()
 
 	var/datum/playingcard/P
-	for(var/suit in list("spades","clubs","diamonds","hearts"))
 
-		var/colour
-		if(suit == "spades" || suit == "clubs")
-			colour = "black_"
-		else
-			colour = "red_"
+	for(var/s in suits)
 
-		for(var/number in list("ace","two","three","four","five","six","seven","eight","nine","ten"))
+		var/suitlist = splittext(s,"_")
+
+		var/suit = suitlist[1]
+		var/colour = suitlist[2]
+
+		for(var/number in pips)
 			P = new()
 			P.name = "[number] of [suit]"
-			P.card_icon = "[colour]num"
+			P.card_icon = "card_[colour]_pip"
 			P.back_icon = "card_back"
 			cards += P
 
-		for(var/number in list("jack","queen","king"))
+		for(var/number in faces)
 			P = new()
 			P.name = "[number] of [suit]"
-			P.card_icon = "[colour]col"
+			P.card_icon = "card_[colour]_face"
 			P.back_icon = "card_back"
 			cards += P
 
-
-	for(var/i = 0,i<2,i++)
+	for(var/i = 0, i < 2 , i++)
 		P = new()
 		P.name = "joker"
 		P.card_icon = "joker"
@@ -265,7 +288,7 @@
 
 /obj/item/hand/examine(mob/user)
 	. = ..()
-	if((!concealed || src.loc == user) && cards.len)
+	if((!concealed || src.loc == user) && cards.len > 1)
 		to_chat(user, "It contains: ")
 		for(var/datum/playingcard/P in cards)
 			to_chat(user, "The [P.name].")
