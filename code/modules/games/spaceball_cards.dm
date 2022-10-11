@@ -40,7 +40,7 @@
 		"catcher",
 		"pitcher"
 	)
-	//For rare cards (hof players or whatever)
+	//For rare cards
 	var/list/positions_special = list(
 		"left-fielding slugger",
 		"center-fielding slugger",
@@ -78,18 +78,18 @@
 		pTeam = "[pick(teams)]"
 
 		if(prob(2))
-			P.name = "signed spaceball card ([pName], [pYear] [pTeam])"
-			P.desc = "An IBL baseball card featuring [pick(positions_special)] and hall-of-famer [pName], playing for the [pYear] [pTeam]. This one's got an autograph!"
+			P.name = "signed spaceball card ([pName], '[copytext(pYear,-2)] [pTeam])"
+			P.desc = "A limited-edition IBL baseball card featuring [pick(positions_special)] and hall-of-famer [pName], playing the [pYear] season for the [pTeam]. This one's got an autograph!"
 			P.card_icon = "card_spaceball_signed_[rand(1,4)]"
 			P.back_icon = "card_back_spaceball_signed"
 		else if(prob(10))
-			P.name = "limited edition spaceball card ([pName], [pYear] [pTeam])"
-			P.desc = "A limited-edition IBL baseball card featuring [pick(positions_special)][pick(" and hall-of-famer ", " ")][pName], playing for the [pYear] [pTeam]."
+			P.name = "limited edition spaceball card ([pName], '[copytext(pYear,-2)] [pTeam])"
+			P.desc = "A limited-edition IBL baseball card featuring [pick(positions_special)][pick(" and hall-of-famer ", " ")][pName], playing the [pYear] season for the [pTeam]."
 			P.card_icon = "card_spaceball_lim_[rand(1,4)]"
 			P.back_icon = "card_back_spaceball_lim"
 		else
-			P.name = "spaceball card ([pName], [pYear] [pTeam])"
-			P.desc = "An IBL baseball card featuring [pick(positions)] [pName], playing for the [pYear] [pTeam]."
+			P.name = "spaceball card ([pName], '[copytext(pYear,-2)] [pTeam])"
+			P.desc = "An IBL baseball card featuring [pick(positions)] [pName], playing the [pYear] season for the [pTeam]."
 			P.card_icon = "card_spaceball_[rand(1,8)]"
 			P.back_icon = "card_back_spaceball"
 

@@ -50,7 +50,7 @@
 
 /obj/item/deck/cards
 	name = "deck of cards"
-	desc = "A simple deck 52 French-suited playing cards."
+	desc = "A simple deck of French-suited playing cards. This one includes jokers."
 	icon_state = "deck"
 	var/list/suits = list(
 		"hearts_red",
@@ -90,50 +90,79 @@
 
 		for(var/number in pips)
 			P = new()
-			P.name = "[number] of [suit]"
+			P.name = "\improper [number] of [suit]"
 			P.card_icon = "card_[colour]_pip"
 			P.back_icon = "card_back"
 			cards += P
 
 		for(var/number in faces)
 			P = new()
-			P.name = "[number] of [suit]"
+			P.name = "\improper [number] of [suit]"
 			P.card_icon = "card_[colour]_face"
 			P.back_icon = "card_back"
 			cards += P
 
 	for(var/i = 0, i < 2 , i++)
 		P = new()
-		P.name = "joker"
+		P.name = "\improper joker"
 		P.card_icon = "joker"
 		cards += P
 
+/obj/item/deck/examine(mob/user)
+	. = ..()
+	to_chat(user, SPAN_NOTICE("There are [cards.len ? cards.len : "no"] cards left in the deck."))
+
 /obj/item/deck/attackby(obj/O, mob/user)
+
 	if(istype(O,/obj/item/hand))
+		//Make sure the user is holding the item if it's in their inventory, so it can't get stuck in their pockets
+		if(O.loc == user && !user.IsHolding(O))
+			return
+
 		var/obj/item/hand/H = O
-		for(var/datum/playingcard/P in H.cards)
-			cards += P
-		qdel(O)
-		to_chat(user, "You place your cards on the bottom of \the [src].")
+		var/response = input("What do you want to do?") in list("Draw card into hand", "Return hand to deck")
+		if(response == "Draw card into hand")
+			draw_from_deck(user)
+		else if(response == "Return hand to deck")
+			for(var/datum/playingcard/P in H.cards)
+				cards += P
+			qdel(O)
+			user.visible_message(
+				SPAN_NOTICE("\The [user] places \his cards onto the bottom of \the [src]."),
+				SPAN_NOTICE("You place your cards onto the bottom of \the [src].")
+			)
 		return
 	..()
+
+/obj/item/deck/attack_hand(mob/user)
+	if(src.loc == user)
+		if(!istype(user,/mob/living/carbon))
+			return
+
+		draw_from_deck(user)
+	else
+		..()
 
 /obj/item/deck/verb/draw_card()
 
 	set category = "Object"
 	set name = "Draw"
-	set desc = "Draw a card from a deck."
+	set desc = "Draw a card from the deck."
 	set src in view(1)
-
-	if(usr.stat || !Adjacent(usr)) return
 
 	if(!istype(usr,/mob/living/carbon))
 		return
 
 	var/mob/living/carbon/user = usr
+	draw_from_deck(user)
+
+//Handles the actual drawing from the deck part
+/obj/item/deck/proc/draw_from_deck(mob/user)
+	if(user.stat || !Adjacent(user))
+		return
 
 	if(!cards.len)
-		to_chat(usr, "There are no cards in the deck.")
+		to_chat(usr, SPAN_WARNING("There are no cards in the deck."))
 		return
 
 	var/obj/item/hand/H = user.IsHolding(/obj/item/hand)
@@ -141,26 +170,31 @@
 		H = new(get_turf(src))
 		user.put_in_hands(H)
 
-	if(!H || !user) return
+	if(!H || !user)
+		return
 
 	var/datum/playingcard/P = cards[1]
 	H.cards += P
 	cards -= P
 	H.update_icon()
-	user.visible_message("\The [user] draws a card.")
-	to_chat(user, "It's the [P].")
+	user.visible_message(
+		SPAN_NOTICE("\The [user] draws a card."),
+		SPAN_NOTICE("You draw a card.")
+	)
+	to_chat(user, "It's \the [P].")
+
 
 /obj/item/deck/verb/deal_card()
 
 	set category = "Object"
 	set name = "Deal"
-	set desc = "Deal a card from a deck."
+	set desc = "Deal a card from the deck."
 	set src in view(1)
 
 	if(usr.stat || !Adjacent(usr)) return
 
 	if(!cards.len)
-		to_chat(usr, "There are no cards in the deck.")
+		to_chat(usr, SPAN_WARNING("There are no cards in the deck."))
 		return
 
 	var/list/players = list()
@@ -169,23 +203,40 @@
 			players += player
 	//players -= usr
 
-	var/mob/living/M = input("Who do you wish to deal a card?") as null|anything in players
-	if(!usr || !src || !M) return
+	var/mob/living/M = input("Who do you want to deal to?") as null|anything in players
+	if(!usr || !src || !M)
+		return
+	var/numcards = input("How many cards do you want to deal?") as num
+	if(numcards < 1)
+		return
+	if(numcards > cards.len)
+		to_chat(usr, SPAN_NOTICE("There are not enough cards to deal that many."))
+		return
 
-	deal_at(usr, M)
+	deal_at(usr, M, numcards)
 
-/obj/item/deck/proc/deal_at(mob/user, mob/target)
+/obj/item/deck/proc/deal_at(mob/user, mob/target, numcards)
+	var/message = numcards == 1 ? "a card" : "[numcards] cards"
+	if(user == target)
+		user.visible_message("\The [user] deals [message] to \himself.")
+	else
+		user.visible_message("\The [user] deals [message] to \the [target].")
+
+	//Actually handle dealing cards now
+	var/i
 	var/obj/item/hand/H = new(get_step(user, user.dir))
 
-	H.cards += cards[1]
-	cards -= cards[1]
-	H.concealed = 1
-	H.update_icon()
-	if(user==target)
-		user.visible_message("\The [user] deals a card to \himself.")
+	for(i = 1, i <= numcards, i++)
+		H.cards += cards[i]
+		cards -= cards[i]
+		H.concealed = 1
+		H.update_icon()
+
+	//Seems redundant but without this the hand would get stuck in walls/windows/whatever the user is standing in front of if they deal to themselves
+	if(target == user)
+		H.dropInto(user.loc)
 	else
-		user.visible_message("\The [user] deals a card to \the [target].")
-	H.throw_at(get_step(target,target.dir),10,1,user)
+		H.throw_at(get_step(target,target.dir),10,1,user)
 
 /obj/item/hand/attackby(obj/O, mob/user)
 	if(istype(O,/obj/item/hand))
@@ -210,7 +261,7 @@
 	if(!ishuman(over) || !(over in viewers(3))) return
 
 	if(!cards.len)
-		to_chat(usr, "There are no cards in the deck.")
+		to_chat(usr, SPAN_WARNING("There are no cards in the deck."))
 		return
 
 	deal_at(usr, over)
@@ -232,7 +283,10 @@
 	return
 
 /obj/item/pack/attack_self(mob/user)
-	user.visible_message("[user] rips open \the [src]!")
+	user.visible_message(
+		SPAN_NOTICE("\The [user] rips open \the [src]."),
+		SPAN_NOTICE("You rip open \the [src].")
+	)
 	var/obj/item/hand/H = new()
 
 	H.cards += cards
@@ -252,13 +306,54 @@
 	var/concealed = 0
 	var/list/datum/playingcard/cards = list()
 
+/obj/item/hand/verb/cut_cards()
+
+	set category = "Object"
+	set name = "Cut Hand"
+	set desc = "Cut the hand in half."
+	set src in view(1)
+
+	if(!istype(usr,/mob/living/carbon))
+		return
+
+	var/mob/living/carbon/user = usr
+
+	if(!user.HasFreeHand())
+		to_chat(user, SPAN_WARNING("You need a free hand to cut \the [src]."))
+
+	if(!cards.len)
+		return
+
+	var/i
+	var/numcards = round(cards.len / 2)
+	var/obj/item/hand/new_hand = new(user.loc)
+	new_hand.concealed = FALSE
+	user.put_in_hands(new_hand)
+
+	for(i = 1, i <= numcards, i++)
+		var/datum/playingcard/P = cards[i]
+
+		new_hand.cards += P
+		cards -= P
+
+	new_hand.update_icon()
+
+	user.visible_message(
+		SPAN_NOTICE("\The [user] cuts \the [src]."),
+		SPAN_NOTICE("You cut \the [src].")
+	)
+
 /obj/item/hand/attack_self(mob/user)
 	concealed = !concealed
 	update_icon()
-	user.visible_message("\The [user] [concealed ? "conceals" : "reveals"] their hand.")
+	user.visible_message(
+		SPAN_NOTICE("\The [user] [concealed ? "conceals" : "reveals"] their hand."),
+		SPAN_NOTICE("You [concealed ? "conceal" : "reveal"] your hand.")
+	)
 
 /obj/item/hand/attack_hand(mob/user)
-	if(src.loc == user)
+	//Make sure the user is holding the cards in their active hand so they don't get stuck in the user's inventory
+	if(src.loc == user && user.IsHolding(src))
 		// build the list of cards in the hand
 		var/list/to_discard = list()
 		for(var/datum/playingcard/P in cards)
@@ -288,10 +383,17 @@
 
 /obj/item/hand/examine(mob/user)
 	. = ..()
-	if((!concealed || src.loc == user) && cards.len > 1)
-		to_chat(user, "It contains: ")
+	//To avoid cluttering up the chat log with stupidly long details about cards should someone accrue an unreasonably large hand
+	if(cards.len >= 20)
+		to_chat(user, SPAN_BOLD("There are too many cards for you to count."))
+
+	else if((!concealed || concealed && (src.loc == user)) && cards.len > 1)
+		to_chat(user, SPAN_BOLD("It contains: "))
 		for(var/datum/playingcard/P in cards)
-			to_chat(user, "The [P.name].")
+			to_chat(user, "\The [P.name].")
+
+	else if(concealed && src.loc == user)
+		to_chat(user, "It's \the [cards[1].name].")
 
 /obj/item/hand/on_update_icon(direction = 0)
 	if(!cards.len)

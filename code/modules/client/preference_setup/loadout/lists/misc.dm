@@ -37,7 +37,7 @@
 	path = /obj/item/pack/cardemon
 
 /datum/gear/spaceball_pack
-	display_name = "Spaceball booster pack"
+	display_name = "spaceball booster pack"
 	path = /obj/item/pack/spaceball
 
 /datum/gear/flask
