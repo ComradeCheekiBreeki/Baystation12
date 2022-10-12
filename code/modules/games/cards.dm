@@ -1,3 +1,6 @@
+/*
+	Playing card datum
+*/
 /datum/playingcard
 	var/name = "playing card"
 	var/card_icon = "card_back"
@@ -17,6 +20,9 @@
 	else
 		return image((src.use_custom_front ? CUSTOM_ITEM_OBJ : deck_icon), "[card_icon]")
 
+/*
+	Decks of cards
+*/
 /obj/item/deck
 	w_class = ITEM_SIZE_SMALL
 	icon = 'icons/obj/playing_cards.dmi'
@@ -43,11 +49,167 @@
 					P.use_custom_back = card_decl["use_custom_back"]
 				cards += P
 
-/obj/item/deck/holder
-	name = "card box"
-	desc = "A small leather case to show how classy you are compared to everyone else."
-	icon_state = "card_holder"
+/obj/item/deck/examine(mob/user)
+	. = ..()
+	to_chat(user, SPAN_NOTICE("There are [cards.len ? cards.len : "no"] cards left in the deck."))
 
+/obj/item/deck/attack_self(mob/user)
+
+	cards = shuffle(cards)
+	user.visible_message("\The [user] shuffles [src].")
+
+/*
+
+	Not a fan of this
+
+/obj/item/deck/MouseDrop(atom/over)
+	if(!usr || !over) return
+	if(!Adjacent(usr) || !over.Adjacent(usr)) return // should stop you from dragging through windows
+
+	if(!ishuman(over) || !(over in viewers(3))) return
+
+	if(!cards.len)
+		to_chat(usr, SPAN_WARNING("There are no cards left in \the [src]."))
+		return
+
+	deal_at(usr, over)
+
+*/
+
+/obj/item/deck/attackby(obj/O, mob/user)
+
+	if(istype(O,/obj/item/hand))
+		//Make sure the user is holding the item if it's in their inventory, so it can't get stuck in their pockets
+		if(O.loc == user && !user.IsHolding(O))
+			return
+
+		var/obj/item/hand/H = O
+		var/response = input("What do you want to do?") in list("Draw card into hand", "Return hand to deck")
+		if(response == "Draw card into hand")
+			draw_from_deck(user)
+		else if(response == "Return hand to deck")
+			for(var/datum/playingcard/P in H.cards)
+				cards += P
+			qdel(O)
+			user.visible_message(
+				SPAN_NOTICE("\The [user] places \his cards onto the bottom of \the [src]."),
+				SPAN_NOTICE("You place your cards onto the bottom of \the [src].")
+			)
+		return
+	..()
+
+/obj/item/deck/attack_hand(mob/user)
+	if(src.loc == user)
+		if(!istype(user,/mob/living/carbon))
+			return
+
+		draw_from_deck(user)
+	else
+		..()
+
+/obj/item/deck/verb/draw_card()
+
+	set category = "Object"
+	set name = "Draw"
+	set desc = "Draw a card from the deck."
+	set src in view(1)
+
+	if(!istype(usr,/mob/living/carbon))
+		return
+
+	var/mob/living/carbon/user = usr
+	draw_from_deck(user)
+
+//Handles the actual drawing from the deck part
+/obj/item/deck/proc/draw_from_deck(mob/user)
+	if(user.stat || !Adjacent(user))
+		return
+
+	if(!cards.len)
+		to_chat(usr, SPAN_WARNING("There are no cards left in \the [src]."))
+		return
+
+	var/obj/item/hand/H = user.IsHolding(/obj/item/hand)
+	if (!H)
+		H = new(get_turf(src))
+		user.put_in_hands(H)
+
+	if(!H || !user)
+		return
+
+	var/datum/playingcard/P = cards[1]
+	H.cards += P
+	cards -= P
+	H.update_icon()
+	user.visible_message(
+		SPAN_NOTICE("\The [user] draws a card."),
+		SPAN_NOTICE("You draw a card.")
+	)
+	to_chat(user, "It's \the [P].")
+
+
+/obj/item/deck/verb/deal_card()
+
+	set category = "Object"
+	set name = "Deal"
+	set desc = "Deal a card from the deck."
+	set src in view(1)
+
+	if(usr.stat || !Adjacent(usr)) return
+
+	if(!cards.len)
+		to_chat(usr, SPAN_WARNING("There are no cards left in \the [src]."))
+		return
+
+	var/list/players = list()
+	for(var/mob/living/player in viewers(3))
+		if(!player.stat)
+			players += player
+
+	var/mob/living/M = input("Who do you want to deal to?") as null|anything in players
+	if(!usr || !src || !M)
+		return
+	var/numcards = input("How many cards do you want to deal?") as num
+	if(numcards < 1)
+		return
+	if(numcards > cards.len)
+		to_chat(usr, SPAN_NOTICE("There are not enough cards to deal that many."))
+		return
+
+	deal_at(usr, M, numcards)
+
+/obj/item/deck/proc/deal_at(mob/user, mob/target, numcards)
+	var/i
+	var/obj/item/hand/H = new(get_step(user, user.dir))
+
+	for(i = 1, i <= numcards, i++)
+		H.cards += cards[i]
+		cards -= cards[i]
+		H.concealed = 1
+		H.update_icon()
+
+	//Seems redundant but without this the hand would get stuck in walls/windows/whatever the user is standing in front of if they deal to themselves
+	if(target == user)
+		H.dropInto(user.loc)
+	else
+		H.throw_at(get_step(target,target.dir),10,1,user)
+
+	var/message = numcards == 1 ? "a card" : "[numcards] cards"
+	if(user == target)
+		user.visible_message(
+				"\The [user] deals [message] to \himself.",
+				"You deal [message] to yourself."
+			)
+	else
+		user.visible_message(
+				"\The [user] deals [message] to \the [target].",
+				"You deal [message] to \the [target].",
+			)
+
+/*
+	Deck types
+*/
+//Basic standard playing cards
 /obj/item/deck/cards
 	name = "deck of cards"
 	desc = "A simple deck of French-suited playing cards. This one includes jokers."
@@ -108,172 +270,55 @@
 		P.card_icon = "joker"
 		cards += P
 
-/obj/item/deck/examine(mob/user)
-	. = ..()
-	to_chat(user, SPAN_NOTICE("There are [cards.len ? cards.len : "no"] cards left in the deck."))
+//Deck box
+/obj/item/deck/holder
+	name = "deck box"
+	desc = "A small leather deck box for cards, to show just how classy you are compared to everyone else."
+	icon_state = "card_holder"
 
-/obj/item/deck/attackby(obj/O, mob/user)
-
-	if(istype(O,/obj/item/hand))
-		//Make sure the user is holding the item if it's in their inventory, so it can't get stuck in their pockets
-		if(O.loc == user && !user.IsHolding(O))
-			return
-
-		var/obj/item/hand/H = O
-		var/response = input("What do you want to do?") in list("Draw card into hand", "Return hand to deck")
-		if(response == "Draw card into hand")
-			draw_from_deck(user)
-		else if(response == "Return hand to deck")
-			for(var/datum/playingcard/P in H.cards)
-				cards += P
-			qdel(O)
-			user.visible_message(
-				SPAN_NOTICE("\The [user] places \his cards onto the bottom of \the [src]."),
-				SPAN_NOTICE("You place your cards onto the bottom of \the [src].")
-			)
-		return
-	..()
-
-/obj/item/deck/attack_hand(mob/user)
-	if(src.loc == user)
-		if(!istype(user,/mob/living/carbon))
-			return
-
-		draw_from_deck(user)
-	else
-		..()
-
-/obj/item/deck/verb/draw_card()
+/obj/item/deck/holder/verb/dump_out_box()
 
 	set category = "Object"
-	set name = "Draw"
-	set desc = "Draw a card from the deck."
+	set name = "Dump Out"
+	set desc = "Dump out the deck box."
 	set src in view(1)
 
 	if(!istype(usr,/mob/living/carbon))
 		return
 
 	var/mob/living/carbon/user = usr
-	draw_from_deck(user)
-
-//Handles the actual drawing from the deck part
-/obj/item/deck/proc/draw_from_deck(mob/user)
-	if(user.stat || !Adjacent(user))
-		return
 
 	if(!cards.len)
-		to_chat(usr, SPAN_WARNING("There are no cards in the deck."))
+		to_chat(user, SPAN_WARNING("There aren't any cards left in \the [src]."))
 		return
 
-	var/obj/item/hand/H = user.IsHolding(/obj/item/hand)
-	if (!H)
-		H = new(get_turf(src))
-		user.put_in_hands(H)
+	var/obj/item/hand/new_hand = new(user.loc)
+	new_hand.concealed = FALSE
 
-	if(!H || !user)
-		return
+	for(var/datum/playingcard/P in cards)
+		new_hand.cards += P
+		cards -= P
 
-	var/datum/playingcard/P = cards[1]
-	H.cards += P
-	cards -= P
-	H.update_icon()
+	new_hand.update_icon()
+
+	if(user.HasFreeHand())
+		user.put_in_hands(new_hand)
+	else
+		new_hand.dropInto(user.loc)
+
 	user.visible_message(
-		SPAN_NOTICE("\The [user] draws a card."),
-		SPAN_NOTICE("You draw a card.")
+		SPAN_WARNING("\The [user] dumps out \the [src]."),
+		SPAN_WARNING("You dump out \the [src].")
 	)
-	to_chat(user, "It's \the [P].")
 
-
-/obj/item/deck/verb/deal_card()
-
-	set category = "Object"
-	set name = "Deal"
-	set desc = "Deal a card from the deck."
-	set src in view(1)
-
-	if(usr.stat || !Adjacent(usr)) return
-
-	if(!cards.len)
-		to_chat(usr, SPAN_WARNING("There are no cards in the deck."))
-		return
-
-	var/list/players = list()
-	for(var/mob/living/player in viewers(3))
-		if(!player.stat)
-			players += player
-	//players -= usr
-
-	var/mob/living/M = input("Who do you want to deal to?") as null|anything in players
-	if(!usr || !src || !M)
-		return
-	var/numcards = input("How many cards do you want to deal?") as num
-	if(numcards < 1)
-		return
-	if(numcards > cards.len)
-		to_chat(usr, SPAN_NOTICE("There are not enough cards to deal that many."))
-		return
-
-	deal_at(usr, M, numcards)
-
-/obj/item/deck/proc/deal_at(mob/user, mob/target, numcards)
-	var/message = numcards == 1 ? "a card" : "[numcards] cards"
-	if(user == target)
-		user.visible_message("\The [user] deals [message] to \himself.")
-	else
-		user.visible_message("\The [user] deals [message] to \the [target].")
-
-	//Actually handle dealing cards now
-	var/i
-	var/obj/item/hand/H = new(get_step(user, user.dir))
-
-	for(i = 1, i <= numcards, i++)
-		H.cards += cards[i]
-		cards -= cards[i]
-		H.concealed = 1
-		H.update_icon()
-
-	//Seems redundant but without this the hand would get stuck in walls/windows/whatever the user is standing in front of if they deal to themselves
-	if(target == user)
-		H.dropInto(user.loc)
-	else
-		H.throw_at(get_step(target,target.dir),10,1,user)
-
-/obj/item/hand/attackby(obj/O, mob/user)
-	if(istype(O,/obj/item/hand))
-		var/obj/item/hand/H = O
-		for(var/datum/playingcard/P in cards)
-			H.cards += P
-		H.concealed = src.concealed
-		qdel(src)
-		H.update_icon()
-		return
-	..()
-
-/obj/item/deck/attack_self(mob/user)
-
-	cards = shuffle(cards)
-	user.visible_message("\The [user] shuffles [src].")
-
-/obj/item/deck/MouseDrop(atom/over)
-	if(!usr || !over) return
-	if(!Adjacent(usr) || !over.Adjacent(usr)) return // should stop you from dragging through windows
-
-	if(!ishuman(over) || !(over in viewers(3))) return
-
-	if(!cards.len)
-		to_chat(usr, SPAN_WARNING("There are no cards in the deck."))
-		return
-
-	deal_at(usr, over)
-
+/*
+	Card packs
+*/
 /obj/item/pack
-	name = "card pack"
-	desc = "For those with disposible income."
-
-	icon_state = "card_pack"
 	icon = 'icons/obj/playing_cards.dmi'
 	w_class = ITEM_SIZE_TINY
 	var/list/cards = list()
+	abstract_type = /obj/item/pack
 
 /obj/item/pack/Initialize()
 	. = ..()
@@ -296,15 +341,29 @@
 	H.update_icon()
 	user.put_in_active_hand(H)
 
+/*
+	Hands of cards
+*/
 /obj/item/hand
 	name = "hand of cards"
-	desc = "Some playing cards."
+	desc = "Some cards."
 	icon = 'icons/obj/playing_cards.dmi'
 	icon_state = "empty"
 	w_class = ITEM_SIZE_TINY
 
 	var/concealed = 0
 	var/list/datum/playingcard/cards = list()
+
+/obj/item/hand/attackby(obj/O, mob/user)
+	if(istype(O,/obj/item/hand))
+		var/obj/item/hand/H = O
+		for(var/datum/playingcard/P in cards)
+			H.cards += P
+		H.concealed = src.concealed
+		qdel(src)
+		H.update_icon()
+		return
+	..()
 
 /obj/item/hand/verb/cut_cards()
 
@@ -337,6 +396,7 @@
 		cards -= P
 
 	new_hand.update_icon()
+	src.update_icon()
 
 	user.visible_message(
 		SPAN_NOTICE("\The [user] cuts \the [src]."),
@@ -454,7 +514,7 @@
 /obj/item/hand/pickup(mob/user)
 	src.update_icon()
 
-/*** A special thing that steals a card from a deck, probably lost in maint somewhere. ***/
+// Missing playing card; steals a random card from any random map-placed deck
 /obj/item/hand/missing_card
 	name = "missing playing card"
 

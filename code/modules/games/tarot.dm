@@ -1,9 +1,9 @@
 
-//This is specifically based off the Tarot of Marseille as it can be used for both playing and diviniation
-//Modern styles are usually intended for one specific purpose, either diviniation (as is the case with the Rider-Waite tarot deck) or playing (the Tarot Nouveau)
+//This is specifically a generic version of the Tarot of Marseille as it can be used for both playing and diviniation
+//Modern styles are usually intended for one specific purpose and often forsake the other (like the Rider-Waite deck not having a consistent pip card setup for tarot games)
 /obj/item/deck/tarot
 	name = "tarot deck"
-	desc = "A classical-style tarot deck. You could use it for cartomancy, or play a game with it, if you know any."
+	desc = "A classical-style tarot deck. You could use it for cartomancy, or play a game with it if you know any."
 	icon_state = "deck_tarot"
 	var/list/trumps = list(
 		"The Fool",

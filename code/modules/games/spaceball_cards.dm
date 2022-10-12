@@ -1,63 +1,69 @@
 //Keeping the name "spaceball" for now, may change it later
 /obj/item/pack/spaceball
-	name = "\improper spaceball booster pack"
-	desc = "Officially licensed by the Intersolar Baseball League to take your money."
+	name = "\improper spaceball card pack"
+	desc = "Officially licensed by the Interplanetary Baseball League to take your money."
 	var/list/teams = list(
-		//Inner solar teams
+		//Some of these are locations in lore, some I just made up. They generally follow a pretty consistent theme
 		"Olympus Black J's",
 		"New Hamburg Gunners",
 		"Hamilton White J's",
 		"Selene Trojans",
 		"Miyoshi Jets",
 		"Morgantown Rakers",
-		//Outer solar teams
 		"Neustaat Woodsmen",
 		"Siverek Aristocrats",
 		"Pikeville Boxers",
 		"Marion Prospectors",
-		//Near-solar teams
 		"Verlize Raiders",
 		"Saloniki Crosses",
 		"Erdeigz Magicians",
 		"Helnburg Astros",
-		//Teams from and near Gaia
-		"New Madrid Jokers",
-		"New Venice Red Aces",
+		"New Madrid Lances",
+		"New Venice Aces",
 		"Surya Champions",
-		"Nottingham Matchers"
+		"Nottingham Starmen"
 	)
-	//Really deep lore in here about how the baseball rules have changed since the 21st century
 	var/list/positions = list(
 		"left-fielder",
 		"center-fielder",
 		"right-fielder",
-		"short-fielder",
 		"first baseman",
 		"second baseman",
 		"third baseman",
 		"shortstop",
+		"second infielder",
 		"anchor",
 		"catcher",
-		"pitcher"
+		"pitcher",
+		"relief pitcher"
 	)
 	//For rare cards
 	var/list/positions_special = list(
-		"left-fielding slugger",
-		"center-fielding slugger",
-		"right-fielding slugger",
-		"rover",
-		"defensive baseman",
+		"outfield slugger",
+		"infield slugger",
 		"shortstop slugger",
-		"hard anchor",
-		"defensive catcher",
+		"menace hitter",
+		"power hitter",
+		"multi-position hitter",
+		"infield rover",
+		"defensive baseman",
+		"specialist catcher",
 		"starting pitcher",
-		"relief pitcher"
+		"closing pitcher",
+		"specialist pitcher",
+		"left-handed pitcher"
+	)
+	var/list/ad_cards = list(
+		/datum/playingcard/adcard/ibl,
+		/datum/playingcard/adcard/sportsbetting,
+		/datum/playingcard/adcard/nanotrasen,
+		/datum/playingcard/adcard/saare,
+		/datum/playingcard/adcard/cigarettes
 	)
 	icon_state = "card_pack_spaceball"
 
 /obj/item/pack/spaceball/SetupCards()
 	var/datum/playingcard/P
-	var/i
 
 	var/pName
 	var/pYear
@@ -65,10 +71,12 @@
 	var/language_type = pick(/datum/language/human)
 	var/datum/language/L = new language_type()
 
-	for(i = 0; i < 5; i++)
+	var/i
+	var/cards_in_pack = rand(3, 8)
+
+	for(i = 0; i < cards_in_pack; i++)
 		P = new()
 
-		//Set up the basic stuff
 		if(prob(35))
 			pName = L.get_random_name(FEMALE)
 		else
@@ -94,3 +102,40 @@
 			P.back_icon = "card_back_spaceball"
 
 		cards += P
+
+	if(prob(35))
+		var/ad_path = pick(ad_cards)
+		cards += new ad_path
+
+/*
+	Advertisement cards
+*/
+/datum/playingcard/adcard/ibl
+	name = "\improper IBL advertisement"
+	desc = "A card advertising some IBL-sponsored team merchandise, with discounts for subscribers of the \"IBL Insiders\" newsletter."
+	card_icon = "card_ad_ibl"
+	back_icon = "card_back_ad_ibl"
+
+/datum/playingcard/adcard/sportsbetting
+	name = "sports betting advertisement"
+	desc = "An ad card for a shady-looking sports betting company. Looks like they got away with not including a gambling warning notice."
+	card_icon = "card_ad_sportsbetting"
+	back_icon = "card_back_ad_sportsbetting"
+
+/datum/playingcard/adcard/nanotrasen
+	name = "\improper NanoTrasen advertisement"
+	desc = "An ad card for the ever-present NanoTrasen corporation, featuring an endorsement from a sports commentator."
+	card_icon = "card_ad_nanotrasen"
+	back_icon = "card_back_ad_nanotrasen"
+
+/datum/playingcard/adcard/saare
+	name = "\improper SAARE advertisement"
+	desc = "A collectible card featuring a unique SAARE \"special operator\" loadout displayed in a fancy 3D-looking graph. The back has some disturbingly bloodthirsty text encouraging people to join up."
+	card_icon = "card_ad_saare"
+	back_icon = "card_back_ad_saare"
+
+/datum/playingcard/adcard/cigarettes
+	name = "cigarette advertisement"
+	desc = "An advertisement for some crappy cigarette brand. There's big text at the top that says, \"NOT FOR INDIVIDUALS UNDER 18,\" and a huge paragraph underneath about cancer."
+	card_icon = "card_ad_cigs"
+	back_icon = "card_back_ad_cigs"
