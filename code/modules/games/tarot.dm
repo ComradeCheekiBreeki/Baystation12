@@ -3,7 +3,7 @@
 //Modern styles are usually intended for one specific purpose and often forsake the other (like the Rider-Waite deck not having a consistent pip card setup for tarot games)
 /obj/item/deck/tarot
 	name = "tarot deck"
-	desc = "A classical-style tarot deck. You could use it for cartomancy, or play a game with it if you know any."
+	desc = "A classical-style tarot deck."
 	icon_state = "deck_tarot"
 	var/list/trumps = list(
 		"The Fool",

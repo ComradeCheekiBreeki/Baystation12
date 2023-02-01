@@ -103,6 +103,10 @@
 		if(!istype(user,/mob/living/carbon))
 			return
 
+		// See before - prevents deck from getting stuck in players' pockets
+		if(!user.IsHolding(src))
+			return
+
 		draw_from_deck(user)
 	else
 		..()
@@ -183,8 +187,9 @@
 	var/obj/item/hand/H = new(get_step(user, user.dir))
 
 	for(i = 1, i <= numcards, i++)
-		H.cards += cards[i]
-		cards -= cards[i]
+		// A bit cringe, but because we're removing cards from the deck we can just access the top card each time since it'll always be different
+		H.cards += cards[0]
+		cards -= cards[0]
 		H.concealed = 1
 		H.update_icon()
 
@@ -209,7 +214,7 @@
 /*
 	Deck types
 */
-//Basic standard playing cards
+//Standard playing cards
 /obj/item/deck/cards
 	name = "deck of cards"
 	desc = "A simple deck of French-suited playing cards. This one includes jokers."
