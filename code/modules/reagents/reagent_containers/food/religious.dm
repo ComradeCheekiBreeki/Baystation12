@@ -17,8 +17,9 @@
 	base_name = "chalice"
 	base_icon = "chalice"
 	icon = 'icons/obj/drink_glasses/chalice.dmi'
-	filling_states = "80;100"
-	volume = 20
+	// Only has 80 and 100 filling states, but only 2 filling states doesn't work
+	filling_states = "50;80;100"
+	volume = 30
 	possible_transfer_amounts = "5;10;15;20"
 	rim_pos = "y=26;x_left=11;x_right=20"
 

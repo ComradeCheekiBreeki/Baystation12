@@ -253,6 +253,18 @@
 	books["Kojiki"] = /obj/item/storage/bible/kojiki
 	gear_tweaks += new/datum/gear_tweak/path(books)
 
+/datum/gear/prayer_rug
+	display_name = "prayer rug selection"
+	description = "Small, rolled up prayer rugs for all your religious needs."
+	path = /obj/item/prayer_rug
+	cost = 2
+
+/datum/gear/prayer_rug/New()
+	..()
+	var/rugs = list()
+	rugs["ornate prayer rug"] = /obj/item/prayer_rug/ornate
+	gear_tweaks += new/datum/gear_tweak/path(rugs)
+
 /datum/gear/swiss
 	display_name = "multi-tool"
 	path = /obj/item/material/knife/folding/swiss
