@@ -10,7 +10,7 @@
 
 /obj/item/clothing/under/clerical_suit
 	name = "clerical suit"
-	desc = "A black dress shirt with clerical collar and dress pants, worn by some members of the Christian clergy."
+	desc = "A black dress shirt with clerical collar and dress pants. Worn by some Christian clergy."
 	icon_state = "clerical_suit"
 	item_state = "clerical_suit"
 	worn_state = "clerical_suit"

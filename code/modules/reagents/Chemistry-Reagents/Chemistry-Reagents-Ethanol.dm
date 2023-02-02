@@ -385,7 +385,7 @@
 
 /datum/reagent/ethanol/communion_wine
 	name = "Communion Wine"
-	description = "Red wine diluted with water. Some Christians believe it to be the blood of Jesus Christ when part of the holy communion ritual."
+	description = "Red wine diluted with water. Part of the Christian communion rite."
 	taste_description = "bitter sweetness"
 	color = "#a06f4f" // rgb: 160, 111, 79
 	strength = 8

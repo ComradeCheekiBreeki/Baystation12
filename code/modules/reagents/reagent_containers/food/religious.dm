@@ -1,7 +1,7 @@
 // Foods
 /obj/item/reagent_containers/food/snacks/communionwafer
 	name = "communion wafer"
-	desc = "A small, round piece of unleavened bread. Some Christians believe it to be the body of Jesus Christ when part of the holy communion ritual."
+	desc = "A small, round piece of unleavened bread. Part of the Christian communion rite."
 	icon_state = "wafer"
 	w_class = ITEM_SIZE_TINY
 	filling_color = "#c6bf85"

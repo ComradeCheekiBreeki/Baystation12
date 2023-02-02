@@ -27,7 +27,7 @@
 
 /obj/item/storage/bible/bible
 	name = "\improper Bible"
-	desc = "The central religious text of the Christian religions. It contains the writings of the Israelites and the chronicle of Jesus and his disciples."
+	desc = "The central religious text of Christianity. It contains the writings of the Israelites and the chronicle of Jesus and his disciples."
 
 /obj/item/storage/bible/tanakh
 	name = "\improper Tanakh"
@@ -46,12 +46,12 @@
 
 /obj/item/storage/bible/aqdas
 	name = "\improper Kitab-i-Aqdas"
-	desc = "The central religious text of the Baha'i Faith. It contains the writings of the founder of the Baha'i Faith, Baha'u'llah."
+	desc = "The central religious text of the Baha'i Faith. It contains the religious principles and philosophy of its founder, Baha'u'llah."
 	icon_state = "aqdas"
 
 /obj/item/storage/bible/guru
 	name = "\improper Guru Granth Sahib"
-	desc = "The central religious text of Sikhism. It is the collection and revision of the writings of the ten human Gurus, considered to be the final true writing of the religion."
+	desc = "The central religious text of Sikhism. It is the collection and revision of the writings of the ten human Gurus, considered to be the final \"eternal Guru\", or teacher."
 	icon_state = "guru"
 
 /obj/item/storage/bible/kojiki
@@ -72,6 +72,7 @@
 				to_chat(M, "Nothing happened.")
 		..()
 
+// Cannot believe there was a reference to NetHack in here. What is this, 1989?
 /obj/item/storage/bible/afterattack(atom/A, mob/user as mob, proximity)
 	if(!proximity) return
 	if(user.mind && istype(user.mind.assigned_job, /datum/job/chaplain))
