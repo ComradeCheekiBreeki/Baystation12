@@ -255,7 +255,7 @@
 
 /datum/gear/prayer_rug
 	display_name = "prayer rug selection"
-	description = "Small, rolled up prayer rugs for all your religious needs."
+	description = "Small, rolled up prayer rugs for all your personal religious needs."
 	path = /obj/item/prayer_rug
 	cost = 2
 
@@ -263,6 +263,8 @@
 	..()
 	var/rugs = list()
 	rugs["ornate prayer rug"] = /obj/item/prayer_rug/ornate
+	rugs["ottoman prayer rug"] = /obj/item/prayer_rug/ottoman
+	rugs["rustic prayer rug"] = /obj/item/prayer_rug/rustic
 	gear_tweaks += new/datum/gear_tweak/path(rugs)
 
 /datum/gear/swiss

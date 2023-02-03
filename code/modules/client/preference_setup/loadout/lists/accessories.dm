@@ -132,27 +132,28 @@
 	flags = GEAR_HAS_NO_CUSTOMIZATION
 
 
-/datum/gear/accessory/chaplain
-	display_name = "chaplain insignia"
-	path = /obj/item/clothing/accessory/chaplain
-	allowed_roles = list(
+/datum/gear/accessory/insignia_religious
+	display_name = "religious pin"
+	path = /obj/item/clothing/accessory/insignia_religious
+	/*allowed_roles = list(
 		/datum/job/chaplain
-	)
+	) */
 	flags = GEAR_HAS_NO_CUSTOMIZATION
 
 
-/datum/gear/accessory/chaplain/New()
+/datum/gear/accessory/insignia_religious/New()
 	..()
 	var/options = list()
-	options["Christianity"] = /obj/item/clothing/accessory/chaplain/christianity
-	options["Judaism"] = /obj/item/clothing/accessory/chaplain/judaism
-	options["Islam"] = /obj/item/clothing/accessory/chaplain/islam
-	options["Buddhism"] = /obj/item/clothing/accessory/chaplain/buddhism
-	options["Hinduism"] = /obj/item/clothing/accessory/chaplain/hinduism
-	options["Sikhism"] = /obj/item/clothing/accessory/chaplain/sikhism
-	options["Baha'i Faith"] = /obj/item/clothing/accessory/chaplain/bahaifaith
-	options["Jainism"] = /obj/item/clothing/accessory/chaplain/jainism
-	options["Taoism"] = /obj/item/clothing/accessory/chaplain/taoism
+	options["Latin cross pin"] = /obj/item/clothing/accessory/insignia_religious/christian_west
+	options["patriarchal cross pin"] = /obj/item/clothing/accessory/insignia_religious/christian_east
+	options["Star of David pin"] = /obj/item/clothing/accessory/insignia_religious/judaism
+	options["takbir pin"] = /obj/item/clothing/accessory/insignia_religious/islam
+	options["dharmachakra pin"] = /obj/item/clothing/accessory/insignia_religious/buddhism
+	options["Om pin"] = /obj/item/clothing/accessory/insignia_religious/hinduism
+	options["Khanda pin"] = /obj/item/clothing/accessory/insignia_religious/sikhism
+	options["nine-pointed star pin"] = /obj/item/clothing/accessory/insignia_religious/bahai
+	options["Ahimsa symbol pin"] = /obj/item/clothing/accessory/insignia_religious/jainism
+	options["taijitu pin"] = /obj/item/clothing/accessory/insignia_religious/taoism
 	gear_tweaks += new/datum/gear_tweak/path (options)
 
 
