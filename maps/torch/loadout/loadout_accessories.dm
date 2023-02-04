@@ -80,6 +80,71 @@
 		/datum/mil_branch/expeditionary_corps
 	)
 
+/datum/gear/accessory/chaplain_scarves_fleet
+	display_name = "chaplain shawls, Fleet"
+	description = "A selection of religious shawls/scarves issued to Fleet chaplains."
+	cost = 1
+	path = /obj/item/clothing/accessory/solgov/chaplain_scarf/fleet
+	flags = GEAR_HAS_NO_CUSTOMIZATION
+	allowed_branches = list(
+		/datum/mil_branch/fleet
+	)
+	allowed_roles = list(
+		/datum/job/chaplain
+	)
+
+/datum/gear/accessory/chaplain_scarves_fleet/New()
+	..()
+	var/chap_scarves_fleet = list()
+	chap_scarves_fleet["Fleet chaplain scarf"] = /obj/item/clothing/accessory/solgov/chaplain_scarf/fleet
+	chap_scarves_fleet["Fleet stole"] = /obj/item/clothing/accessory/solgov/chaplain_scarf/fleet/dress_christian
+	chap_scarves_fleet["Fleet tallit"] = /obj/item/clothing/accessory/solgov/chaplain_scarf/fleet/dress_jewish
+	gear_tweaks += new/datum/gear_tweak/path(chap_scarves_fleet)
+
+/datum/gear/accessory/chaplain_scarves_ec
+	display_name = "chaplain shawls, Expeditionary Corps"
+	description = "A selection of religious shawls/scarves issued to Expeditionary Corps chaplains."
+	cost = 1
+	path = /obj/item/clothing/accessory/solgov/chaplain_scarf/ec
+	flags = GEAR_HAS_NO_CUSTOMIZATION
+	allowed_branches = list(
+		/datum/mil_branch/expeditionary_corps
+	)
+	allowed_roles = list(
+		/datum/job/chaplain
+	)
+
+/datum/gear/accessory/chaplain_scarves_ec/New()
+	..()
+	var/chap_scarves_ec = list()
+	chap_scarves_ec["Expeditionary Corps chaplain scarf"] = /obj/item/clothing/accessory/solgov/chaplain_scarf/ec
+	chap_scarves_ec["Expeditionary Corps stole"] = /obj/item/clothing/accessory/solgov/chaplain_scarf/ec/dress_christian
+	chap_scarves_ec["Expeditionary Corps tallit"] = /obj/item/clothing/accessory/solgov/chaplain_scarf/ec/dress_jewish
+	gear_tweaks += new/datum/gear_tweak/path(chap_scarves_ec)
+
+/datum/gear/accessory/chaplain_pins
+	display_name = "chaplain religious pins"
+	description = "A selection silver collar pins issued to Fleet and EC chaplains to indicate the religion they are ordained in."
+	cost = 1
+	path = /obj/item/clothing/accessory/solgov/religious_pin
+	flags = GEAR_HAS_NO_CUSTOMIZATION
+	allowed_branches = list(
+		/datum/mil_branch/expeditionary_corps,
+		/datum/mil_branch/fleet
+	)
+	allowed_roles = list(
+		/datum/job/chaplain
+	)
+
+/datum/gear/accessory/chaplain_pins/New()
+	..()
+	var/chap_pins = list()
+	chap_pins["Latin cross collar pin"] = /obj/item/clothing/accessory/solgov/religious_pin/christian_west
+	chap_pins["patriarchal cross collar pin"] = /obj/item/clothing/accessory/solgov/religious_pin/christian_east
+	chap_pins["Ten Commandments collar pin"] = /obj/item/clothing/accessory/solgov/religious_pin/judaism
+	chap_pins["Shahadah collar pin"] = /obj/item/clothing/accessory/solgov/religious_pin/islam
+	gear_tweaks += new/datum/gear_tweak/path(chap_pins)
+
 /datum/gear/accessory/ec_patch
 	display_name = "Expeditionary Corps patch"
 	path = /obj/item/clothing/accessory/solgov/ec_patch

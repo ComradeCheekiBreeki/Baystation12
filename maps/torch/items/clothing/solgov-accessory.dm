@@ -162,6 +162,42 @@ scarves
 	desc = "A silk scarf in Expeditionary Corps Field Operations section colors, meant to be worn with Expeditionary Corps uniforms."
 	color = "#9f84b3"
 
+// Chaplain scarves/shawls
+// The base classes (just "fleet" and "ec") are intended to be generic and discreet when worn with the utility uniform
+// All the "dress" variants are for organized religious services and so not subject to the same duty uniform regulations
+/obj/item/clothing/accessory/solgov/chaplain_scarf/fleet
+	name = "fleet chaplain scarf"
+	desc = "A short scarf issued to chaplains of the Fleet, discreet enough to be worn over the uniform while on duty."
+	icon_state = "chap_scarf_fleet"
+	check_codex_val = FACTION_FLEET
+
+/obj/item/clothing/accessory/solgov/chaplain_scarf/fleet/dress_jewish
+	name = "fleet tallit"
+	icon_state = "chap_tallit_fleet"
+	desc = "A Fleet-issued Jewish prayer shawl decorated with gold embroidery of the Ten Commandments. Not to be worn on duty with the utility uniform."
+
+/obj/item/clothing/accessory/solgov/chaplain_scarf/fleet/dress_christian
+	name = "fleet stole"
+	icon_state = "chap_stole_fleet"
+	desc = "A Fleet-issued Christian stole. Not to be worn on duty with the utility uniform."
+
+/obj/item/clothing/accessory/solgov/chaplain_scarf/ec
+	name = "expeditionary corps chaplain scarf"
+	icon_state = "chap_scarf_ec"
+	desc = "A short scarf issued to chaplains of the Expeditionary Corps, discreet enough to be worn over the uniform while on duty."
+	check_codex_val = FACTION_EXPEDITIONARY
+
+/obj/item/clothing/accessory/solgov/chaplain_scarf/ec/dress_jewish
+	name = "expeditionary corps tallit"
+	icon_state = "chap_tallit_ec"
+	desc = "An EC-issued Jewish prayer shawl decorated with gold embroidery of the Ten Commandments. Not to be worn on duty with the utility uniform."
+
+/obj/item/clothing/accessory/solgov/chaplain_scarf/ec/dress_christian
+	name = "expeditionary corps stole"
+	icon_state = "chap_stole_ec"
+	desc = "An EC-issued Christian stole. Not to be worn on duty with the utility uniform."
+
+
 /******
 ribbons
 ******/
@@ -894,3 +930,66 @@ ranks - marines
 /obj/item/clothing/accessory/solgov/rank/army/flag/o10_alt
 	name = "ranks (O-10 field marshal)"
 	desc = "Insignia denoting the rank of Field Marshal."
+
+
+
+
+/***************************************
+Religious collar tabs/pins for chaplains
+***************************************/
+/obj/item/clothing/accessory/solgov/religious_pin
+	abstract_type = /obj/item/clothing/accessory/solgov/religious_pin
+	name = "religious pin"
+	item_state = "chaplain_collar_pin"
+	on_rolled_down = ACCESSORY_ROLLED_NONE
+	slot = ACCESSORY_SLOT_INSIGNIA
+
+/obj/item/clothing/accessory/solgov/religious_pin/christian_west
+	name = "\improper Latin cross collar pin"
+	desc = "A silver collar pin for a military uniform. It features a Latin cross, a symbol of Roman Catholic and Protestant Christianity."
+	icon_state = "r_pin_christian_west"
+
+/obj/item/clothing/accessory/solgov/religious_pin/christian_east
+	name = "patriarchal cross collar pin"
+	desc = "A silver collar pin for a military uniform. It is a patriarchal cross, a symbol of Eastern Orthodox and Byzantine Catholic Christianity."
+	icon_state = "r_pin_christian_east"
+
+/obj/item/clothing/accessory/solgov/religious_pin/judaism
+	name = "\improper Ten Commandments collar pin"
+	desc = "A silver collar pin for a military uniform. It is a rendering of the Ten Commandments and a Star of David, symbols of Judaism."
+	icon_state = "r_pin_judaism"
+
+/obj/item/clothing/accessory/solgov/religious_pin/islam
+	name = "\improper Shahadah collar pin"
+	desc = "A silver collar pin for a military uniform. It is a geometric design engraved with the first half of the <i>Shahadah</i>, the Islamc profession of faith."
+	icon_state = "r_pin_islam"
+
+/obj/item/clothing/accessory/solgov/religious_pin/buddhism
+	name = "dharmachakra collar pin"
+	desc = "A silver collar pin for a military uniform. It is of the dharmachakra, a Buddhist symbol of Dharma and the Eightfold Path."
+	icon_state = "r_pin_buddhism"
+
+/obj/item/clothing/accessory/solgov/religious_pin/hinduism
+	name = "\improper Om collar pin"
+	desc = "A silver collar pin for a military uniform. It features <i>Om</i>, a divine syllable and written symbol of Hinduism."
+	icon_state = "r_pin_hinduism"
+
+/obj/item/clothing/accessory/solgov/religious_pin/sikhism
+	name = "\improper Khanda collar pin"
+	desc = "A silver collar pin for a military uniform. Its design is the Khanda, a symbol of Sikhism representing the obligation to care for and protect the oppressed."
+	icon_state = "r_pin_sikhism"
+
+/obj/item/clothing/accessory/solgov/religious_pin/bahai
+	name = "nine-pointed star collar pin"
+	desc = "A silver collar pin for a military uniform. It is inscribed with a nine-pointed star, a Baha'i symbol of perfect unity and the glory of God."
+	icon_state = "r_pin_bahai"
+
+/obj/item/clothing/accessory/solgov/religious_pin/jainism
+	name = "\improper Ahimsa symbol collar pin"
+	desc = "A silver collar pin for a military uniform. It is of the Ahimsa symbol, representing the Jain commitment to end the cycle of earthly rebirth through adherence to nonviolence."
+	icon_state = "r_pin_jainism"
+
+/obj/item/clothing/accessory/solgov/religious_pin/taoism
+	name = "taijitu collar pin"
+	desc = "A silver collar pin for a military uniform. It is a taijitu, a Taoist symbol of the \"yin and yang,\" the opposing and interconnected forces of the universe."
+	icon_state = "r_pin_taoism"

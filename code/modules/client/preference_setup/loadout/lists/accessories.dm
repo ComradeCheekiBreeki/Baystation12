@@ -131,6 +131,10 @@
 	path = /obj/item/clothing/accessory/ftu_pin
 	flags = GEAR_HAS_NO_CUSTOMIZATION
 
+/*
+
+	This used to be a generic item, but religious insignia now live as Fleet and EC items (i.e uniform pins/tabs)
+	May re-add at some point as generic religious symbols
 
 /datum/gear/accessory/insignia_religious
 	display_name = "religious pin"
@@ -139,6 +143,7 @@
 		/datum/job/chaplain
 	) */
 	flags = GEAR_HAS_NO_CUSTOMIZATION
+
 
 
 /datum/gear/accessory/insignia_religious/New()
@@ -156,6 +161,7 @@
 	options["taijitu pin"] = /obj/item/clothing/accessory/insignia_religious/taoism
 	gear_tweaks += new/datum/gear_tweak/path (options)
 
+*/
 
 /datum/gear/accessory/bracelet
 	display_name = "bracelet, color select"

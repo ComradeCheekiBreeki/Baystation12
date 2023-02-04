@@ -1,15 +1,15 @@
 /obj/structure/banner
 	name = "religious banner"
-	desc = "A banner used to contain religious symbols."
+	desc = "A wall-mounted roller for displaying religious banners."
 	anchored = TRUE
 	density = FALSE
 	var/rolled = TRUE
 	var/static/banner_type = list(
-		"blank" = "no symbol"
-		, "crucifix" = "the cross, a symbol of Christianity"
-		, "starofdavid" = "the Star of David, a symbol of Judaism"
-		, "crescentandstar" = "the crescent and star, a symbol of Islam"
-		, "aum" = "the Aum, a symbol of Hinduism"
+		"blank" = "nothing."
+		, "catholic" = "the keys to the Kingdom of Heaven, a symbol of the Catholic Holy See."
+		, "protestant" = "a simple inverse cross, associated with Protestant Christianity."
+		, "orthodox" = "Jesus Christ crucified on an Orthodox cross, with the headboard reading \"INRI.\""
+		, "judaism" = "a Menorah intercut with a Star of David and olive branches."
 		, "khanda" = "the Khanda, a symbol of Sikhism"
 		, "ninepointedstar" = "the nine-pointed star, a symbol of the Baha'i Faith"
 		, "dharmachakra" = "the dharmachakra, a symbol of Buddhism"
@@ -49,7 +49,7 @@
 	if (!user.mind || !istype(user.mind.assigned_job, /datum/job/chaplain))
 		to_chat(user, SPAN_WARNING("Only the Chaplain can change the banner!"))
 	else
-		var/banner = input(user, "Pick a symbol:") as null | anything in banner_type
+		var/banner = input(user, "Pick a faith banner to display:") as null | anything in banner_type
 		if (!banner)
 			return
 		if (user.stat || !Adjacent(user) || user.restrained())
@@ -61,7 +61,7 @@
 
 /obj/structure/banner/examine(mob/user)
 	. = ..()
-	to_chat(user, "It displays [banner_type[selected]].")
+	to_chat(user, "The current banner displays [banner_type[selected]]")
 
 /obj/structure/banner/get_mechanics_info()
 	. = ..()

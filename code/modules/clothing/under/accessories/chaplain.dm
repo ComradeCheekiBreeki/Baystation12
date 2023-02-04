@@ -1,3 +1,7 @@
+/*
+
+	Former religious insignia, here in case of re-adding
+
 /obj/item/clothing/accessory/insignia_religious
 	abstract_type = /obj/item/clothing/accessory/insignia_religious
 	name = "religious pin"
@@ -10,14 +14,12 @@
 	name = "\improper Latin cross pin"
 	desc = "A pin with a Latin cross, a symbol of Latin and Protestant Christianity."
 	icon_state = "r_pin_christian_west"
-	slot = ACCESSORY_SLOT_INSIGNIA
 
 
 /obj/item/clothing/accessory/insignia_religious/christian_east
 	name = "patriarchal cross pin"
 	desc = "A pin with the patriarchal cross, a symbol of Eastern Orthodox and Byzantine Catholic Christianity."
 	icon_state = "r_pin_christian_east"
-	slot = ACCESSORY_SLOT_INSIGNIA
 
 
 /obj/item/clothing/accessory/insignia_religious/judaism
@@ -65,3 +67,5 @@
 	name = "taijitu pin"
 	desc = "A pin with a taijitu, a Taoist symbol of the \"yin and yang,\" the opposing and interconnected forces of the universe."
 	icon_state = "r_pin_taoism_taijitu"
+
+*/
