@@ -23,7 +23,7 @@
 	..()
 	remove_extension(src, /datum/extension/scent)
 
-/obj/item/flame/candle/scented/light(mob/user)
+/obj/item/flame/candle/scented/light(mob/user, var/silent)
 	..()
 	if(lit)
 		set_extension(src, style.scent_datum)

@@ -35,3 +35,9 @@
 
 /datum/extension/scent/candle/sandalwood
 	scent = "sandalwood"
+
+/datum/extension/scent/candle/onycha
+	scent = "onycha"
+
+/datum/extension/scent/candle/myrrh
+	scent = "myrrh"

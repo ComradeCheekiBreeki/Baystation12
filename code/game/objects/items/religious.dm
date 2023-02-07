@@ -1,5 +1,7 @@
-// Procession crosses
-// Carried during religious ceremonies
+
+/*****************
+Procession crosses
+*****************/
 /obj/item/cross_procession
 	name = "processional cross"
 	desc = "A processional cross."
@@ -37,6 +39,10 @@
 	else
 		icon_state = icon_state_base
 
+/obj/item/cross_procession/get_mechanics_info()
+	. = ..()
+	. += "<p>A large cross carried by altar servers during some Christian ceremonies. It can be placed on the ground and moved around to change its direction or carried.</p>"
+
 // Procession cross types
 /obj/item/cross_procession/eastern
 	name = "eastern processional cross"
@@ -57,7 +63,9 @@
 	icon_state_deployed = "cross_procession_western_D"
 	matter = list(MATERIAL_WOOD = 2000, MATERIAL_BRONZE = 250)
 
-// Prayer rug
+/**********
+Prayer rugs
+**********/
 /obj/item/prayer_rug
 	name = "prayer rug"
 	desc = "A prayer rug."
@@ -145,6 +153,16 @@
 			SPAN_NOTICE("You roll up \the [src].")
 		)
 
+/obj/item/prayer_rug/get_mechanics_info()
+	. = ..()
+	. += "<p>A rug that can be rolled out on the ground for prayer. Common in Eastern Christianity and Islam.</p>"
+
+/obj/item/prayer_rug/get_interactions_info()
+	. = ..()
+	.["Empty Hand (While rolled out)"] += "Allows you to prostrate yourself on the rug."
+	.[CODEX_INTERACTION_USE_SELF] += "Places the rug down and rolls it out if it's possible to do so. You need a free hand to do this."
+	.[CODEX_INTERACTION_ALT_CLICK] += "Rolls the rug out on the ground or rolls it back up. If it's in your inventory, it'll get placed on the ground first. You need a free hand to do this."
+
 // Prayer rug types
 /obj/item/prayer_rug/ornate
 	name = "ornate prayer rug"
@@ -167,3 +185,237 @@
 	icon_state = "prayer_rug_rustic"
 	icon_state_base = "prayer_rug_rustic"
 	icon_state_deployed = "prayer_rug_rustic_D"
+
+/*********
+Candleabra
+*********/
+/obj/item/storage/candelabrum
+	name = "candlestick"
+	desc = "A simple iron candlestick. Pre-aged, for that 1500s look."
+	icon = 'icons/obj/candle.dmi'
+	icon_state = "candelabrum"
+	var/base_icon = "candelabrum"
+	force = 6
+	// We want the user to be able to place it specifically
+	randpixel = 0
+	throwforce = 6
+	w_class = ITEM_SIZE_NORMAL
+	can_hold = list(/obj/item/flame/candle, /obj/item/flame/candle/tall)
+	storage_slots = 1
+	allow_slow_dump = FALSE
+	center_of_mass = "x=16;y=6"
+
+/obj/item/storage/candelabrum/on_update_icon()
+	..()
+	// Kind of dirty, but it works
+	overlays.Cut()
+	if(contents.len)
+		var/i = 1
+		for(var/obj/item/flame/candle/cand in contents)
+			// Example: candelabrum has 5 slots and 2 candles are in it, the second is lit: "candelabrum_1" and "candelabrum_2_lit" are the overlays
+			overlays += "[base_icon]_[i]"
+			if(cand.lit)
+				overlays += "[base_icon]_[i]_lit"
+
+			i++
+
+/obj/item/storage/candelabrum/attackby(obj/item/W as obj, mob/user as mob)
+	if((isflamesource(W) || is_hot(W)))
+		if(contents.len)
+			var/unlightable = 0
+			for(var/obj/item/flame/candle/cand in contents)
+				if(!cand.lit)
+					cand.light(user, FALSE)
+					update_icon()
+					break
+				else
+					unlightable++
+
+			// If all candles are unlightable
+			if(unlightable == contents.len)
+				if((W.type in can_hold) && contents.len < storage_slots)
+					..()
+				else
+					to_chat(user, SPAN_WARNING("The candles in \the [src] are already lit."))
+
+		else if(W.type in can_hold)
+			..()
+		else
+			to_chat(user, SPAN_WARNING("There are no candles in \the [src]."))
+	else
+		..()
+
+/obj/item/storage/candelabrum/attack_self(mob/user as mob)
+	var/ext = 0
+	for(var/obj/item/flame/candle/cand in contents)
+		if(cand.lit)
+			cand.lit = 0
+			cand.update_icon()
+			cand.set_light(0)
+			remove_extension(cand, /datum/extension/scent)
+			ext++
+
+	if(ext > 0)
+		user.visible_message(
+			SPAN_NOTICE("\The [user] extinguishes all the candles in \the [src]."),
+			SPAN_NOTICE("You extinguish all the candles in \the [src].")
+		)
+
+/obj/item/storage/candelabrum/get_mechanics_info()
+	. = ..()
+	. += "<p>An object that lets you place candles in it for easier organization, cleaner lighting, or just to look nice. \n This one can hold [storage_slots] candle(s).</p>"
+
+/obj/item/storage/candelabrum/get_interactions_info()
+	. = ..()
+	.["Fire Source"] += "Lights the unlit candles one by one. Another lit candle can be used for this purpose, but only if there are no empty slots in the candelabrum; otherwise the candle will be placed in it."
+	.[CODEX_INTERACTION_USE_SELF] += "Extinguishes all of the lit candles."
+
+/obj/item/storage/candelabrum/altar_candlestick
+	name = "altar candlestick"
+	desc = "A tall golden candlestick that looks great on an altar."
+	icon = 'icons/obj/candle.dmi'
+	icon_state = "altar_candlestick"
+	base_icon = "altar_candlestick"
+	force = 6
+	// We want the user to be able to place it specifically
+	randpixel = 0
+	throwforce = 6
+	w_class = ITEM_SIZE_NORMAL
+	can_hold = list(/obj/item/flame/candle, /obj/item/flame/candle/tall)
+	storage_slots = 1
+	allow_slow_dump = FALSE
+	center_of_mass = "x=16;y=3"
+
+/*****
+Censer
+*****/
+/obj/item/storage/censer
+	name = "censer"
+	desc = "A brass censer for dispersing incese or other aromatic things, usually during a religious service. If you're crazy enough, you could also use it like a flail."
+	icon = 'icons/obj/items.dmi'
+	icon_state = "censer"
+	item_state = "censer"
+	force = 5
+	throwforce = 4
+	w_class = ITEM_SIZE_LARGE
+	can_hold = list(/obj/item/flame/candle/scented/incense, /obj/item/flame/candle/scented/incense/religious)
+	storage_slots = 1
+	var/lit = FALSE
+	// The censer can only be swung when it's held in two hands
+	var/wielded_item_state = "censer-wielded"
+	var/last_swing = 0
+	var/cooldown = 2 SECONDS
+	allow_slow_dump = FALSE
+	center_of_mass = "x=17;y=4"
+
+/obj/item/storage/censer/update_twohanding()
+	update_icon()
+	..()
+
+/obj/item/storage/censer/update_icon()
+	var/mob/living/user = loc
+	if(istype(user))
+		if(is_held_twohanded(user))
+			item_state_slots[slot_l_hand_str] = wielded_item_state
+			item_state_slots[slot_r_hand_str] = wielded_item_state
+		else
+			item_state_slots[slot_l_hand_str] = initial(item_state)
+			item_state_slots[slot_r_hand_str] = initial(item_state)
+
+/obj/item/storage/censer/attackby(obj/item/W as obj, mob/user as mob)
+
+	if((isflamesource(W) || is_hot(W)))
+		if(!lit)
+			if(!contents.len && (W.type in can_hold))
+				..()
+
+			else
+				lit = TRUE
+				user.visible_message(
+						SPAN_NOTICE("\The [user] opens the front slot and ignites \the [src]."),
+						SPAN_NOTICE("You open the front slot and ignite \the [src].")
+					)
+				for(var/obj/item/flame/candle/scented/incense/inc in contents)
+					if(!inc.lit)
+						inc.light(user, TRUE)
+
+		else if(W.type in can_hold)
+			..()
+		else
+			to_chat(user, SPAN_WARNING("\The [src] is already lit."))
+	else
+		..()
+
+	if(contents.len && lit)
+		for(var/obj/item/flame/candle/scented/incense/inc in contents)
+			if(!inc.lit)
+				inc.light(user, TRUE)
+
+/obj/item/storage/censer/AltClick(mob/user as mob)
+	if(lit)
+		lit = FALSE
+		if(contents.len)
+			for(var/obj/item/flame/candle/scented/incense/inc in contents)
+				if(inc.lit)
+					inc.lit = 0
+					inc.update_icon()
+					inc.set_light(0)
+					remove_extension(inc, /datum/extension/scent)
+		user.visible_message(
+			SPAN_NOTICE("\The [user] closes the slot over the chamber, extinguishing \the [src]."),
+			SPAN_NOTICE("You close the slot over the chamber, extinguishing \the [src].")
+		)
+	else
+		to_chat(user, SPAN_WARNING("\The [src] isn't lit."))
+
+/obj/item/storage/censer/attack_self(mob/user as mob)
+	if(!(last_swing < world.time) && last_swing != 0)
+		return
+	else
+		last_swing = world.time + cooldown
+
+	if(!CanPhysicallyInteract(user))
+		to_chat(user, SPAN_WARNING("You can't swing \the [src] right now."))
+		return
+
+	if(!is_held_twohanded(user))
+		to_chat(user, SPAN_WARNING("You need to hold \the [src] in both hands to swing it!"))
+		return
+
+	if(contents.len)
+		if(lit)
+			user.visible_message(
+				SPAN_NOTICE("\The [user] swings the \the [src] left and right, dispersing the incense."),
+				SPAN_NOTICE("You swing \the [src] left and right, dispersing the incense.")
+			)
+			var/datum/effect/effect/system/steam_spread/steam = new /datum/effect/effect/system/steam_spread()
+			steam.set_up(3, 0, user.loc)
+			steam.start()
+
+		else
+			user.visible_message(
+				SPAN_NOTICE("\The [user] swings \the unlit [src] left and right."),
+				SPAN_NOTICE("You swing \the unlit [src] left and right.")
+			)
+
+	else if(lit)
+		user.visible_message(
+			SPAN_NOTICE("\The [user] swings the \the [src] left and right."),
+			SPAN_NOTICE("You swing \the [src] left and right, but smell only smoldering charcoal.")
+		)
+
+	else
+		user.visible_message(
+			SPAN_NOTICE("\The [user] swings the \the [src] left and right."),
+			SPAN_NOTICE("You swing \the [src] left and right.")
+		)
+
+/obj/item/storage/censer/get_mechanics_info()
+	. = ..()
+	. += "<p>A little perforated metal chamber suspended from a chain used to disperse incense. Incense can be placed in it and lit to fill the room with a pleasant (or possibly revolting) smell.</p>"
+
+/obj/item/storage/censer/get_interactions_info()
+	. = ..()
+	.["Fire Source"] += "Lights the combustion base in the censer. Any unlit incense inside will be ignited along with it. Another lit incense cone can be used for this purpose, but only if the censer is not empty; otherwise it will be placed inside."
+	.[CODEX_INTERACTION_USE_SELF] += "Swings the censer left and right. Disperses incense smoke throughout the room if it's lit and filled. Requires the item to be wielded two-handed."
+	.[CODEX_INTERACTION_ALT_CLICK] += "Closes a slot over the chamber to put out the fire. Extinguishes the censer and any incense inside it."

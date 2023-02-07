@@ -57,3 +57,14 @@
 	color = COLOR_YELLOW_GRAY
 	scent = "sandalwood"
 	scent_datum = /datum/extension/scent/candle/sandalwood
+
+// No one actually knows what "onycha" is so this is kind of a cop out but w/e
+/singleton/scent_type/onycha
+	color = COLOR_DARK_BLUE_GRAY
+	scent = "onycha"
+	scent_datum = /datum/extension/scent/candle/onycha
+
+/singleton/scent_type/myrrh
+	color = COLOR_WARM_YELLOW
+	scent = "myrrh"
+	scent_datum = /datum/extension/scent/candle/myrrh

@@ -26,3 +26,17 @@
 	max_storage_space = 9
 
 	startswith = list(/obj/item/flame/candle/scented/incense = 9)
+
+/obj/item/flame/candle/scented/incense/religious
+
+	scent_types = list(/singleton/scent_type/sage,
+					   /singleton/scent_type/frankincense,
+					   /singleton/scent_type/onycha,
+					   /singleton/scent_type/cinnamon,
+					   /singleton/scent_type/myrrh)
+
+/obj/item/storage/candle_box/incense/religious
+	name = "ritual incense box"
+	desc = "A pack of incense intended for religious use."
+
+	startswith = list(/obj/item/flame/candle/scented/incense/religious = 9)

@@ -54,6 +54,7 @@
 	return inv_overlay
 
 
+// Since this is not mentioned elsewhere I'll put it here- accessories inherit the clothing overlay layer of whatever they're attached to
 /obj/item/clothing/accessory/get_mob_overlay(mob/user_mob, slot)
 	if(!istype(loc,/obj/item/clothing))	//don't need special handling if it's worn as normal item.
 		return ..()

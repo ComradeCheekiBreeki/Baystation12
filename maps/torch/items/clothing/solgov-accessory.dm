@@ -170,6 +170,7 @@ scarves
 	desc = "A short scarf issued to chaplains of the Fleet, discreet enough to be worn over the uniform while on duty."
 	icon_state = "chap_scarf_fleet"
 	check_codex_val = FACTION_FLEET
+	accessory_flags = ACCESSORY_REMOVABLE | ACCESSORY_HIGH_VISIBILITY
 
 /obj/item/clothing/accessory/solgov/chaplain_scarf/fleet/dress_jewish
 	name = "fleet tallit"
@@ -186,6 +187,7 @@ scarves
 	icon_state = "chap_scarf_ec"
 	desc = "A short scarf issued to chaplains of the Expeditionary Corps, discreet enough to be worn over the uniform while on duty."
 	check_codex_val = FACTION_EXPEDITIONARY
+	accessory_flags = ACCESSORY_REMOVABLE | ACCESSORY_HIGH_VISIBILITY
 
 /obj/item/clothing/accessory/solgov/chaplain_scarf/ec/dress_jewish
 	name = "expeditionary corps tallit"

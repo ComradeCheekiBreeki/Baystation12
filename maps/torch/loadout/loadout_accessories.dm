@@ -143,6 +143,12 @@
 	chap_pins["patriarchal cross collar pin"] = /obj/item/clothing/accessory/solgov/religious_pin/christian_east
 	chap_pins["Ten Commandments collar pin"] = /obj/item/clothing/accessory/solgov/religious_pin/judaism
 	chap_pins["Shahadah collar pin"] = /obj/item/clothing/accessory/solgov/religious_pin/islam
+	chap_pins["dharmachakra pin"] = /obj/item/clothing/accessory/solgov/religious_pin/buddhism
+	chap_pins["Om pin"] = /obj/item/clothing/accessory/solgov/religious_pin/hinduism
+	chap_pins["Khanda pin"] = /obj/item/clothing/accessory/solgov/religious_pin/sikhism
+	chap_pins["nine-pointed star pin"] = /obj/item/clothing/accessory/solgov/religious_pin/bahai
+	chap_pins["Ahimsa symbol pin"] = /obj/item/clothing/accessory/solgov/religious_pin/jainism
+	chap_pins["taijitu pin"] = /obj/item/clothing/accessory/solgov/religious_pin/taoism
 	gear_tweaks += new/datum/gear_tweak/path(chap_pins)
 
 /datum/gear/accessory/ec_patch

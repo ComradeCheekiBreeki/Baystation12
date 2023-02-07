@@ -36,7 +36,7 @@
 
 /singleton/cultural_info/religion/bahai
 	name = RELIGION_BAHAI_FAITH
-	description = "An Abrahamic monotheistic religion that follows the teachings of Baha'u'llah and believes in universal peace and unity. Someone who practices the Baha'i Faith is called a Baha'i."
+	description = "An Abrahamic monotheistic religion that follows the teachings of Baha'u'llah, who preaches unity and the value of all religion. Someone who practices the Baha'i Faith is called a Baha'i."
 
 /singleton/cultural_info/religion/agnostic
 	name = RELIGION_AGNOSTICISM

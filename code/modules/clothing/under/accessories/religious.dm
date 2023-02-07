@@ -13,11 +13,13 @@
 	desc = "A white tunic that covers almost the entire body, used as the primary religious garment for Christian clergy."
 	icon_state = "alb"
 	body_location = FULL_TORSO | LEGS | FEET
+	accessory_flags = ACCESSORY_REMOVABLE | ACCESSORY_HIGH_VISIBILITY
 
 /obj/item/clothing/accessory/stole
 	name = "stole"
 	desc = "A long colored cloth band embroidered with gold, worn draped around the neck. Worn by Christian clergy."
 	icon_state = "stole"
+	accessory_flags = ACCESSORY_REMOVABLE | ACCESSORY_HIGH_VISIBILITY
 
 // colored stoles
 /obj/item/clothing/accessory/stole/green

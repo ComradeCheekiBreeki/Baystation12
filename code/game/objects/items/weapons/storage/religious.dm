@@ -6,7 +6,7 @@
 	desc = "A golden bowl used to hold communion wafers for Christian mass."
 	icon_state = "communionbowl-empty"
 	can_hold = list(/obj/item/reagent_containers/food/snacks/communionwafer)
-	max_storage_space = 3
+	max_storage_space = 10
 	allow_slow_dump = TRUE
 
 /obj/item/storage/communion_bowl/on_update_icon()

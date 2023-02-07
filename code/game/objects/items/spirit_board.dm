@@ -3,7 +3,7 @@
 	desc = "A wooden board with letters etched into it, used in seances."
 	icon = 'icons/obj/objects.dmi'
 	icon_state = "spirit_board"
-	density = TRUE
+	density = FALSE
 	var/next_use = 0
 	var/planchette = "A"
 	var/lastuser = null
@@ -12,12 +12,15 @@
 	. = ..()
 	to_chat(user, "The planchette is sitting at \"[planchette]\".")
 
-/obj/item/spirit_board/attack_hand(mob/user)
-	if (user.a_intent == I_GRAB)
-		return ..()
-	else
-		spirit_board_pick_letter(user)
+/obj/item/spirit_board/AltClick(mob/user)
+	if(!istype(user))
+		return
 
+	if(!CanPhysicallyInteract(user) || user.stat || user.restrained())
+		to_chat(user, SPAN_WARNING("You're in no state to be using \the [src] right now!"))
+		return
+
+	spirit_board_pick_letter(user)
 
 //ATTACK GHOST IGNORING PARENT RETURN VALUE
 /obj/item/spirit_board/attack_ghost(mob/observer/ghost/user)
@@ -36,7 +39,7 @@
 		return	next_use = world.time + rand(30,50)
 	lastuser = M.ckey
 	//blind message is the same because not everyone brings night vision to seances
-	visible_message(SPAN_NOTICE("The planchette slowly moves... and stops at the letter \"[planchette]\"."))
+	visible_message(SPAN_NOTICE("The planchette slowly moves... and stops at \"[planchette]\"."))
 
 /obj/item/spirit_board/proc/spirit_board_checks(mob/M)
 	//cooldown
@@ -73,3 +76,11 @@
 		return 0
 
 	return 1
+
+/obj/item/spirit_board/get_mechanics_info()
+	. = ..()
+	. += "<p>A spooky wooden board that you can use to do some spooky stuff. Maybe it's all in your head. Or is it?!</p>"
+
+/obj/item/spirit_board/get_interactions_info()
+	. = ..()
+	.[CODEX_INTERACTION_ALT_CLICK] += "Places your hand on the planchette and gives you an option to move it somewhere. Maybe you're the one moving it, or maybe you're not..."

@@ -32,29 +32,33 @@
 /obj/structure/banner/on_update_icon()
 	icon_state = "[selected]_[rolled ? "up" : "down"]"
 
-/obj/structure/banner/verb/toggle()
-	set src in oview(1)
-	set category = "Object"
-	set name = "Toggle Banner"
-
-	if (usr.stat || usr.restrained())
+/obj/structure/banner/AltClick(mob/user)
+	if(!istype(user) || user.stat || user.restrained())
 		return
 
 	rolled = !rolled
-	to_chat(usr, "You roll [rolled ? "up" : "down"] \the [src].")
-
+	user.visible_message(
+		SPAN_NOTICE("\The [user] rolls [rolled ? "up" : "down"] \the [src]."),
+		SPAN_NOTICE("You roll [rolled ? "up" : "down"] \the [src].")
+	)
 	update_icon()
 
 /obj/structure/banner/attack_hand(mob/user)
 	if (!user.mind || !istype(user.mind.assigned_job, /datum/job/chaplain))
 		to_chat(user, SPAN_WARNING("Only the Chaplain can change the banner!"))
 	else
-		var/banner = input(user, "Pick a faith banner to display:") as null | anything in banner_type
+		var/banner = input(user, "Pick a banner design to display:") as null | anything in banner_type
 		if (!banner)
 			return
-		if (user.stat || !Adjacent(user) || user.restrained())
-			to_chat(user, SPAN_WARNING("You're in no condition to change \the [src]."))
+
+		if(!Adjacent(user))
+			to_chat(user, SPAN_WARNING("You need to stand closer to \the [src]."))
 			return
+
+		if (user.stat || user.restrained())
+			to_chat(user, SPAN_WARNING("You're in no condition to change \the [src]!"))
+			return
+
 		selected = banner
 
 		update_icon()
@@ -65,5 +69,9 @@
 
 /obj/structure/banner/get_mechanics_info()
 	. = ..()
-	. += "<p>A Chaplain can change the banner's display by clicking on it with an empty hand. Only characters that joined the round as a chaplain can do this.</p>"
-	. += "<p>The banner can be rolled up or unfurled by using the 'Toggle Banner' verb in the Object tab or the right-click menu while adjacent to the banner.</p>"
+	. += "<p>A banner that can be used to display various religious symbols. It can be changed and rolled up or down by the Chaplain.</p>"
+
+/obj/structure/banner/get_interactions_info()
+	. = ..()
+	.[CODEX_INTERACTION_HAND] += "Allows the Chaplain to change which symbol is displayed on the banner."
+	.[CODEX_INTERACTION_ALT_CLICK] += "Rolls the banner up and down. Unlike changing the symbol, anyone can do this."
