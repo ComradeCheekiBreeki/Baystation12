@@ -27,13 +27,14 @@
 	)
 	icon = 'icons/obj/banner.dmi'
 	icon_state = "blank_up"
+	material = /material/cloth
 	var/selected = "blank"
 
 /obj/structure/banner/on_update_icon()
 	icon_state = "[selected]_[rolled ? "up" : "down"]"
 
 /obj/structure/banner/AltClick(mob/user)
-	if(!istype(user) || user.stat || user.restrained())
+	if(!istype(user) || user.stat || user.restrained() || !CanPhysicallyInteract(user))
 		return
 
 	rolled = !rolled

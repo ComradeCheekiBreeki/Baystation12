@@ -33,6 +33,18 @@
 	display_name = "poncho, supply"
 	path = /obj/item/clothing/suit/poncho/roles/cargo
 
+/datum/gear/suit/bisht
+	display_name = "bisht, color select"
+	path = /obj/item/clothing/suit/bisht
+	cost = 1
+	flags = GEAR_HAS_COLOR_SELECTION
+
+/datum/gear/suit/bisht_embroidered
+	display_name = "black embroidered bisht"
+	path = /obj/item/clothing/suit/bisht_embroidered
+	cost = 1
+	flags = GEAR_HAS_NO_CUSTOMIZATION
+
 /datum/gear/suit/suit_jacket
 	display_name = "standard suit jackets"
 	path = /obj/item/clothing/suit/storage/toggle/suit

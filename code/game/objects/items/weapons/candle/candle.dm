@@ -105,7 +105,6 @@
 /obj/item/flame/candle/tall
 	name = "tall candle"
 	desc = "A tall pillar candle that burns for an extended period of time."
-	icon = 'icons/obj/candle.dmi'
 	icon_state = "tallcandle1"
 	item_state = "tallcandle1"
 	w_class = ITEM_SIZE_SMALL
@@ -115,11 +114,30 @@
 	available_colours = list(COLOR_WHITE)
 	icon_set = "tallcandle"
 
-
 /obj/item/storage/candle_box/tall
 	name = "liturgical candle pack"
 	desc = "A pack of tall liturgical candles."
 	max_w_class = ITEM_SIZE_SMALL
-	max_storage_space = 28
+	max_storage_space = 14
 
 	startswith = list(/obj/item/flame/candle/tall = 7)
+
+/obj/item/flame/candle/votive
+	name = "votive candle"
+	desc = "A short, round votive candle."
+	icon_state = "candle_votive1"
+	item_state = "candle_votive1"
+	w_class = ITEM_SIZE_TINY
+	light_color = "#e09d37"
+	burn_time = list(25 MINUTES, 35 MINUTES)
+
+	available_colours = list(COLOR_WHITE, COLOR_SOL, COLOR_BRASS, COLOR_GREEN_GRAY, COLOR_PALE_RED_GRAY, COLOR_CHESTNUT)
+	icon_set = "candle_votive"
+
+/obj/item/storage/candle_box/votive
+	name = "votive candle pack"
+	desc = "A box of votive candles."
+	max_w_class = ITEM_SIZE_SMALL
+	max_storage_space = 12
+
+	startswith = list(/obj/item/flame/candle/votive = 12)

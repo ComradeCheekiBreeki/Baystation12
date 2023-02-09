@@ -321,6 +321,21 @@ would spawn and follow the beaker, even if it is carried or thrown.
 	R.updatehealth()
 	return
 
+//
+// Small smoke
+//
+/obj/effect/effect/smoke/small
+	name = "smoke"
+	icon = 'icons/effects/effects.dmi'
+	icon_state = "smokenew"
+	// It's just mild smoke, no need to block sight
+	opacity = 0
+	// 2/3rds opacity
+	alpha = 170
+	pixel_x = 0
+	pixel_y = 0
+	time_to_live = 4 SECONDS
+
 /////////////////////////////////////////////
 // Smoke spread
 /////////////////////////////////////////////
@@ -375,10 +390,11 @@ would spawn and follow the beaker, even if it is carried or thrown.
 /datum/effect/effect/system/smoke_spread/sleepy
 	smoke_type = /obj/effect/effect/smoke/sleepy
 
-
 /datum/effect/effect/system/smoke_spread/mustard
 	smoke_type = /obj/effect/effect/smoke/mustard
 
+/datum/effect/effect/system/smoke_spread/small
+	smoke_type = /obj/effect/effect/smoke/small
 
 /////////////////////////////////////////////
 //////// Attach an Ion trail to any object, that spawns when it moves (like for the jetpack)

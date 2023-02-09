@@ -128,6 +128,11 @@
 	path = /obj/item/clothing/head/kippa
 	flags = GEAR_HAS_COLOR_SELECTION
 
+/datum/gear/head/keffiyeh
+	display_name = "keffiyeh, colour select"
+	path = /obj/item/clothing/head/keffiyeh
+	flags = GEAR_HAS_COLOR_SELECTION
+
 /datum/gear/head/turban
 	display_name = "turban, colour select"
 	path = /obj/item/clothing/head/turban

@@ -313,6 +313,7 @@
 	allowed_branches = CIVILIAN_BRANCHES
 
 /datum/gear/clothing/thawb
+	allowed_roles = FORMAL_ROLES
 	allowed_branches = CIVILIAN_BRANCHES
 
 /datum/gear/clothing/sherwani

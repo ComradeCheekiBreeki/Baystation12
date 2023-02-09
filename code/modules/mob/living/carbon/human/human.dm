@@ -1796,6 +1796,7 @@
 			update_languages()
 
 /mob/living/carbon/human/proc/get_cultural_value(token)
+	RETURN_TYPE(/singleton/cultural_info)
 	return cultural_info[token]
 
 /mob/living/carbon/human/needs_wheelchair()

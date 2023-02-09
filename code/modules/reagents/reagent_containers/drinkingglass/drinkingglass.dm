@@ -21,6 +21,9 @@ var/global/const/DRINK_ICON_NOISY = "noise"
 	var/filling_overlayed //if filling should go on top of the icon (e.g. opaque cups)
 	var/static/list/filling_icons_cache = list()
 
+	// Whether or not the glass should shatter on impact
+	var/shatters = TRUE
+
 	center_of_mass ="x=16;y=9"
 
 	amount_per_transfer_from_this = 5
@@ -96,33 +99,25 @@ var/global/const/DRINK_ICON_NOISY = "noise"
 /obj/item/reagent_containers/food/drinks/glass2/throw_impact(atom/hit_atom)
 	if(QDELETED(src))
 		return
-	if(prob(80))
-		if(length(reagents?.reagent_list))
-			visible_message(
-				SPAN_DANGER("\The [src] shatters from the impact and spills all its contents!"),
-				SPAN_DANGER("You hear the sound of glass shattering!")
-			)
-			reagents.splash(hit_atom, reagents.total_volume)
-		else
-			visible_message(
-				SPAN_DANGER("\The [src] shatters from the impact!"),
-				SPAN_DANGER("You hear the sound of glass shattering!")
-			)
+	if(length(reagents?.reagent_list))
+		visible_message(
+			SPAN_DANGER("\The [src] impacts \the [hit_atom] and spills its contents!"),
+			SPAN_DANGER("You hear liquid spilling!")
+		)
+		reagents.splash(hit_atom, reagents.total_volume)
+	if(prob(80) && shatters)
+		visible_message(
+			SPAN_DANGER("\The [src] shatters from the impact!"),
+			SPAN_DANGER("You hear the sound of glass shattering!")
+		)
 		playsound(src.loc, pick(GLOB.shatter_sound), 100)
 		new /obj/item/material/shard(src.loc)
 		qdel(src)
-	else
-		if (length(reagents?.reagent_list))
-			visible_message(
-				SPAN_DANGER("\The [src] bounces and spills all its contents!"),
-				SPAN_WARNING("You hear the sound of glass hitting something.")
-			)
-			reagents.splash(hit_atom, reagents.total_volume)
-		else
-			visible_message(
-				SPAN_WARNING("\The [src] bounces dangerously. Luckily it didn't break."),
-				SPAN_WARNING("You hear the sound of glass hitting something.")
-			)
+	else if(shatters)
+		visible_message(
+			SPAN_WARNING("\The [src] bounces dangerously off \the [hit_atom]. Luckily, it didn't break."),
+			SPAN_WARNING("You hear the sound of glass hitting something.")
+		)
 		playsound(src.loc, "sound/effects/Glasshit.ogg", 50)
 
 /obj/item/reagent_containers/food/drinks/glass2/proc/can_add_extra(obj/item/glass_extra/GE)

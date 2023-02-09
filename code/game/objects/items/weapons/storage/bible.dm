@@ -8,6 +8,8 @@
 	w_class = ITEM_SIZE_NORMAL
 	max_w_class = ITEM_SIZE_SMALL
 	max_storage_space = 4
+	// Pretty dirty band-aid fix, at some point these items just shouldn't be storage items anymore
+	virtual = TRUE
 	// For displaying different flavor text
 	var/list/familiar_religions = list(RELIGION_CHRISTIANITY)
 	// As far as I can tell, this is not used anywhere
@@ -17,11 +19,22 @@
 	// var/icon_changed = 0
 	// see below for why these are commented out
 
+/obj/item/storage/bible/get_mechanics_info()
+	. = ..()
+	. += "<p>A religious text that can be read from and used to bless objects.</p>"
+
+/obj/item/storage/bible/get_interactions_info()
+	. = ..()
+	.[CODEX_INTERACTION_USE_SELF] += "Begins reading from \the [src]. Switching hands or moving will cancel this action."
+	.["Other Player"] += "Allows you to place \the [src] on their forehead and recite a prayer. Switching hands or moving will cancel this action."
+	.["Container of Water"] += "Blesses the water inside and turns it into holy water."
+
 // For an away site/maint meme or something
 /obj/item/storage/bible/booze
 	name = "\improper Bible"
 	desc = "The central religiou- wait, this one seems to have a cut-out in the center..."
 	icon_state ="bible"
+	virtual = FALSE
 
 	startswith = list(
 		/obj/item/reagent_containers/food/drinks/bottle/small/beer,
@@ -143,6 +156,64 @@
 			for(var/mob/living/carbon/human/H in view(user))
 				if(istype(H) && H != user)
 					affect_user(H)
+
+
+/***********
+Torah scroll
+***********/
+
+// Not in loadouts because the Torch spawns with one by default
+/obj/item/storage/bible/torah_scroll
+	name = "\improper Torah scroll"
+	desc = "A very old, sacred, handmade copy of the Torah on scroll rollers. Used for the Torah reading at Jewish synagogues."
+	icon_state = "torahscroll_rolled"
+	var/icon_state_rolled = "torahscroll_rolled"
+	var/icon_state_unrolled = "torahscroll"
+	var/rolled = TRUE
+	// Torah scrolls are in Hebrew
+	familiar_religions = list(RELIGION_JUDAISM)
+
+/obj/item/storage/bible/torah_scroll/update_icon()
+	..()
+	if(rolled)
+		icon_state = icon_state_rolled
+		w_class = ITEM_SIZE_NORMAL
+	else
+		// You should roll it up before putting it in something
+		w_class = ITEM_SIZE_LARGE
+		icon_state = icon_state_unrolled
+
+/obj/item/storage/bible/torah_scroll/attack_self(mob/living/carbon/human/user)
+	if(!istype(user))
+		return
+
+	if(rolled)
+		to_chat(user, SPAN_WARNING("You need to unroll \the [src] first to read it."))
+	else
+		..()
+
+/obj/item/storage/bible/torah_scroll/AltClick(mob/user)
+	if(!istype(user))
+		return
+
+	if(!CanPhysicallyInteract(user))
+		to_chat(user, SPAN_WARNING("You can't roll \the [src] right now."))
+		return
+
+	user.visible_message(
+		SPAN_NOTICE("\The [user] [rolled ? "unrolls" : "rolls up"] \the [src]."),
+		SPAN_NOTICE("You [rolled ? "unroll" : "roll up"] \the [src].")
+	)
+	rolled = !rolled
+	update_icon()
+
+/obj/item/storage/bible/torah_scroll/get_mechanics_info()
+	. = ..()
+	. += "<p>Can be rolled up and rolled out, which changes its size.</p>"
+
+/obj/item/storage/bible/torah_scroll/get_interactions_info()
+	. = ..()
+	.[CODEX_INTERACTION_ALT_CLICK] += "Rolls up/out the scroll. Rolling it up makes it easier to fit inside other objects."
 
 /*
 

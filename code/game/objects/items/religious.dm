@@ -155,7 +155,7 @@ Prayer rugs
 
 /obj/item/prayer_rug/get_mechanics_info()
 	. = ..()
-	. += "<p>A rug that can be rolled out on the ground for prayer. Common in Eastern Christianity and Islam.</p>"
+	. += "<p>A rug that can be rolled out on the ground for prayer.</p>"
 
 /obj/item/prayer_rug/get_interactions_info()
 	. = ..()
@@ -204,20 +204,42 @@ Candleabra
 	storage_slots = 1
 	allow_slow_dump = FALSE
 	center_of_mass = "x=16;y=6"
+	// Whether or not to put the overlays as underlays so they display below the object (used for transparent containers)
+	var/underlay = FALSE
 
 /obj/item/storage/candelabrum/on_update_icon()
 	..()
 	// Kind of dirty, but it works
 	overlays.Cut()
+	underlays.Cut()
 	if(contents.len)
 		var/i = 1
 		for(var/obj/item/flame/candle/cand in contents)
-			// Example: candelabrum has 5 slots and 2 candles are in it, the second is lit: "candelabrum_1" and "candelabrum_2_lit" are the overlays
-			overlays += "[base_icon]_[i]"
-			if(cand.lit)
-				overlays += "[base_icon]_[i]_lit"
+			if(istype(cand))
+				// I'm sure this could be done much more intelligently but I'm too lazy to figure it out
+				var/image/image = image(icon,"[base_icon]_[i]")
+				image.color = cand.color
+				if(underlay)
+					underlays += image
+				else
+					overlays += image
+
+				if(cand.lit)
+					if(underlay)
+						underlays += "[base_icon]_[i]_lit"
+					else
+						overlays += "[base_icon]_[i]_lit"
 
 			i++
+
+/obj/item/storage/candelabrum/throw_at(atom/target, range, speed, mob/thrower, spin = TRUE, datum/callback/callback)
+	. = ..()
+	if(contents.len)
+		for(var/obj/item/flame/candle/cand in contents)
+			if(remove_from_storage(cand, src.loc))
+				cand.throw_at(CircularRandomTurfAround(target, Frand(1, 3)), Frand(1,get_dist(src.loc, target)), Frand(3,10))
+
+		visible_message(SPAN_WARNING("The candles in \the [src] go flying everywhere!"))
 
 /obj/item/storage/candelabrum/attackby(obj/item/W as obj, mob/user as mob)
 	if((isflamesource(W) || is_hot(W)))
@@ -250,9 +272,9 @@ Candleabra
 	for(var/obj/item/flame/candle/cand in contents)
 		if(cand.lit)
 			cand.lit = 0
-			cand.update_icon()
 			cand.set_light(0)
 			remove_extension(cand, /datum/extension/scent)
+			cand.update_icon()
 			ext++
 
 	if(ext > 0)
@@ -260,6 +282,7 @@ Candleabra
 			SPAN_NOTICE("\The [user] extinguishes all the candles in \the [src]."),
 			SPAN_NOTICE("You extinguish all the candles in \the [src].")
 		)
+	update_icon()
 
 /obj/item/storage/candelabrum/get_mechanics_info()
 	. = ..()
@@ -267,24 +290,43 @@ Candleabra
 
 /obj/item/storage/candelabrum/get_interactions_info()
 	. = ..()
-	.["Fire Source"] += "Lights the unlit candles one by one. Another lit candle can be used for this purpose, but only if there are no empty slots in the candelabrum; otherwise the candle will be placed in it."
+	.["Fire Source"] += "Lights the unlit candles one by one. Another lit candle can be used for this purpose, but only if there are no empty slots; otherwise the candle will be placed in it."
 	.[CODEX_INTERACTION_USE_SELF] += "Extinguishes all of the lit candles."
 
 /obj/item/storage/candelabrum/altar_candlestick
 	name = "altar candlestick"
 	desc = "A tall golden candlestick that looks great on an altar."
-	icon = 'icons/obj/candle.dmi'
 	icon_state = "altar_candlestick"
 	base_icon = "altar_candlestick"
-	force = 6
-	// We want the user to be able to place it specifically
-	randpixel = 0
-	throwforce = 6
-	w_class = ITEM_SIZE_NORMAL
 	can_hold = list(/obj/item/flame/candle, /obj/item/flame/candle/tall)
 	storage_slots = 1
-	allow_slow_dump = FALSE
 	center_of_mass = "x=16;y=3"
+
+/obj/item/storage/candelabrum/menorah_temple
+	name = "temple menorah"
+	desc = "A golden seven-armed candelabrum, a symbol of Jewish synagogues, modeled after the original in the Temple of Jerusalem. <i>Not</i> to be confused with the nine-armed Hanukkah menorah."
+	icon_state = "menorah"
+	base_icon = "menorah"
+	can_hold = list(/obj/item/flame/candle, /obj/item/flame/candle/tall)
+	storage_slots = 7
+	center_of_mass = "x=16;y=3"
+
+/obj/item/storage/candelabrum/votive_glass
+	name = "glass votive"
+	desc = "A small glass votive container for holding candles."
+	icon_state = "votive_glass"
+	base_icon = "votive_glass"
+	randpixel = 3
+	can_hold = list(/obj/item/flame/candle/votive)
+	storage_slots = 1
+	center_of_mass = "x=16;y=12"
+	matter = list(MATERIAL_GLASS = 150)
+	underlay = TRUE
+	var/available_colors = list(COLOR_WHITE, COLOR_RED_GRAY, COLOR_GREEN_GRAY, COLOR_PALE_BLUE_GRAY, COLOR_BOTTLE_GREEN, COLOR_COMMAND_BLUE, COLOR_ASTEROID_ROCK)
+
+/obj/item/storage/candelabrum/votive_glass/Initialize()
+	color = pick(available_colors)
+	. = ..()
 
 /*****
 Censer
@@ -312,6 +354,7 @@ Censer
 	update_icon()
 	..()
 
+// Pilfered this from somewhere, don't remember where
 /obj/item/storage/censer/update_icon()
 	var/mob/living/user = loc
 	if(istype(user))
@@ -388,9 +431,9 @@ Censer
 				SPAN_NOTICE("\The [user] swings the \the [src] left and right, dispersing the incense."),
 				SPAN_NOTICE("You swing \the [src] left and right, dispersing the incense.")
 			)
-			var/datum/effect/effect/system/steam_spread/steam = new /datum/effect/effect/system/steam_spread()
-			steam.set_up(3, 0, user.loc)
-			steam.start()
+			var/datum/effect/effect/system/smoke_spread/small/smoke = new /datum/effect/effect/system/smoke_spread/small()
+			smoke.set_up(3, 0, user.loc)
+			smoke.start()
 
 		else
 			user.visible_message(

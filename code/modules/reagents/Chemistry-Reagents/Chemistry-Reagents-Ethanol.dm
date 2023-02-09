@@ -388,7 +388,7 @@
 	description = "Red wine diluted with water. Part of the Christian communion rite."
 	taste_description = "bitter sweetness"
 	color = "#a06f4f" // rgb: 160, 111, 79
-	strength = 8
+	strength = 45
 
 	glass_name = "communion wine"
 	glass_desc = "Recreational use prohibited."
