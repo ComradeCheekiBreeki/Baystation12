@@ -3,6 +3,9 @@
 	icon = 'maps/torch/icons/obj/obj_accessories_solgov.dmi'
 	accessory_icons = list(slot_w_uniform_str = 'maps/torch/icons/mob/onmob_accessories_solgov.dmi', slot_wear_suit_str = 'maps/torch/icons/mob/onmob_accessories_solgov.dmi')
 	w_class = ITEM_SIZE_TINY
+	sprite_sheets = list(
+		SPECIES_UNATHI = 'maps/torch/icons/mob/unathi/onmob_accessories_solgov_unathi.dmi'
+		)
 
 /*****
 medals
@@ -87,9 +90,6 @@ patches
 	icon_state = "torchpatch"
 	on_rolled_down = ACCESSORY_ROLLED_NONE
 	slot = ACCESSORY_SLOT_INSIGNIA
-	sprite_sheets = list(
-		SPECIES_UNATHI = 'icons/mob/species/unathi/onmob_accessories_sol_unathi.dmi'
-		)
 
 /obj/item/clothing/accessory/solgov/ec_patch
 	name = "\improper Observatory patch"
@@ -136,7 +136,7 @@ patches
 
 /obj/item/clothing/accessory/solgov/fleet_patch/fifth
 	name = "\improper Fifth Fleet patch"
-	desc = "A tactical shoulder patch carrying insignia of Fifth Fleet, the Quick Reaction Force, recently formed and outfited with last tech."
+	desc = "A tactical shoulder patch carrying insignia of Fifth Fleet, the Quick Reaction Force, recently formed and outfited with the latest tech."
 	icon_state = "fleetpatch5"
 
 /*****
@@ -147,6 +147,9 @@ scarves
 	desc = "An SCG blue silk scarf, meant to be worn with Expeditionary Corps uniforms."
 	icon = 'icons/obj/clothing/obj_accessories.dmi'
 	accessory_icons = list(slot_w_uniform_str = 'icons/mob/onmob/onmob_accessories.dmi', slot_wear_suit_str = 'icons/mob/onmob/onmob_accessories.dmi')
+	sprite_sheets = list(
+		SPECIES_UNATHI = 'icons/mob/species/unathi/onmob_accessories_unathi.dmi'
+		)
 	icon_state = "whitescarf"
 	on_rolled_down = ACCESSORY_ROLLED_NONE
 	color = "#68a0ce"
@@ -363,7 +366,7 @@ badges
 	owner_rank = H.char_rank && H.char_rank.name
 	owner_name = H.real_name
 	owner_branch = H.char_branch && H.char_branch.name
-	var/decl/cultural_info/culture = H.get_cultural_value(TAG_RELIGION)
+	var/singleton/cultural_info/culture = H.get_cultural_value(TAG_RELIGION)
 	var/religion = culture ? culture.name : "Unset"
 	desc = "[initial(desc)]\nName: [H.real_name] ([H.get_species()])[H.char_branch ? "\nBranch: [H.char_branch.name]" : ""]\nReligion: [religion]\nBlood type: [H.b_type]"
 
@@ -381,9 +384,6 @@ armbands
 	name = "master solgov armband"
 	icon = 'maps/torch/icons/obj/obj_accessories_solgov.dmi'
 	accessory_icons = list(slot_w_uniform_str = 'maps/torch/icons/mob/onmob_accessories_solgov.dmi', slot_wear_suit_str = 'maps/torch/icons/mob/onmob_accessories_solgov.dmi')
-	sprite_sheets = list(
-		SPECIES_UNATHI = 'icons/mob/species/unathi/onmob_accessories_sol_unathi.dmi'
-		)
 
 /obj/item/clothing/accessory/armband/solgov/mp
 	name = "military police brassard"
@@ -417,6 +417,11 @@ armour attachments
 	desc = "An emblem depicting the crest of the SCG Expeditionary Corps."
 	icon_state = "ecflag"
 
+/obj/item/clothing/accessory/armor_tag/solgov/fleet
+	name = "\improper Fleet crest"
+	desc = "An emblem depicting the crest of the SCG Fleet."
+	icon_state = "fleetflag"
+
 /obj/item/clothing/accessory/armor_tag/solgov/sec
 	name = "\improper POLICE tag"
 	desc = "An armor tag with the word POLICE printed in silver lettering on it."
@@ -441,6 +446,11 @@ armour attachments
 	name = "\improper POLICE tag"
 	desc = "An armor tag with the words POLICE printed in gold lettering on it."
 
+/obj/item/clothing/accessory/armor_tag/solgov/lead
+	name = "\improper LEAD tag"
+	desc = "An armor tag denoting the leader of a fireteam."
+	icon_state = "leadtag"
+
 /obj/item/clothing/accessory/helmet_cover/blue/sol
 	name = "peacekeeper helmet cover"
 	desc = "A fabric cover for armored helmets. This one is in SCG peacekeeper colors."
@@ -456,9 +466,6 @@ department tags
 	on_rolled_sleeves = "dept_exped_sleeves"
 	slot = ACCESSORY_SLOT_DEPT
 	accessory_flags = EMPTY_BITFIELD
-	sprite_sheets = list(
-		SPECIES_UNATHI = 'icons/mob/species/unathi/onmob_accessories_sol_unathi.dmi'
-		)
 
 /obj/item/clothing/accessory/solgov/department/command
 	name = "command insignia"
@@ -473,9 +480,6 @@ department tags
 	desc = "Insignia denoting assignment to the command department. These fit Fleet uniforms."
 	on_rolled_sleeves = "dept_fleet_sleeves"
 
-/obj/item/clothing/accessory/solgov/department/command/army
-	icon_state = "dept_army"
-	desc = "Insignia denoting assignment to the command department. These fit Army uniforms."
 
 /obj/item/clothing/accessory/solgov/department/engineering
 	name = "engineering insignia"
@@ -490,9 +494,6 @@ department tags
 	desc = "Insignia denoting assignment to the engineering department. These fit Fleet uniforms."
 	on_rolled_sleeves = "dept_fleet_sleeves"
 
-/obj/item/clothing/accessory/solgov/department/engineering/army
-	icon_state = "dept_army"
-	desc = "Insignia denoting assignment to the engineering department. These fit Army uniforms."
 
 /obj/item/clothing/accessory/solgov/department/security
 	name = "security insignia"
@@ -507,9 +508,6 @@ department tags
 	desc = "Insignia denoting assignment to the security department. These fit Fleet uniforms."
 	on_rolled_sleeves = "dept_fleet_sleeves"
 
-/obj/item/clothing/accessory/solgov/department/security/army
-	icon_state = "dept_army"
-	desc = "Insignia denoting assignment to the security department. These fit Army uniforms."
 
 /obj/item/clothing/accessory/solgov/department/medical
 	name = "medical insignia"
@@ -525,9 +523,6 @@ department tags
 	desc = "Insignia denoting assignment to the medical department. These fit Fleet uniforms."
 	on_rolled_sleeves = "dept_fleet_sleeves"
 
-/obj/item/clothing/accessory/solgov/department/medical/army
-	icon_state = "dept_army"
-	desc = "Insignia denoting assignment to the medical department. These fit Army uniforms."
 
 /obj/item/clothing/accessory/solgov/department/supply
 	name = "supply insignia"
@@ -542,9 +537,6 @@ department tags
 	desc = "Insignia denoting assignment to the supply department. These fit Fleet uniforms."
 	on_rolled_sleeves = "dept_fleet_sleeves"
 
-/obj/item/clothing/accessory/solgov/department/supply/army
-	icon_state = "dept_army"
-	desc = "Insignia denoting assignment to the supply department. These fit Army uniforms."
 
 /obj/item/clothing/accessory/solgov/department/service
 	name = "service insignia"
@@ -559,9 +551,6 @@ department tags
 	desc = "Insignia denoting assignment to the service department. These fit Fleet uniforms."
 	on_rolled_sleeves = "dept_fleet_sleeves"
 
-/obj/item/clothing/accessory/solgov/department/service/army
-	icon_state = "dept_army"
-	desc = "Insignia denoting assignment to the service department. These fit Army uniforms."
 
 /obj/item/clothing/accessory/solgov/department/exploration
 	name = "exploration insignia"
@@ -576,9 +565,6 @@ department tags
 	desc = "Insignia denoting assignment to the exploration department. These fit Fleet uniforms."
 	on_rolled_sleeves = "dept_fleet_sleeves"
 
-/obj/item/clothing/accessory/solgov/department/exploration/army
-	icon_state = "dept_army"
-	desc = "Insignia denoting assignment to the exploration department. These fit Army uniforms."
 
 /obj/item/clothing/accessory/solgov/department/research
 	name = "research insignia"
@@ -600,9 +586,6 @@ ranks - ec
 	slot = ACCESSORY_SLOT_RANK
 	gender = PLURAL
 	accessory_flags = ACCESSORY_REMOVABLE | ACCESSORY_HIGH_VISIBILITY
-	sprite_sheets = list(
-		SPECIES_UNATHI = 'icons/mob/species/unathi/onmob_accessories_sol_unathi.dmi'
-		)
 
 /obj/item/clothing/accessory/solgov/rank/ec
 	name = "explorer ranks"
@@ -791,106 +774,3 @@ ranks - fleet
 	name = "ranks (O-10 fleet admiral)"
 	desc = "Insignia denoting the rank of Fleet Admiral."
 	icon_state = "fleetrank_o10"
-
-/**************
-ranks - marines
-**************/
-/obj/item/clothing/accessory/solgov/rank/army
-	name = "army ranks"
-	desc = "Insignia denoting marine rank of some kind. These appear blank."
-	icon_state = "armyrank_enlisted"
-
-/obj/item/clothing/accessory/solgov/rank/army/enlisted
-	name = "ranks (E-1 private)"
-	desc = "Insignia denoting the rank of Private."
-	icon_state = "armyrank_enlisted"
-
-/obj/item/clothing/accessory/solgov/rank/army/enlisted/e2
-	name = "ranks (E-2 private second class)"
-	desc = "Insignia denoting the rank of Private Second Class."
-
-/obj/item/clothing/accessory/solgov/rank/army/enlisted/e3
-	name = "ranks (E-3 private first class)"
-	desc = "Insignia denoting the rank of Private First Class."
-
-/obj/item/clothing/accessory/solgov/rank/army/enlisted/e4
-	name = "ranks (E-4 corporal)"
-	desc = "Insignia denoting the rank of Corporal."
-
-/obj/item/clothing/accessory/solgov/rank/army/enlisted/e5
-	name = "ranks (E-5 sergeant)"
-	desc = "Insignia denoting the rank of Sergeant."
-
-/obj/item/clothing/accessory/solgov/rank/army/enlisted/e6
-	name = "ranks (E-6 staff sergeant)"
-	desc = "Insignia denoting the rank of Staff Sergeant."
-
-/obj/item/clothing/accessory/solgov/rank/army/enlisted/e7
-	name = "ranks (E-7 sergeant first class)"
-	desc = "Insignia denoting the rank of Sergeant First Class."
-
-/obj/item/clothing/accessory/solgov/rank/army/enlisted/e8
-	name = "ranks (E-8 master sergeant)"
-	desc = "Insignia denoting the rank of Master Sergeant."
-
-/obj/item/clothing/accessory/solgov/rank/army/enlisted/e8_alt
-	name = "ranks (E-8 first sergeant)"
-	desc = "Insignia denoting the rank of First Sergeant."
-
-/obj/item/clothing/accessory/solgov/rank/army/enlisted/e9
-	name = "ranks (E-9 sergeant major)"
-	desc = "Insignia denoting the rank of Sergeant Major."
-
-/obj/item/clothing/accessory/solgov/rank/army/enlisted/e9_alt1
-	name = "ranks (E-9 command sergeant major)"
-	desc = "Insignia denoting the rank of Command Sergeant Major."
-
-/obj/item/clothing/accessory/solgov/rank/army/enlisted/e9_alt2
-	name = "ranks (E-9 sergeant major of the Army)"
-	desc = "Insignia denoting the rank of Sergeant Major of the Army."
-
-/obj/item/clothing/accessory/solgov/rank/army/officer
-	name = "ranks (O-1 second lieutenant)"
-	desc = "Insignia denoting the rank of Second Lieutenant."
-	icon_state = "armyrank_officer"
-
-/obj/item/clothing/accessory/solgov/rank/army/officer/o2
-	name = "ranks (O-2 first lieutenant)"
-	desc = "Insignia denoting the rank of First Lieutenant."
-
-/obj/item/clothing/accessory/solgov/rank/army/officer/o3
-	name = "ranks (O-3 captain)"
-	desc = "Insignia denoting the rank of Captain."
-
-/obj/item/clothing/accessory/solgov/rank/army/officer/o4
-	name = "ranks (O-4 major)"
-	desc = "Insignia denoting the rank of Major."
-
-/obj/item/clothing/accessory/solgov/rank/army/officer/o5
-	name = "ranks (O-5 lieutenant colonel)"
-	desc = "Insignia denoting the rank of Lieutenant Colonel."
-
-/obj/item/clothing/accessory/solgov/rank/army/officer/o6
-	name = "ranks (O-6 colonel)"
-	desc = "Insignia denoting the rank of Colonel."
-
-/obj/item/clothing/accessory/solgov/rank/army/flag
-	name = "ranks (O-7 brigadier general)"
-	desc = "Insignia denoting the rank of Brigadier General."
-	icon_state = "armyrank_command"
-
-/obj/item/clothing/accessory/solgov/rank/army/flag/o8
-	name = "ranks (O-8 major general)"
-	desc = "Insignia denoting the rank of Major General."
-
-/obj/item/clothing/accessory/solgov/rank/army/flag/o9
-	name = "ranks (O-9 lieutenant general)"
-	desc = "Insignia denoting the rank of lieutenant general."
-
-/obj/item/clothing/accessory/solgov/rank/army/flag/o10
-	name = "ranks (O-10 general)"
-	desc = "Insignia denoting the rank of General."
-
-/obj/item/clothing/accessory/solgov/rank/army/flag/o10_alt
-	name = "ranks (O-10 field marshal)"
-	desc = "Insignia denoting the rank of Field Marshal."

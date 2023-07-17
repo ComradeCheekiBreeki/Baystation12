@@ -154,7 +154,7 @@
 	if(mode != STATUS_DISPLAY_BLANK && mode != STATUS_DISPLAY_ALERT)
 		to_chat(user, "The display says:<br>\t[sanitize(message1)]<br>\t[sanitize(message2)]")
 	if(mode == STATUS_DISPLAY_ALERT || status_display_show_alert_border)
-		var/decl/security_state/security_state = decls_repository.get_decl(GLOB.using_map.security_state)
+		var/singleton/security_state/security_state = GET_SINGLETON(GLOB.using_map.security_state)
 		to_chat(user, "The current alert level is [security_state.current_security_level.name].")
 
 /obj/machinery/status_display/proc/set_message(m1, m2)
@@ -176,8 +176,8 @@
 	status_display_show_alert_border = !status_display_show_alert_border
 
 /obj/machinery/status_display/proc/add_alert_border_to_display()
-	var/decl/security_state/security_state = decls_repository.get_decl(GLOB.using_map.security_state)
-	var/decl/security_level/sl = security_state.current_security_level
+	var/singleton/security_state/security_state = GET_SINGLETON(GLOB.using_map.security_state)
+	var/singleton/security_level/sl = security_state.current_security_level
 
 	var/border = image(sl.icon,sl.alert_border)
 
@@ -186,10 +186,10 @@
 /obj/machinery/status_display/proc/display_alert()
 	remove_display()
 
-	var/decl/security_state/security_state = decls_repository.get_decl(GLOB.using_map.security_state)
-	var/decl/security_level/sl = security_state.current_security_level
+	var/singleton/security_state/security_state = GET_SINGLETON(GLOB.using_map.security_state)
+	var/singleton/security_level/sl = security_state.current_security_level
 
-	var/image/alert = image(sl.icon, sl.overlay_status_display)
+	var/image/alert = overlay_image(sl.icon, sl.overlay_status_display, plane = EFFECTS_ABOVE_LIGHTING_PLANE, layer = ABOVE_LIGHTING_LAYER)
 
 	set_light(sl.light_max_bright, sl.light_inner_range, sl.light_outer_range, 2, sl.light_color_alarm)
 	overlays |= alert
@@ -227,7 +227,7 @@
 	return ""
 
 /obj/machinery/status_display/proc/remove_display()
-	if(overlays.len)
+	if(length(overlays))
 		overlays.Cut()
 	if(maptext)
 		maptext = ""

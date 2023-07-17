@@ -4,6 +4,7 @@
 	icon = 'icons/obj/power.dmi'
 	icon_state = "ccharger0"
 	anchored = TRUE
+	obj_flags = OBJ_FLAG_CAN_TABLE
 	idle_power_usage = 5
 	active_power_usage = 60 KILOWATTS	//This is the power drawn when charging
 	power_channel = EQUIP
@@ -34,12 +35,12 @@
 
 	if(istype(W, /obj/item/cell) && anchored)
 		if(charging)
-			to_chat(user, "<span class='warning'>There is already a cell in the charger.</span>")
+			to_chat(user, SPAN_WARNING("There is already a cell in the charger."))
 			return
 		else
 			var/area/a = get_area(loc)
 			if(a.power_equip == 0) // There's no APC in this area, don't try to cheat power!
-				to_chat(user, "<span class='warning'>The [name] blinks red as you try to insert the cell!</span>")
+				to_chat(user, SPAN_WARNING("The [name] blinks red as you try to insert the cell!"))
 				return
 			if(!user.unEquip(W, src))
 				return
@@ -51,7 +52,7 @@
 		queue_icon_update()
 	else if(isWrench(W))
 		if(charging)
-			to_chat(user, "<span class='warning'>Remove the cell first!</span>")
+			to_chat(user, SPAN_WARNING("Remove the cell first!"))
 			return
 
 		anchored = !anchored

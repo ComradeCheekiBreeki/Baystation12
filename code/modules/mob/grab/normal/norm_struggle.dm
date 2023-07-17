@@ -28,8 +28,13 @@
 	var/mob/living/carbon/human/affecting = G.affecting
 	var/mob/living/carbon/human/assailant = G.assailant
 
+	if (assailant.incapacitated(INCAPACITATION_ALL))
+		affecting.visible_message(SPAN_WARNING("[assailant] lets go of \his grab!"))
+		qdel(G)
+		return
+
 	if(affecting.incapacitated(INCAPACITATION_UNRESISTING) || affecting.a_intent == I_HELP)
-		affecting.visible_message("<span class='warning'>[affecting] isn't prepared to fight back as [assailant] tightens \his grip!</span>")
+		affecting.visible_message(SPAN_WARNING("[affecting] isn't prepared to fight back as [assailant] tightens \his grip!"))
 		G.done_struggle = TRUE
 		G.upgrade(TRUE)
 
@@ -43,13 +48,13 @@
 		return
 
 	if(affecting.incapacitated(INCAPACITATION_UNRESISTING) || affecting.a_intent == I_HELP)
-		affecting.visible_message("<span class='warning'>[affecting] isn't prepared to fight back as [assailant] tightens \his grip!</span>")
+		affecting.visible_message(SPAN_WARNING("[affecting] isn't prepared to fight back as [assailant] tightens \his grip!"))
 		G.done_struggle = TRUE
 		G.upgrade(TRUE)
 	else
-		affecting.visible_message("<span class='warning'>[affecting] struggles against [assailant]!</span>")
+		affecting.visible_message(SPAN_WARNING("[affecting] struggles against [assailant]!"))
 		G.done_struggle = FALSE
-		addtimer(CALLBACK(G, .proc/handle_resist), 1 SECOND)
+		addtimer(new Callback(G, .proc/handle_resist), 1 SECOND)
 		resolve_struggle(G)
 
 /datum/grab/normal/struggle/proc/resolve_struggle(obj/item/grab/G)
@@ -64,15 +69,15 @@
 	return G.done_struggle
 
 /datum/grab/normal/struggle/on_hit_disarm(obj/item/grab/normal/G)
-	to_chat(G.assailant, "<span class='warning'>Your grip isn't strong enough to pin.</span>")
+	to_chat(G.assailant, SPAN_WARNING("Your grip isn't strong enough to pin."))
 	return 0
 
 /datum/grab/normal/struggle/on_hit_grab(obj/item/grab/normal/G)
-	to_chat(G.assailant, "<span class='warning'>Your grip isn't strong enough to jointlock.</span>")
+	to_chat(G.assailant, SPAN_WARNING("Your grip isn't strong enough to jointlock."))
 	return 0
 
 /datum/grab/normal/struggle/on_hit_harm(obj/item/grab/normal/G)
-	to_chat(G.assailant, "<span class='warning'>Your grip isn't strong enough to dislocate.</span>")
+	to_chat(G.assailant, SPAN_WARNING("Your grip isn't strong enough to dislocate."))
 	return 0
 
 /datum/grab/normal/struggle/resolve_openhand_attack(obj/item/grab/G)

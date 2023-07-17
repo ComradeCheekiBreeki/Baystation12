@@ -100,7 +100,7 @@
 		/obj/item/ammo_casing,
 		/obj/item/melee/baton,
 		/obj/item/handcuffs,
-		/obj/item/storage/fancy/cigarettes,
+		/obj/item/storage/fancy/smokable,
 		/obj/item/flame/lighter,
 		/obj/item/device/taperecorder
 	)
@@ -123,7 +123,6 @@
 /obj/item/clothing/suit/storage/forensics
 	name = "jacket"
 	desc = "A forensics technician jacket."
-	item_state = "det_suit"
 	body_parts_covered = UPPER_TORSO|ARMS
 	allowed = list(
 		/obj/item/tank/oxygen_emergency,
@@ -188,8 +187,8 @@
 	icon_state = "hazard_b"
 
 /obj/item/clothing/suit/storage/hazardvest/white
-	name = "medical hazard vest"
-	desc = "A high-visibility vest used in work zones. This one has a blue cross!"
+	name = "white hazard vest"
+	desc = "A high-visibility vest used in work zones. This one is white!"
 	icon_state = "hazard_w"
 
 /obj/item/clothing/suit/storage/hazardvest/green
@@ -211,6 +210,11 @@
 	name = "purple hazard vest"
 	desc = "A high-visibility vest used in work zones. This one is purple!"
 	icon_state = "hazard_p"
+
+/obj/item/clothing/suit/storage/hazardvest/med
+	name = "medical hazard vest"
+	desc = "A high-visibility vest used in work zones. This one is has a blue cross!"
+	icon_state = "hazard_med"
 
 /obj/item/clothing/suit/storage/toggle/highvis
 	name = "high visibility jacket"
@@ -281,26 +285,75 @@
 	desc = "A white jacket often worn in emergency medical and reanimation services across human space."
 	icon_state = "medical_jacket"
 
-/obj/item/clothing/suit/storage/medical_chest_rig
-	name = "\improper MT chest-rig"
-	desc = "A black chest-rig with blue pouches worn by medical first responders, meant to carry their equipment. It has a blue 'Medic' tag on its chest."
-	icon_state = "Med-chest-rig"
+/obj/item/clothing/suit/storage/security_chest_rig
+	name = "chest-rig"
+	desc = "A grey chest-rig with black pouches. For when you wish you had more hands."
+	icon_state = "chest-rig"
 	blood_overlay_type = "armor"
 	allowed = list(
+		/obj/item/device/flashlight,
+		/obj/item/tank/oxygen_emergency,
+		/obj/item/tank/oxygen_emergency_extended,
+		/obj/item/tank/nitrogen_emergency,
+		/obj/item/clothing/mask/gas,
+		/obj/item/device/radio,
+		/obj/item/taperoll,
+		/obj/item/clothing/head/hardhat,
+		/obj/item/handcuffs,
+		/obj/item/melee/baton,
+		/obj/item/grenade,
+		/obj/item/gun
+	)
+
+	body_parts_covered = UPPER_TORSO
+
+/obj/item/clothing/suit/storage/engineering_chest_rig
+	name = "hazard chest-rig"
+	desc = "A grey chest-rig with black pouches and orange markings worn by engineers. It has an 'Engineer' tag on its chest."
+	icon_state = "engi-chest-rig"
+	blood_overlay_type = "armor"
+	allowed = list (
+		/obj/item/device/flashlight,
+		/obj/item/tank/oxygen_emergency,
+		/obj/item/tank/oxygen_emergency_extended,
+		/obj/item/tank/nitrogen_emergency,
+		/obj/item/clothing/mask/gas,
+		/obj/item/device/radio,
+		/obj/item/taperoll,
+		/obj/item/clothing/head/hardhat,
+		/obj/item/device/scanner/gas,
+		/obj/item/device/multitool,
+		/obj/item/device/t_scanner,
+		/obj/item/crowbar,
+		/obj/item/screwdriver,
+		/obj/item/weldingtool,
+		/obj/item/wirecutters,
+		/obj/item/wrench,
+		/obj/item/gun
+	)
+
+/obj/item/clothing/suit/storage/medical_chest_rig
+	name = "\improper MT chest-rig"
+	desc = "A white chest-rig with black pouches worn by medical first responders. It has a 'Medic' tag on its chest."
+	icon_state = "med-chest-rig"
+	blood_overlay_type = "armor"
+	allowed = list(
+		/obj/item/device/flashlight,
+		/obj/item/tank/oxygen_emergency,
+		/obj/item/tank/oxygen_emergency_extended,
+		/obj/item/tank/nitrogen_emergency,
+		/obj/item/clothing/mask/gas,
+		/obj/item/device/radio,
+		/obj/item/taperoll,
+		/obj/item/clothing/head/hardhat,
 		/obj/item/stack/medical,
 		/obj/item/reagent_containers/dropper,
 		/obj/item/reagent_containers/hypospray,
 		/obj/item/reagent_containers/syringe,
 		/obj/item/device/scanner/health,
-		/obj/item/device/flashlight,
-		/obj/item/device/radio,
-		/obj/item/tank/oxygen_emergency,
-		/obj/item/tank/oxygen_emergency_extended,
-		/obj/item/tank/nitrogen_emergency,
 		/obj/item/reagent_containers/ivbag,
-		/obj/item/clothing/head/hardhat/EMS
+		/obj/item/gun
 	)
-	body_parts_covered = UPPER_TORSO
 
 /obj/item/clothing/suit/surgicalapron
 	name = "surgical apron"

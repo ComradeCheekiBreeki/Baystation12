@@ -12,11 +12,11 @@
 	economic_power = 10
 	alt_titles = list(
 		"Surgeon")
-	outfit_type = /decl/hierarchy/outfit/job/torch/crew/medical/senior
+	outfit_type = /singleton/hierarchy/outfit/job/torch/crew/medical/senior
 	allowed_branches = list(
 		/datum/mil_branch/expeditionary_corps,
-		/datum/mil_branch/fleet = /decl/hierarchy/outfit/job/torch/crew/medical/senior/fleet,
-		/datum/mil_branch/civilian = /decl/hierarchy/outfit/job/torch/crew/medical/contractor/senior
+		/datum/mil_branch/fleet = /singleton/hierarchy/outfit/job/torch/crew/medical/senior/fleet,
+		/datum/mil_branch/civilian = /singleton/hierarchy/outfit/job/torch/crew/medical/contractor/senior
 	)
 	allowed_ranks = list(
 		/datum/mil_rank/ec/o1,
@@ -25,10 +25,10 @@
 		/datum/mil_rank/civ/contractor
 	)
 	min_skill = list(   SKILL_BUREAUCRACY = SKILL_BASIC,
-	                    SKILL_MEDICAL     = SKILL_EXPERT,
-	                    SKILL_ANATOMY     = SKILL_EXPERT,
+	                    SKILL_MEDICAL     = SKILL_EXPERIENCED,
+	                    SKILL_ANATOMY     = SKILL_EXPERIENCED,
 	                    SKILL_CHEMISTRY   = SKILL_BASIC,
-						SKILL_DEVICES     = SKILL_ADEPT)
+						SKILL_DEVICES     = SKILL_TRAINED)
 
 	max_skill = list(   SKILL_MEDICAL     = SKILL_MAX,
 	                    SKILL_ANATOMY     = SKILL_MAX,
@@ -56,11 +56,11 @@
 	supervisors = "physicians and the Chief Medical Officer"
 	selection_color = "#013d3b"
 	economic_power = 6
-	outfit_type = /decl/hierarchy/outfit/job/torch/crew/medical/senior
+	outfit_type = /singleton/hierarchy/outfit/job/torch/crew/medical/senior
 	allowed_branches = list(
 		/datum/mil_branch/expeditionary_corps,
-		/datum/mil_branch/fleet = /decl/hierarchy/outfit/job/torch/crew/medical/senior/fleet,
-		/datum/mil_branch/civilian = /decl/hierarchy/outfit/job/torch/crew/medical/contractor/senior
+		/datum/mil_branch/fleet = /singleton/hierarchy/outfit/job/torch/crew/medical/senior/fleet,
+		/datum/mil_branch/civilian = /singleton/hierarchy/outfit/job/torch/crew/medical/contractor/senior
 	)
 	allowed_ranks = list(
 		/datum/mil_rank/ec/o1,
@@ -68,10 +68,10 @@
 		/datum/mil_rank/civ/contractor
 	)
 	min_skill = list(   SKILL_BUREAUCRACY = SKILL_BASIC,
-	                    SKILL_MEDICAL     = SKILL_EXPERT,
-	                    SKILL_ANATOMY     = SKILL_EXPERT,
+	                    SKILL_MEDICAL     = SKILL_EXPERIENCED,
+	                    SKILL_ANATOMY     = SKILL_EXPERIENCED,
 	                    SKILL_CHEMISTRY   = SKILL_BASIC,
-						SKILL_DEVICES     = SKILL_ADEPT)
+						SKILL_DEVICES     = SKILL_TRAINED)
 
 	max_skill = list(   SKILL_MEDICAL     = SKILL_MAX,
 	                    SKILL_ANATOMY     = SKILL_MAX,
@@ -99,11 +99,11 @@
 	alt_titles = list(
 		"Paramedic",
 		"Corpsman")
-	outfit_type = /decl/hierarchy/outfit/job/torch/crew/medical/doctor
+	outfit_type = /singleton/hierarchy/outfit/job/torch/crew/medical/doctor
 	allowed_branches = list(
 		/datum/mil_branch/expeditionary_corps,
-		/datum/mil_branch/fleet = /decl/hierarchy/outfit/job/torch/crew/medical/doctor/fleet,
-		/datum/mil_branch/civilian = /decl/hierarchy/outfit/job/torch/crew/medical/contractor
+		/datum/mil_branch/fleet = /singleton/hierarchy/outfit/job/torch/crew/medical/doctor/fleet,
+		/datum/mil_branch/civilian = /singleton/hierarchy/outfit/job/torch/crew/medical/contractor
 	)
 	allowed_ranks = list(
 		/datum/mil_rank/ec/e3,
@@ -145,10 +145,10 @@
 	alt_titles = list(
 		"Corpsman Trainee")
 
-	outfit_type = /decl/hierarchy/outfit/job/torch/crew/medical/doctor
+	outfit_type = /singleton/hierarchy/outfit/job/torch/crew/medical/doctor
 	allowed_branches = list(
 		/datum/mil_branch/expeditionary_corps,
-		/datum/mil_branch/fleet = /decl/hierarchy/outfit/job/torch/crew/medical/doctor/fleet
+		/datum/mil_branch/fleet = /singleton/hierarchy/outfit/job/torch/crew/medical/doctor/fleet
 	)
 	allowed_ranks = list(
 		/datum/mil_rank/ec/e3,
@@ -158,9 +158,9 @@
 	skill_points = 4
 	no_skill_buffs = TRUE
 
-	min_skill = list(   SKILL_EVA     = SKILL_ADEPT,
-	                    SKILL_HAULING = SKILL_ADEPT,
-	                    SKILL_MEDICAL = SKILL_EXPERT,
+	min_skill = list(   SKILL_EVA     = SKILL_TRAINED,
+	                    SKILL_HAULING = SKILL_TRAINED,
+	                    SKILL_MEDICAL = SKILL_EXPERIENCED,
 	                    SKILL_ANATOMY = SKILL_BASIC)
 
 	max_skill = list(   SKILL_MEDICAL     = SKILL_MAX,
@@ -178,7 +178,7 @@
 							 /datum/computer_file/program/camera_monitor)
 
 /datum/job/medical_trainee/get_description_blurb()
-	return "You are a Trainee Medical Technician. You are learning how to treat and recover wounded crew from the more experienced medical personnel aboard. You are subordinate to the rest of the medical team."
+	return "You are a Trainee Medical Technician. You are learning how to treat and recover wounded crew from the more experienced medical personnel aboard. You are subordinate to the rest of the medical team. The role is only for players new to the medical system and department."
 
 /datum/job/chemist
 	title = "Pharmacist"
@@ -186,7 +186,7 @@
 	department_flag = MED
 	total_positions = 1
 	spawn_positions = 1
-	supervisors = "medical personnel, the Corporate Liaison, and the Chief Medical Officer"
+	supervisors = "medical personnel, and the Chief Medical Officer"
 	selection_color = "#013d3b"
 	economic_power = 4
 	minimum_character_age = list(SPECIES_HUMAN = 25)
@@ -195,11 +195,11 @@
 	alt_titles = list(
 		"Chemist"
 	)
-	outfit_type = /decl/hierarchy/outfit/job/torch/crew/medical/contractor/chemist
+	outfit_type = /singleton/hierarchy/outfit/job/torch/crew/medical/contractor/chemist
 	allowed_branches = list(/datum/mil_branch/civilian)
 	allowed_ranks = list(/datum/mil_rank/civ/contractor)
 	min_skill = list(   SKILL_MEDICAL   = SKILL_BASIC,
-	                    SKILL_CHEMISTRY = SKILL_ADEPT)
+	                    SKILL_CHEMISTRY = SKILL_TRAINED)
 
 	max_skill = list(   SKILL_MEDICAL     = SKILL_BASIC,
 						SKILL_ANATOMY	  = SKILL_BASIC,
@@ -224,28 +224,28 @@
 	minimum_character_age = list(SPECIES_HUMAN = 24)
 	minimal_player_age = 0
 	supervisors = "the Chief Medical Officer"
-	outfit_type = /decl/hierarchy/outfit/job/torch/crew/medical/counselor
+	outfit_type = /singleton/hierarchy/outfit/job/torch/crew/medical/counselor
 	alt_titles = list(
 		"Psychiatrist",
-		"Psionic Counselor",
+		"Psychologist",
 		"Mentalist"
-
 	)
 
 	allowed_branches = list(
 		/datum/mil_branch/civilian,
-		/datum/mil_branch/expeditionary_corps = /decl/hierarchy/outfit/job/torch/crew/medical/counselor/ec,
-		/datum/mil_branch/fleet = /decl/hierarchy/outfit/job/torch/crew/medical/counselor/fleet)
+		/datum/mil_branch/expeditionary_corps = /singleton/hierarchy/outfit/job/torch/crew/medical/counselor/ec,
+		/datum/mil_branch/fleet = /singleton/hierarchy/outfit/job/torch/crew/medical/counselor/fleet)
 	allowed_ranks = list(
 		/datum/mil_rank/civ/contractor,
 		/datum/mil_rank/fleet/o1,
 		/datum/mil_rank/ec/o1)
 	min_skill = list(
-		SKILL_BUREAUCRACY = SKILL_BASIC,
-		SKILL_MEDICAL     = SKILL_BASIC
+		SKILL_BUREAUCRACY = SKILL_TRAINED,
+		SKILL_MEDICAL = SKILL_BASIC
 	)
 	max_skill = list(
-		SKILL_MEDICAL     = SKILL_MAX
+		SKILL_MEDICAL = SKILL_TRAINED,
+		SKILL_ANATOMY = SKILL_TRAINED
 	)
 	access = list(
 		access_medical, access_psychiatrist,
@@ -259,9 +259,7 @@
 	give_psionic_implant_on_join = FALSE
 
 /datum/job/psychiatrist/equip(mob/living/carbon/human/H)
-	if(H.mind?.role_alt_title == "Psionic Counselor")
-		psi_faculties = list("[PSI_REDACTION]" = PSI_RANK_OPERANT)
-	if(H.mind?.role_alt_title == "Mentalist")
+	if (H.mind?.role_alt_title == "Mentalist")
 		psi_faculties = list("[PSI_COERCION]" = PSI_RANK_OPERANT)
 	return ..()
 

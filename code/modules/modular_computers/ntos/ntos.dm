@@ -84,10 +84,10 @@
 		var/obj/item/stock_parts/computer/hard_drive/hard_drive = get_component(PART_HDD)
 		if(hard_drive)
 			if(prob(10))
-				hard_drive.visible_message("<span class='warning'>[src] emits some ominous clicks.</span>")
+				hard_drive.visible_message(SPAN_WARNING("[src] emits some ominous clicks."))
 				hard_drive.set_damage_malfunction()
 			else if(prob(5))
-				hard_drive.visible_message("<span class='warning'>[src] emits some ominous clicks.</span>")
+				hard_drive.visible_message(SPAN_WARNING("[src] emits some ominous clicks."))
 				hard_drive.set_damage_failure()
 	update_host_icon()
 
@@ -147,7 +147,7 @@
 
 	if(P in running_programs)
 		return P
-	if(running_programs.len >= get_program_capacity())
+	if(length(running_programs) >= get_program_capacity())
 		loud && show_error(user, "Kernel Error - Insufficient CPU resources available to allocate.")
 		return
 	if(!P.can_run(user, loud))

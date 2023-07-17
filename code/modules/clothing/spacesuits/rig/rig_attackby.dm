@@ -14,16 +14,16 @@
 	if(W.GetIdCard())
 		if(subverted)
 			locked = 0
-			to_chat(user, "<span class='danger'>It looks like the locking system has been shorted out.</span>")
+			to_chat(user, SPAN_DANGER("It looks like the locking system has been shorted out."))
 			return
 
 		if(!length(req_access))
 			locked = 0
-			to_chat(user, "<span class='danger'>\The [src] doesn't seem to have a locking mechanism.</span>")
+			to_chat(user, SPAN_DANGER("\The [src] doesn't seem to have a locking mechanism."))
 			return
 
 		if(security_check_enabled && !src.allowed(user))
-			to_chat(user, "<span class='danger'>Access denied.</span>")
+			to_chat(user, SPAN_DANGER("Access denied."))
 			return
 
 		locked = !locked
@@ -104,8 +104,8 @@
 			var/list/current_mounts = list()
 			if(cell) current_mounts   += "cell"
 			if(air_supply) current_mounts += "tank"
-			if(installed_modules && installed_modules.len) current_mounts += "system module"
-
+			if (length(chest?.storage?.contents)) current_mounts += "storage"
+			if(installed_modules && length(installed_modules)) current_mounts += "system module"
 			var/to_remove = input("Which would you like to modify?") as null|anything in current_mounts
 			if(!to_remove)
 				return
@@ -138,6 +138,18 @@
 					to_chat(user, "You detach and remove \the [air_supply].")
 					air_supply = null
 
+				if ("storage")
+					if (!length(chest?.storage?.contents))
+						to_chat(user, "There is nothing in the storage to remove.")
+						return
+					chest.storage.DoQuickEmpty()
+					user.visible_message(
+						SPAN_ITALIC("\The [user] ejects the contents of \a [src]'s storage."),
+						SPAN_ITALIC("You eject the contents of \the [src]'s storage."),
+						SPAN_ITALIC("You hear things clatter to the floor."),
+						range = 5
+					)
+
 				if("system module")
 
 					var/list/possible_removals = list()
@@ -146,7 +158,7 @@
 							continue
 						possible_removals[module.name] = module
 
-					if(!possible_removals.len)
+					if(!length(possible_removals))
 						to_chat(user, "There are no installed modules to remove.")
 						return
 
@@ -195,5 +207,5 @@
 		req_access.Cut()
 		locked = 0
 		subverted = 1
-		to_chat(user, "<span class='danger'>You short out the access protocol for the suit.</span>")
+		to_chat(user, SPAN_DANGER("You short out the access protocol for the suit."))
 		return 1

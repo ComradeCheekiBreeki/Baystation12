@@ -18,8 +18,12 @@
 	// Flooring data.
 	var/flooring_override
 	var/initial_flooring
-	var/decl/flooring/flooring
+	var/singleton/flooring/flooring
 	var/mineral = DEFAULT_WALL_MATERIAL
+
+	// Initialization modifiers for mapping
+	/// Boolean (Default `FALSE`) - If set, the tile will not have atmosphere on init.
+	var/map_airless = FALSE
 
 	thermal_conductivity = 0.040
 	heat_capacity = 10000
@@ -31,16 +35,20 @@
 	return !flooring
 
 /turf/simulated/floor/protects_atom(atom/A)
-	return (A.level <= 1 && !is_plating()) || ..()
+	return (A.level == ATOM_LEVEL_UNDER_TILE && !is_plating()) || ..()
 
 /turf/simulated/floor/New(newloc, floortype)
+	var/area/area = get_area(src)
+	if (map_airless || area?.turfs_airless)
+		initial_gas = null
+		temperature = TCMB
 	..(newloc)
 	if(!floortype && initial_flooring)
 		floortype = initial_flooring
 	if(floortype)
-		set_flooring(decls_repository.get_decl(floortype))
+		set_flooring(GET_SINGLETON(floortype))
 
-/turf/simulated/floor/proc/set_flooring(decl/flooring/newflooring)
+/turf/simulated/floor/proc/set_flooring(singleton/flooring/newflooring)
 	make_plating(defer_icon_update = 1)
 	flooring = newflooring
 	update_icon(1)

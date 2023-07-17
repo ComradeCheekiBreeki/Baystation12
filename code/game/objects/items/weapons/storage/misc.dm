@@ -39,7 +39,10 @@
 	overlays.Cut()
 	var/i = 0
 	for(var/obj/item/reagent_containers/food/snacks/donut/D in contents)
-		overlays += image('icons/obj/food.dmi', "[i][D.overlay_state]")
+		var/image/I = image('icons/obj/food.dmi', "[i][D.overlay_state]")
+		if(D.overlay_state == "box-donut1")
+			I.color = D.filling_color
+		overlays += I
 		i++
 
 /obj/item/storage/box/donut/empty
@@ -59,10 +62,10 @@
 	slot_flags = SLOT_BELT
 	startswith = list(/obj/item/paper/cig = 10)
 	can_hold = list(
-  /obj/item/paper/cig,
-  /obj/item/clothing/mask/smokable/cigarette,
-  /obj/item/storage/cigpaper/filters
-)
+		/obj/item/paper/cig,
+		/obj/item/clothing/mask/smokable/cigarette,
+		/obj/item/storage/cigpaper/filters
+	)
 
 /obj/item/storage/cigpaper/fancy
 	name = "\improper Trident cigarette paper"
@@ -176,7 +179,7 @@
 
 /obj/item/storage/medical_lolli_jar/on_update_icon()
 	. = ..()
-	if(contents.len)
+	if(length(contents))
 		icon_state = "lollijar"
 	else
 		icon_state = "lollijar_empty"

@@ -109,6 +109,7 @@
 	plushes["mouse plush"] = /obj/item/toy/plushie/mouse
 	plushes["kitten plush"] = /obj/item/toy/plushie/kitten
 	plushes["lizard plush"] = /obj/item/toy/plushie/lizard
+	plushes["crow plush"] = /obj/item/toy/plushie/crow
 	plushes["spider plush"] = /obj/item/toy/plushie/spider
 	plushes["farwa plush"] = /obj/item/toy/plushie/farwa
 	plushes["golden carp plush"] = /obj/item/toy/plushie/carp_gold
@@ -168,9 +169,13 @@
 	display_name = "pipe, corn"
 	path = /obj/item/clothing/mask/smokable/pipe/cobpipe
 
+/datum/gear/matchbox
+	display_name = "matchbox"
+	path = /obj/item/storage/fancy/matches/matchbox
+
 /datum/gear/matchbook
 	display_name = "matchbook"
-	path = /obj/item/storage/box/matches
+	path = /obj/item/storage/fancy/matches/matchbook
 
 /datum/gear/lighter
 	display_name = "cheap lighter"
@@ -208,12 +213,12 @@
 
 /datum/gear/cigscase
 	display_name = "fancy cigarette case"
-	path = /obj/item/storage/fancy/cigarettes/case
+	path = /obj/item/storage/fancy/smokable/case
 	cost = 2
 
 /datum/gear/cigars
 	display_name = "fancy cigar case"
-	path = /obj/item/storage/fancy/cigar
+	path = /obj/item/storage/fancy/smokable/cigar
 	cost = 2
 
 /datum/gear/cigar
@@ -272,20 +277,3 @@
 	crosstype["cross, silver"] = /obj/item/material/cross/silver
 	crosstype["cross, gold"] = /obj/item/material/cross/gold
 	gear_tweaks += new/datum/gear_tweak/path(crosstype)
-
-/datum/gear/coin
-	display_name = "coin"
-	path = /obj/item/material/coin
-	cost = 2
-
-/datum/gear/coin/New()
-	..()
-	var/cointype = list()
-	cointype["coin, gold"] = /obj/item/material/coin/gold
-	cointype["coin, silver"] = /obj/item/material/coin/silver
-	cointype["coin, iron"] = /obj/item/material/coin/iron
-	cointype["coin, diamond"] = /obj/item/material/coin/diamond
-	cointype["coin, uranium"] = /obj/item/material/coin/uranium
-	cointype["coin, phoron"] = /obj/item/material/coin/phoron
-	cointype["coin, platinum"] = /obj/item/material/coin/platinum
-	gear_tweaks += new/datum/gear_tweak/path(cointype)

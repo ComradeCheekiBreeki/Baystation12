@@ -23,7 +23,7 @@
 		chameleon_choices = sortAssoc(choices)
 
 	atom_holder = holder
-	chameleon_verb += new/atom/proc/chameleon_appearance(atom_holder,"Change [atom_holder.name] Appearance")
+	chameleon_verb = /atom/proc/chameleon_appearance
 
 /datum/extension/chameleon/Destroy()
 	. = ..()
@@ -43,12 +43,9 @@
 	C.item_state = copy.item_state
 	C.body_parts_covered = copy.body_parts_covered
 
-	if (copy.item_icons)
-		C.item_icons = copy.item_icons.Copy()
-	if (copy.item_state_slots)
-		C.item_state_slots = copy.item_state_slots.Copy()
-	if (copy.sprite_sheets)
-		C.sprite_sheets = copy.sprite_sheets.Copy()
+	C.item_icons = copy.item_icons
+	C.item_state_slots = copy.item_state_slots
+	C.sprite_sheets = copy.sprite_sheets
 
 	OnDisguise(copy)
 	qdel(copy)
@@ -96,6 +93,9 @@
 		add_chameleon_choice(choices, path)
 	return sortAssoc(choices)
 
+/**
+ * Verb to handle changing the appearance of atoms that have the chameleon extension.
+ */
 /atom/proc/chameleon_appearance()
 	set name = "Change Appearance"
 	set desc = "Activate the holographic appearance changing module."

@@ -18,10 +18,10 @@ var/global/list/holder_mob_icon_cache = list()
 		)
 	pixel_y = 8
 
-	var/last_holder
+	var/mob/living/last_holder
 
-/obj/item/holder/New()
-	..()
+/obj/item/holder/Initialize()
+	. = ..()
 	START_PROCESSING(SSobj, src)
 
 /obj/item/holder/proc/destroy_all()
@@ -49,7 +49,7 @@ var/global/list/holder_mob_icon_cache = list()
 		for(var/mob/M in contents)
 			unregister_all_movement(last_holder, M)
 
-	if(istype(loc,/turf) || !(contents.len))
+	if(istype(loc,/turf) || !(length(contents)))
 		for(var/mob/M in contents)
 			var/atom/movable/mob_container = M
 			mob_container.dropInto(loc)
@@ -77,7 +77,16 @@ var/global/list/holder_mob_icon_cache = list()
 	var/obj/item/I = GetIdCard()
 	return I ? I.GetAccess() : ..()
 
-/obj/item/holder/attack_self()
+/obj/item/holder/attack_self(mob/user)
+	if (!ishuman(user))
+		return
+	var/mob/living/carbon/human/H = user
+	for(var/mob/M in contents)
+		H.species.hug(H, M)
+
+/obj/item/holder/MouseDrop(atom/over_atom, atom/source_loc, atom/over_loc, source_control, over_control, list/mouse_params)
+	if(over_atom != usr)
+		return ..()
 	for(var/mob/M in contents)
 		M.show_inv(usr)
 
@@ -105,6 +114,10 @@ var/global/list/holder_mob_icon_cache = list()
 	overlays |= M.overlays
 	var/mob/living/carbon/human/H = loc
 	last_holder = H
+	if (M.pulledby)
+		if (M.pulledby.pulling == src)
+			M.pulledby.pulling = null
+		M.pulledby = null
 	register_all_movement(H, M)
 
 	update_held_icon()
@@ -141,7 +154,7 @@ var/global/list/holder_mob_icon_cache = list()
 /mob/living/var/holder_type
 
 /mob/living/proc/get_scooped(mob/living/carbon/human/grabber, self_grab)
-	if(!holder_type || buckled || pinned.len)
+	if(!holder_type || buckled || length(pinned))
 		return
 
 	if(self_grab)
@@ -153,18 +166,18 @@ var/global/list/holder_mob_icon_cache = list()
 
 	if(self_grab)
 		if(!grabber.equip_to_slot_if_possible(H, slot_back, TRYEQUIP_REDRAW | TRYEQUIP_SILENT))
-			to_chat(src, "<span class='warning'>You can't climb onto [grabber]!</span>")
+			to_chat(src, SPAN_WARNING("You can't climb onto [grabber]!"))
 			return
 
-		to_chat(grabber, "<span class='notice'>\The [src] clambers onto you!</span>")
-		to_chat(src, "<span class='notice'>You climb up onto \the [grabber]!</span>")
+		to_chat(grabber, SPAN_NOTICE("\The [src] clambers onto you!"))
+		to_chat(src, SPAN_NOTICE("You climb up onto \the [grabber]!"))
 	else
 		if(!grabber.put_in_hands(H))
-			to_chat(grabber, "<span class='warning'>Your hands are full!</span>")
+			to_chat(grabber, SPAN_WARNING("Your hands are full!"))
 			return
 
-		to_chat(grabber, "<span class='notice'>You scoop up \the [src]!</span>")
-		to_chat(src, "<span class='notice'>\The [grabber] scoops you up!</span>")
+		to_chat(grabber, SPAN_NOTICE("You scoop up \the [src]!"))
+		to_chat(src, SPAN_NOTICE("\The [grabber] scoops you up!"))
 
 	src.forceMove(H)
 

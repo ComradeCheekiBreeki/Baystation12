@@ -66,7 +66,7 @@
 	dat += "<tr><td><b>Potency</b></td><td>[grown_seed.get_trait(TRAIT_POTENCY)]</td></tr>"
 	dat += "</table>"
 
-	if(grown_reagents && grown_reagents.reagent_list && grown_reagents.reagent_list.len)
+	if(grown_reagents && grown_reagents.reagent_list && length(grown_reagents.reagent_list))
 		dat += "<h2>Reagent Data</h2>"
 
 		dat += "<br>This sample contains: "
@@ -99,7 +99,7 @@
 		else
 			dat += "It requires a stable supply of water.<br>"
 
-	if(grown_seed.mutants && grown_seed.mutants.len)
+	if(grown_seed.mutants && length(grown_seed.mutants))
 		dat += "It exhibits a high degree of potential subspecies shift.<br>"
 
 	dat += "It thrives in a temperature of [grown_seed.get_trait(TRAIT_IDEAL_HEAT)] Kelvin."
@@ -154,7 +154,7 @@
 		dat += "<br>It will periodically alter the local temperature by [grown_seed.get_trait(TRAIT_ALTER_TEMP)] degrees Kelvin."
 
 	if(grown_seed.get_trait(TRAIT_BIOLUM))
-		dat += "<br>It is [grown_seed.get_trait(TRAIT_BIOLUM_COLOUR)  ? "<font color='[grown_seed.get_trait(TRAIT_BIOLUM_COLOUR)]'>bio-luminescent</font>" : "bio-luminescent"]."
+		dat += "<br>It is [grown_seed.get_trait(TRAIT_BIOLUM_COLOUR)  ? SPAN_COLOR("[grown_seed.get_trait(TRAIT_BIOLUM_COLOUR)]", "bio-luminescent") : "bio-luminescent"]."
 
 	if(grown_seed.get_trait(TRAIT_PRODUCES_POWER))
 		dat += "<br>The fruit will function as a battery if prepared appropriately."

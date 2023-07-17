@@ -62,10 +62,10 @@
 
 	if(href_list["irc_msg"])
 		if(!holder && received_irc_pm < world.time - 6000) //Worse they can do is spam IRC for 10 minutes
-			to_chat(usr, "<span class='warning'>You are no longer able to use this, it's been more then 10 minutes since an admin on IRC has responded to you</span>")
+			to_chat(usr, SPAN_WARNING("You are no longer able to use this, it's been more then 10 minutes since an admin on IRC has responded to you"))
 			return
 		if(mute_irc)
-			to_chat(usr, "<span class='warning'You cannot use this as your client has been muted from sending messages to the admins on IRC</span>")
+			to_chat(usr, SPAN_WARNING("You cannot use this as your client has been muted from sending messages to the admins on IRC"))
 			return
 		cmd_admin_irc_pm(href_list["irc_msg"])
 		return
@@ -106,7 +106,7 @@
 	if(!user_acted(src))
 		return 0
 	if(filelength > UPLOAD_LIMIT)
-		to_chat(src, "<font color='red'>Error: AllowUpload(): File Upload too large. Upload Limit: [UPLOAD_LIMIT/1024]KiB.</font>")
+		to_chat(src, SPAN_COLOR("red", "Error: AllowUpload(): File Upload too large. Upload Limit: [UPLOAD_LIMIT/1024]KiB."))
 		return 0
 	return 1
 
@@ -139,7 +139,7 @@
 		return
 
 	if(config.player_limit != 0)
-		if((GLOB.clients.len >= config.player_limit) && !(ckey in admin_datums))
+		if((length(GLOB.clients) >= config.player_limit) && !(ckey in admin_datums))
 			alert(src,"This server is currently full and not accepting new connections.","Server Full","OK")
 			log_admin("[ckey] tried to join and was turned away due to the server being full (player_limit=[config.player_limit])")
 			qdel(src)
@@ -151,14 +151,14 @@
 			break
 
 	// Change the way they should download resources.
-	if(config.resource_urls && config.resource_urls.len)
+	if(config.resource_urls && length(config.resource_urls))
 		src.preload_rsc = pick(config.resource_urls)
 	else src.preload_rsc = 1 // If config.resource_urls is not set, preload like normal.
 
 	if(byond_version < DM_VERSION)
-		to_chat(src, "<span class='warning'>You are running an older version of BYOND than the server and may experience issues.</span>")
-		to_chat(src, "<span class='warning'>It is recommended that you update to at least [DM_VERSION] at http://www.byond.com/download/.</span>")
-	to_chat(src, "<span class='warning'>If the title screen is black, resources are still downloading. Please be patient until the title screen appears.</span>")
+		to_chat(src, SPAN_WARNING("You are running an older version of BYOND than the server and may experience issues."))
+		to_chat(src, SPAN_WARNING("It is recommended that you update to at least [DM_VERSION] at http://www.byond.com/download/."))
+	to_chat(src, SPAN_WARNING("If the title screen is black, resources are still downloading. Please be patient until the title screen appears."))
 	GLOB.clients += src
 	GLOB.ckey_directory[ckey] = src
 
@@ -174,7 +174,7 @@
 		prefs = new /datum/preferences(src)
 	prefs.last_ip = address				//these are gonna be used for banning
 	prefs.last_id = computer_id			//these are gonna be used for banning
-	apply_fps(prefs.clientfps)
+	fps = prefs.clientfps
 
 	. = ..()	//calls mob.Login()
 
@@ -183,7 +183,7 @@
 	if (config.event)
 		to_chat(src, "<h1 class='alert'>Event</h1>")
 		to_chat(src, "<h2 class='alert'>An event is taking place. OOC Info:</h2>")
-		to_chat(src, "<span class='alert'>[config.event]</span>")
+		to_chat(src, SPAN_CLASS("alert", "[config.event]"))
 		to_chat(src, "<br>")
 
 	if(holder)
@@ -203,16 +203,34 @@
 	send_resources()
 
 	if (GLOB.changelog_hash && prefs.lastchangelog != GLOB.changelog_hash) //bolds the changelog button on the interface so we know there are updates.
-		to_chat(src, "<span class='info'>You have unread updates in the changelog.</span>")
+		to_chat(src, SPAN_INFO("You have unread updates in the changelog."))
 		winset(src, "rpane.changelog", "background-color=#eaeaea;font-style=bold")
 		if(config.aggressive_changelog)
 			src.changes()
 
 	if(!winexists(src, "asset_cache_browser")) // The client is using a custom skin, tell them.
-		to_chat(src, "<span class='warning'>Unable to access asset cache browser, if you are using a custom skin file, please allow DS to download the updated version, if you are not, then make a bug report. This is not a critical issue but can cause issues with resource downloading, as it is impossible to know when extra resources arrived to you.</span>")
+		to_chat(src, SPAN_WARNING("Unable to access asset cache browser, if you are using a custom skin file, please allow DS to download the updated version, if you are not, then make a bug report. This is not a critical issue but can cause issues with resource downloading, as it is impossible to know when extra resources arrived to you."))
+
+	if(!tooltips)
+		tooltips = new /datum/tooltip(src)
 
 	if(holder)
 		src.control_freak = 0 //Devs need 0 for profiler access
+
+	// This turns out to be a touch too much when a bunch of people are connecting at once from a restart during init.
+	if (GAME_STATE & RUNLEVELS_DEFAULT)
+		spawn()
+			// Check connections
+			var/list/connections = fetch_connections()
+			var/list/ckeys = _unique_ckeys_from_connections(connections) - ckey
+			if (length(ckeys))
+				log_and_message_staff(SPAN_INFO("[key_name_admin(src)] has connection details associated with other ckeys in the log: [english_list(ckeys)]"))
+
+			// Check bans
+			var/list/bans = _find_bans_in_connections(connections)
+			ckeys = _unique_ckeys_from_connections(bans)
+			if (length(bans))
+				log_and_message_staff(SPAN_DANGER("[key_name_admin(src)] has connection details associated with active bans: [english_list(ckeys)]"))
 
 	//////////////
 	//DISCONNECT//
@@ -305,16 +323,9 @@
 		if(!isnum(sql_id))
 			return
 
-	var/admin_rank = "Player"
-	if(src.holder)
-		admin_rank = src.holder.rank
-		for(var/client/C in GLOB.clients)
-			if(C.staffwarn)
-				C.mob.send_staffwarn(src, "is connected", 0)
-
 	var/sql_ip = sql_sanitize_text(src.address)
 	var/sql_computerid = sql_sanitize_text(src.computer_id)
-	var/sql_admin_rank = sql_sanitize_text(admin_rank)
+	var/sql_admin_rank = sql_sanitize_text("Player")
 
 
 	if(sql_id)
@@ -376,14 +387,15 @@
 		'html/images/xynlogo.png',
 		'html/images/daislogo.png',
 		'html/images/eclogo.png',
-		'html/images/fleetlogo.png',
-		'html/images/sfplogo.png'
+		'html/images/FleetLogo.png',
+		'html/images/sfplogo.png',
+		'html/images/falogo.png'
 		)
-	addtimer(CALLBACK(src, .proc/after_send_resources), 1 SECOND)
+	addtimer(new Callback(src, .proc/after_send_resources), 1 SECOND)
 
 
 /client/proc/after_send_resources()
-	var/decl/asset_cache/asset_cache = decls_repository.get_decl(/decl/asset_cache)
+	var/singleton/asset_cache/asset_cache = GET_SINGLETON(/singleton/asset_cache)
 	getFilesSlow(src, asset_cache.cache, register_asset = FALSE)
 
 
@@ -403,9 +415,6 @@
 	if(prefs)
 		prefs.open_setup_window(usr)
 
-/client/proc/apply_fps(client_fps)
-	if(world.byond_version >= 511 && byond_version >= 511 && client_fps >= CLIENT_MIN_FPS && client_fps <= CLIENT_MAX_FPS)
-		vars["fps"] = prefs.clientfps
 
 /client/MouseDrag(src_object, over_object, src_location, over_location, src_control, over_control, params)
 	. = ..()

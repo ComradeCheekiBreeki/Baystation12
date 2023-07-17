@@ -8,7 +8,7 @@
 	clicksound = 'sound/machines/buttonbeep.ogg'
 	clickvol = 30
 	base_type = /obj/machinery/sleeper
-	construct_state = /decl/machine_construction/default/panel_closed
+	construct_state = /singleton/machine_construction/default/panel_closed
 	uncreated_component_parts = null
 	stat_immune = 0
 	machine_name = "sleeper"
@@ -44,8 +44,8 @@
 			to_chat(user, "It is loaded with a beaker.")
 		if(occupant)
 			occupant.examine(arglist(args))
-		if (emagged && user.skill_check(SKILL_MEDICAL, SKILL_EXPERT))
-			to_chat(user, "The sleeper chemical synthesis controls look tampered with.")
+		if (emagged && user.skill_check(SKILL_MEDICAL, SKILL_EXPERIENCED))
+			to_chat(user, SPAN_WARNING("The sleeper chemical synthesis controls look tampered with."))
 
 
 /obj/machinery/sleeper/Process()
@@ -108,7 +108,7 @@
 	data["reagents"] = reagents.Copy()
 
 	if(istype(occupant))
-		var/scan = user.skill_check(SKILL_MEDICAL, SKILL_ADEPT) ? medical_scan_results(occupant) : "<span class='white'><b>Contains: \the [occupant]</b></span>"
+		var/scan = user.skill_check(SKILL_MEDICAL, SKILL_TRAINED) ? medical_scan_results(occupant) : SPAN_CLASS("white", "<b>Contains: \the [occupant]</b>")
 		scan = replacetext(scan,"'scan_notice'","'white'")
 		scan = replacetext(scan,"'scan_warning'","'average'")
 		scan = replacetext(scan,"'scan_danger'","'bad'")
@@ -133,7 +133,7 @@
 
 /obj/machinery/sleeper/CanUseTopic(user)
 	if(user == occupant)
-		to_chat(usr, "<span class='warning'>You can't reach the controls from the inside.</span>")
+		to_chat(usr, SPAN_WARNING("You can't reach the controls from the inside."))
 		return STATUS_CLOSE
 	. = ..()
 
@@ -164,7 +164,7 @@
 			change_power_consumption(initial(active_power_usage) + stasis_power * (stasis-1), POWER_USE_ACTIVE)
 			return TOPIC_REFRESH
 
-/obj/machinery/sleeper/state_transition(decl/machine_construction/default/new_state)
+/obj/machinery/sleeper/state_transition(singleton/machine_construction/default/new_state)
 	. = ..()
 	if(istype(new_state))
 		updateUsrDialog()
@@ -177,24 +177,55 @@
 			if(!user.unEquip(I, src))
 				return
 			beaker = I
-			user.visible_message("<span class='notice'>\The [user] adds \a [I] to \the [src].</span>", "<span class='notice'>You add \a [I] to \the [src].</span>")
+			user.visible_message(SPAN_NOTICE("\The [user] adds \a [I] to \the [src]."), SPAN_NOTICE("You add \a [I] to \the [src]."))
 		else
-			to_chat(user, "<span class='warning'>\The [src] has a beaker already.</span>")
+			to_chat(user, SPAN_WARNING("\The [src] has a beaker already."))
 		return TRUE
 	return ..()
 
+/obj/machinery/sleeper/proc/user_can_move_target_inside(mob/target, mob/user)
+	if(!user.use_sanity_check(src, target))
+		return FALSE
+	if (!istype(target))
+		to_chat(user, SPAN_WARNING("\The [src] cannot handle such a lifeform!"))
+		return FALSE
+	if (user.incapacitated() || !istype(user))
+		return FALSE
+	if (!target.simulated)
+		return FALSE
+	if (inoperable())
+		to_chat(user, SPAN_WARNING("\The [src] is not functioning."))
+		return FALSE
+	if (occupant)
+		to_chat(user, SPAN_WARNING("\The [src] is already occupied!"))
+		return FALSE
+	if (target.abiotic())
+		to_chat(user, SPAN_WARNING("[user == target ? "You" : "[target]"] can't enter \the [src] while wearing abiotic items."))
+		return FALSE
+	if (target.buckled)
+		to_chat(user, SPAN_WARNING("Unbuckle [user == target ? "yourself" : "\the [target]"] before attempting to [user == target ? "enter \the [src]" : "move them"]."))
+		return FALSE
+	if (panel_open)
+		to_chat(user, SPAN_WARNING("Close the maintenance panel before attempting to place [user == target ? "yourself" : "\the [target]"] in \the [src]."))
+		return FALSE
+	for (var/obj/item/grab/grab in target.grabbed_by)
+		if (grab.assailant == user || grab.assailant == target)
+			continue
+		to_chat(user, SPAN_WARNING("\The [target] is being grabbed by [grab.assailant] and can't be placed in \the [src]."))
+		return FALSE
+	return TRUE
+
 /obj/machinery/sleeper/MouseDrop_T(mob/target, mob/user)
-	if(!CanMouseDrop(target, user))
+	if (!CanMouseDrop(target, user) || !ismob(target))
 		return
-	if(!istype(target))
-		return
-	if(target.buckled)
-		to_chat(user, "<span class='warning'>Unbuckle the subject before attempting to move them.</span>")
-		return
-	if(panel_open)
-		to_chat(user, "<span class='warning'>Close the maintenance panel before attempting to place the subject in the sleeper.</span>")
+	if (!user_can_move_target_inside(target, user))
 		return
 	go_in(target, user)
+	return
+
+/obj/machinery/sleeper/use_grab(obj/item/grab/grab, list/click_params) //Grab is deleted at the level of go_in if all checks are passed.
+	MouseDrop_T(grab.affecting, grab.assailant)
+	return TRUE
 
 /obj/machinery/sleeper/relaymove(mob/user)
 	..()
@@ -215,35 +246,35 @@
 	if(!occupant || !beaker)
 		filtering = 0
 		return
-	to_chat(occupant, "<span class='warning'>You feel like your blood is being sucked away.</span>")
+	to_chat(occupant, SPAN_WARNING("You feel like your blood is being sucked away."))
 	filtering = !filtering
 
 /obj/machinery/sleeper/proc/toggle_pump()
 	if(!occupant || !beaker)
 		pump = 0
 		return
-	to_chat(occupant, "<span class='warning'>You feel a tube jammed down your throat.</span>")
+	to_chat(occupant, SPAN_WARNING("You feel a tube jammed down your throat."))
 	pump = !pump
 
-/obj/machinery/sleeper/proc/go_in(mob/M, mob/user)
-	if(!M)
-		return
-	if(inoperable())
-		return
-	if(occupant)
-		to_chat(user, "<span class='warning'>\The [src] is already occupied.</span>")
-		return
-
-	if(M == user)
+/obj/machinery/sleeper/proc/go_in(mob/target, mob/user)
+	if (!target)
+		return FALSE
+	if (occupant)
+		to_chat(user, SPAN_WARNING("\The [src] is already occupied."))
+		return FALSE
+	if (target == user)
 		visible_message("\The [user] starts climbing into \the [src].")
 	else
-		visible_message("\The [user] starts putting [M] into \the [src].")
-
-	if(do_after(user, 2 SECONDS, src, DO_PUBLIC_UNIQUE))
-		if(occupant)
-			to_chat(user, "<span class='warning'>\The [src] is already occupied.</span>")
-			return
-		set_occupant(M)
+		visible_message("\The [user] starts putting [target] into \the [src].")
+	add_fingerprint(user) //Add fingerprints for trying to go in.
+	if (!do_after(user, 2 SECONDS, src, DO_PUBLIC_UNIQUE))
+		return FALSE
+	if (!user_can_move_target_inside(target, user))
+		return FALSE
+	set_occupant(target)
+	if (target != user)
+		add_fingerprint(target) //Add fingerprints of the person stuffed in.
+	target.remove_grabs_and_pulls()
 
 /obj/machinery/sleeper/proc/go_out()
 	if(!occupant)
@@ -259,12 +290,6 @@
 			continue
 		O.dropInto(loc)
 	toggle_filter()
-
-/obj/machinery/sleeper/AltClick(mob/user)
-	if(CanDefaultInteract(user))
-		go_out()
-	else
-		..()
 
 /obj/machinery/sleeper/proc/set_occupant(mob/living/carbon/occupant)
 	src.occupant = occupant
@@ -323,10 +348,25 @@
 
 /obj/machinery/sleeper/emag_act(remaining_charges, mob/user)
 	emagged = !emagged
-	to_chat(user, "<span class='danger'>You [emagged ? "disable" : "enable"] \the [src]'s chemical synthesis safety checks.</span>")
+	to_chat(user, SPAN_DANGER("You [emagged ? "disable" : "enable"] \the [src]'s chemical synthesis safety checks."))
 
 	if (emagged)
 		available_chemicals |= antag_chemicals
 	else
 		available_chemicals -= antag_chemicals
 	return 1
+
+/obj/machinery/sleeper/AltClick(mob/user)
+	if (CanDefaultInteract(user))
+		go_out()
+		return TRUE
+	return ..()
+
+/obj/machinery/sleeper/verb/eject()
+	set name = "Eject Sleeper"
+	set category = "Object"
+	set src in oview(1)
+	if (CanDefaultInteract(usr))
+		go_out()
+		return TRUE
+	return FALSE

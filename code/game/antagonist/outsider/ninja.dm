@@ -18,6 +18,8 @@ GLOBAL_DATUM_INIT(ninjas, /datum/antagonist/ninja, new)
 	id_type = /obj/item/card/id/syndicate
 
 	faction = "ninja"
+	no_prior_faction = TRUE
+
 	base_to_load = /datum/map_template/ruin/antag_spawn/ninja
 
 /datum/antagonist/ninja/create_objectives(datum/mind/ninja)
@@ -76,7 +78,7 @@ GLOBAL_DATUM_INIT(ninjas, /datum/antagonist/ninja, new)
 	if(!..())
 		return 0
 	var/directive = generate_ninja_directive("heel")
-	player.StoreMemory("<B>Directive:</B> <span class='danger'>[directive]</span><br>", /decl/memory_options/system)
+	player.StoreMemory("<B>Directive:</B> [SPAN_DANGER("[directive]")]<br>", /singleton/memory_options/system)
 	to_chat(player, "<b>Remember your directive:</b> [directive].")
 
 /datum/antagonist/ninja/update_antag_mob(datum/mind/player)
@@ -100,7 +102,7 @@ GLOBAL_DATUM_INIT(ninjas, /datum/antagonist/ninja, new)
 		equip_rig(/obj/item/rig/light/ninja, player)
 		var/obj/item/modular_computer/pda/syndicate/U = new
 		player.put_in_hands(U)
-		var/decl/uplink_source/pda/uplink_source = new
+		var/singleton/uplink_source/pda/uplink_source = new
 		uplink_source.setup_uplink_source(player, 0)
 
 /datum/antagonist/ninja/proc/generate_ninja_directive(side)

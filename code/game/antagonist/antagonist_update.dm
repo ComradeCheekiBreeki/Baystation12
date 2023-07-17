@@ -1,5 +1,5 @@
 /datum/antagonist/proc/update_leader()
-	if(!leader && current_antagonists.len && (flags & ANTAG_HAS_LEADER))
+	if(!leader && length(current_antagonists) && (flags & ANTAG_HAS_LEADER))
 		leader = current_antagonists[1]
 
 /datum/antagonist/proc/update_antag_mob(datum/mind/player, preserve_appearance)
@@ -15,7 +15,7 @@
 		spawn(3)
 			var/mob/living/carbon/human/H = player.current
 			if(istype(H))
-				H.change_appearance(APPEARANCE_COMMON, TRUE, state = GLOB.z_state)
+				H.change_appearance(APPEARANCE_COMMON, state = GLOB.z_state)
 	return player.current
 
 /datum/antagonist/proc/update_access(mob/living/player)

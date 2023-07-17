@@ -22,12 +22,12 @@
 /mob/living/bot/remotebot/examine(mob/user)
 	. = ..()
 	if(holding)
-		to_chat(user, "<span class='notice'>It is holding \the [icon2html(holding, user)] [holding].</span>")
+		to_chat(user, SPAN_NOTICE("It is holding \the [icon2html(holding, user)] [holding]."))
 
 /mob/living/bot/remotebot/explode()
 	on = 0
 	new /obj/effect/decal/cleanable/blood/oil(get_turf(src.loc))
-	visible_message("<span class='danger'>[src] blows apart!</span>")
+	visible_message(SPAN_DANGER("[src] blows apart!"))
 	if(controller)
 		controller.bot = null
 		controller = null
@@ -41,14 +41,36 @@
 	s.start()
 	qdel(src)
 
-/mob/living/bot/remotebot/attackby(obj/item/I, mob/living/user)
-	if(istype(I, /obj/item/device/bot_controller) && !controller)
-		user.visible_message("\The [user] waves \the [I] over \the [src].")
-		to_chat(user, "<span class='notice'>You link \the [src] to \the [I].</span>")
-		var/obj/item/device/bot_controller/B = I
-		B.bot = src
-		controller = B
+
+/mob/living/bot/remotebot/get_interactions_info()
+	. = ..()
+	.["Remote Control"] = "<p>Syncs the remote control to the bot, allowing it to be controlled. Only one remote control can be synced to a given bot.</p>"
+
+
+/mob/living/bot/remotebot/use_tool(obj/item/tool, mob/user, list/click_params)
+	// Remove Control - Link controller to bot
+	if (istype(tool, /obj/item/device/bot_controller))
+		if (controller)
+			USE_FEEDBACK_FAILURE("\The [src] is already connected to a remote control.")
+			return TRUE
+		var/obj/item/device/bot_controller/bot_controller = tool
+		bot_controller.bot = src
+		controller = bot_controller
+		GLOB.destroyed_event.register(bot_controller, src, .proc/controller_deleted)
+		user.visible_message(
+			SPAN_NOTICE("\The [user] syncs \a [tool] to \the [src]."),
+			SPAN_NOTICE("You sync \the [tool] to \the [src].")
+		)
+		return TRUE
+
 	return ..()
+
+
+/mob/living/bot/remotebot/proc/controller_deleted(obj/item/device/bot_controller/bot_controller)
+	if (controller == bot_controller)
+		controller = null
+	GLOB.destroyed_event.unregister(bot_controller, src, .proc/controller_deleted)
+
 
 /mob/living/bot/remotebot/update_icons()
 	icon_state = "fetchbot[on]"
@@ -96,7 +118,8 @@
 /obj/item/device/bot_controller
 	name = "remote control"
 	desc = "Used to control something remotely. Even has a tiny screen!"
-	icon_state = "forensic1"
+	icon = 'icons/obj/surgery.dmi'
+	icon_state = "autopsy_scanner"
 	w_class = ITEM_SIZE_SMALL
 	slot_flags = SLOT_BELT
 	item_state = "electronic"
@@ -152,7 +175,7 @@
 
 /obj/item/device/bot_controller/Destroy()
 	if(bot)
-		bot.controller = null
+		bot.controller_deleted(src)
 		bot = null
 	return ..()
 

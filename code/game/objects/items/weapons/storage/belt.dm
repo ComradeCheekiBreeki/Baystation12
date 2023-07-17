@@ -33,7 +33,7 @@
 
 /obj/item/storage/belt/get_mob_overlay(mob/user_mob, slot)
 	var/image/ret = ..()
-	if(slot == slot_belt_str && contents.len)
+	if(slot == slot_belt_str && length(contents))
 		var/list/ret_overlays = list()
 		for(var/obj/item/I in contents)
 			var/use_state = (I.item_state ? I.item_state : I.icon_state)
@@ -131,7 +131,8 @@
 		/obj/item/clothing/gloves,
 		/obj/item/tape_roll,
 		/obj/item/clothing/head/beret,
-		/obj/item/material/knife/folding
+		/obj/item/material/knife/folding,
+		/obj/item/swapper
 		)
 
 
@@ -142,7 +143,7 @@
 	new /obj/item/weldingtool(src)
 	new /obj/item/crowbar(src)
 	new /obj/item/wirecutters(src)
-	new /obj/item/stack/cable_coil/random(src, 30)
+	new /obj/random/single/color/cable_coil(src, 30)
 	update_icon()
 
 
@@ -156,7 +157,14 @@
 	new /obj/item/device/t_scanner(src)
 	update_icon()
 
-
+/obj/item/storage/belt/utility/engi_command/New()
+	..()
+	new /obj/item/swapper/power_drill(src)
+	new /obj/item/weldingtool(src)
+	new /obj/item/swapper/jaws_of_life(src)
+	new /obj/random/single/color/cable_coil(src, 30)
+	new /obj/item/device/t_scanner(src)
+	update_icon()
 
 /obj/item/storage/belt/medical
 	name = "medical belt"
@@ -171,7 +179,7 @@
 		/obj/item/reagent_containers/pill,
 		/obj/item/reagent_containers/syringe,
 		/obj/item/flame/lighter/zippo,
-		/obj/item/storage/fancy/cigarettes,
+		/obj/item/storage/fancy/smokable,
 		/obj/item/storage/pill_bottle,
 		/obj/item/stack/medical,
 		/obj/item/device/flashlight/pen,
@@ -318,6 +326,16 @@
 		/obj/item/device/tape
 		)
 
+/obj/item/storage/belt/general/full/Initialize()
+	. = ..()
+	new /obj/item/material/clipboard(src)
+	new /obj/item/folder(src)
+	new /obj/item/device/taperecorder(src)
+	new /obj/item/device/camera(src)
+	new /obj/item/taperoll/research(src)
+	new /obj/item/device/tape/random(src)
+	queue_icon_update()
+
 /obj/item/storage/belt/janitor
 	name = "janibelt"
 	desc = "A belt used to hold most janitorial supplies."
@@ -329,6 +347,7 @@
 		/obj/item/device/flashlight,
 		/obj/item/reagent_containers/spray/cleaner,
 		/obj/item/soap,
+		/obj/item/reagent_containers/glass/rag,
 		/obj/item/holosign_creator,
 		/obj/item/clothing/gloves,
 		/obj/item/device/assembly/mousetrap,
@@ -531,16 +550,6 @@
 	max_w_class = ITEM_SIZE_SMALL
 	max_storage_space = ITEM_SIZE_SMALL * 4
 	slot_flags = SLOT_BELT | SLOT_BACK
-
-/obj/item/storage/belt/waistpack/big
-	name = "large waist pack"
-	desc = "A bag designed to be worn on the waist. Definitely makes your butt look big."
-	icon_state = "fannypack_big_white"
-	item_state = "fannypack_big_white"
-	w_class = ITEM_SIZE_LARGE
-	max_w_class = ITEM_SIZE_NORMAL
-	max_storage_space = ITEM_SIZE_NORMAL * 4
-
 
 /obj/item/storage/belt/fire_belt
 	name = "firefighting equipment belt"

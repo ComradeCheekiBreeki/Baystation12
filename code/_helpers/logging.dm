@@ -107,8 +107,6 @@ var/global/log_end= world.system_type == UNIX ? ascii2text(13) : ""
 	to_world_log("## UNIT_TEST ##: [text]")
 	log_debug(text)
 
-/proc/log_qdel(text)
-	to_file(GLOB.world_qdel_log, "\[[time_stamp()]]QDEL: [text]")
 
 //This replaces world.log so it displays both in DD and the file
 /proc/log_world(text)
@@ -179,7 +177,7 @@ var/global/log_end= world.system_type == UNIX ? ascii2text(13) : ""
 
 
 		if(is_special_character(M) && highlight_special_characters)
-			. += "/(<font color='#ffa500'>[name]</font>)" //Orange
+			. += "/([SPAN_COLOR("#ffa500", name)])" //Orange
 		else
 			. += "/([name])"
 
@@ -220,5 +218,5 @@ var/global/log_end= world.system_type == UNIX ? ascii2text(13) : ""
 	return d.get_log_info_line()
 
 /proc/report_progress(progress_message)
-	admin_notice("<span class='boldannounce'>[progress_message]</span>", R_DEBUG)
+	admin_notice(SPAN_CLASS("boldannounce", "[progress_message]"), R_DEBUG)
 	to_world_log(progress_message)

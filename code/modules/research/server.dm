@@ -1,9 +1,9 @@
 /obj/machinery/r_n_d/server
-	name = "R&D Server"
+	name = "\improper R&D server"
 	icon = 'icons/obj/machines/research.dmi'
 	icon_state = "server"
 	base_type = /obj/machinery/r_n_d/server
-	construct_state = /decl/machine_construction/default/panel_closed
+	construct_state = /singleton/machine_construction/default/panel_closed
 	machine_name = "\improper R&D server"
 	machine_desc = "A powerful piece of hardware used as the hub of a research matrix, containing every byte of data gleaned from an experiment."
 	var/datum/research/files
@@ -29,12 +29,12 @@
 	if(!files)
 		files = new /datum/research(src)
 	var/list/temp_list
-	if(!id_with_upload.len)
+	if(!length(id_with_upload))
 		temp_list = list()
 		temp_list = splittext(id_with_upload_string, ";")
 		for(var/N in temp_list)
 			id_with_upload += text2num(N)
-	if(!id_with_download.len)
+	if(!length(id_with_download))
 		temp_list = list()
 		temp_list = splittext(id_with_download_string, ";")
 		for(var/N in temp_list)
@@ -86,7 +86,7 @@
 			env.merge(removed)
 
 /obj/machinery/r_n_d/server/centcom
-	name = "Central R&D Database"
+	name = "central R&D database"
 	server_id = -1
 
 /obj/machinery/r_n_d/server/centcom/proc/update_connections()
@@ -115,7 +115,7 @@
 	return PROCESS_KILL //don't need process()
 
 /obj/machinery/computer/rdservercontrol
-	name = "R&D Server Controller"
+	name = "\improper R&D server controller"
 	icon_keyboard = "rd_key"
 	icon_screen = "rdcomp"
 	light_color = "#a97faa"
@@ -129,7 +129,7 @@
 
 /obj/machinery/computer/rdservercontrol/CanUseTopic(user)
 	if(!allowed(user) && !emagged)
-		to_chat(user, "<span class='warning'>You do not have the required access level</span>")
+		to_chat(user, SPAN_WARNING("You do not have the required access level"))
 		return STATUS_CLOSE
 	return ..()
 
@@ -266,18 +266,18 @@
 		playsound(src.loc, 'sound/effects/sparks4.ogg', 75, 1)
 		emagged = TRUE
 		req_access.Cut()
-		to_chat(user, "<span class='notice'>You you disable the security protocols.</span>")
+		to_chat(user, SPAN_NOTICE("You you disable the security protocols."))
 		src.updateUsrDialog()
 		return 1
 
 /obj/machinery/r_n_d/server/robotics
-	name = "Robotics R&D Server"
+	name = "robotics R&D server"
 	id_with_upload_string = "1;2"
 	id_with_download_string = "1;2"
 	server_id = 2
 
 /obj/machinery/r_n_d/server/core
-	name = "Core R&D Server"
+	name = "core R&D server"
 	id_with_upload_string = "1;3"
 	id_with_download_string = "1;3"
 	server_id = 1

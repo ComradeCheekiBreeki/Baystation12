@@ -40,6 +40,19 @@
 	if (material)
 		return material.display_name
 
+/**
+ * Returns the material's melting point, or `T100C` if there is no material. Overrideable for special cases, such as
+ * atoms that allow material reinforcement or that by nature should have a higher or lower melting point.
+ */
+/atom/proc/get_material_melting_point()
+	return T100C
+
+/obj/get_material_melting_point()
+	. = ..()
+	var/material/material = get_material()
+	if (material)
+		. = material.melting_point
+
 // Material definition and procs follow.
 /material
 	var/name	                          // Unique name for use in indexing the list.
@@ -65,12 +78,24 @@
 	var/destruction_desc = "breaks apart" // Fancy string for barricades/tables/objects exploding.
 
 	// Icons
-	var/icon_colour                                      // Colour applied to products of this material.
-	var/icon_base = "metal"                              // Wall and table base icon tag. See header.
-	var/door_icon_base = "metal"                         // Door base icon tag. See header.
-	var/icon_reinf = "reinf_metal"                       // Overlay used
+	/// String (Colour). Colour applied to products of this material.
+	var/icon_colour
+	/// String. Base icon state for material stacks.
+	var/sheet_icon_base = "sheet"
+	/// String. Icon overlay used for reinforced stacks.
+	var/sheet_icon_reinf = "reinf-overlay"
+	/// Boolean (Default `TRUE`). If set, material stacks will have alt icons for plural or max.
+	var/sheet_has_plural_icon = TRUE
+	/// String. Wall base icon state. See header.
+	var/wall_icon_base = "metal"
+	/// String. Icon overlay used for reinforced walls.
+	var/wall_icon_reinf = "reinf_metal"
+	/// String. Unpowered door base icon state. See header.
+	var/door_icon_base = "metal"
+	/// String. Table base icon state.
 	var/table_icon_base = "metal"
-	var/table_reinf = "reinf_metal"
+	/// String. Table icon state for reinforcement overlays.
+	var/table_icon_reinf = "reinf_metal"
 	var/list/stack_origin_tech = list(TECH_MATERIAL = 1) // Research level for stacks.
 
 	// Attributes
@@ -129,39 +154,38 @@
 // Placeholders for light tiles and rglass.
 /material/proc/reinforce(mob/user, obj/item/stack/material/used_stack, obj/item/stack/material/target_stack)
 	if(!used_stack.can_use(1))
-		to_chat(user, "<span class='warning'>You need need at least one [used_stack.singular_name] to reinforce [target_stack].</span>")
+		USE_FEEDBACK_STACK_NOT_ENOUGH(used_stack, 1, "to reinforce \the [target_stack].")
 		return
 
 	var/needed_sheets = 2 * used_stack.matter_multiplier
 	if(!target_stack.can_use(needed_sheets))
-		to_chat(user, "<span class='warning'>You need need at least [needed_sheets] [target_stack.plural_name] for reinforcement with [used_stack].</span>")
+		USE_FEEDBACK_STACK_NOT_ENOUGH(target_stack, needed_sheets, "for reinforcement with \the [used_stack].")
 		return
 
 	var/material/reinf_mat = used_stack.material
 	if(reinf_mat.integrity <= integrity || reinf_mat.is_brittle())
-		to_chat(user, "<span class='warning'>The [reinf_mat.display_name] is too structurally weak to reinforce the [display_name].</span>")
+		to_chat(user, SPAN_WARNING("The [reinf_mat.display_name] is too structurally weak to reinforce the [display_name]."))
 		return
 
-	to_chat(user, "<span class='notice'>You reinforce the [target_stack] with the [reinf_mat.display_name].</span>")
+	to_chat(user, SPAN_NOTICE("You reinforce the [target_stack] with the [reinf_mat.display_name]."))
 	used_stack.use(1)
 	var/target_loc = target_stack.loc
 	var/obj/item/stack/material/S = target_stack.split(needed_sheets)
 	S.reinf_material = reinf_mat
-	S.update_strings()
-	S.update_icon()
+	S.update_materials()
 	S.dropInto(target_loc)
 
 /material/proc/build_wired_product(mob/user, obj/item/stack/used_stack, obj/item/stack/target_stack)
 	if(!wire_product)
-		to_chat(user, "<span class='warning'>You cannot make anything out of \the [target_stack]</span>")
+		to_chat(user, SPAN_WARNING("You cannot make anything out of \the [target_stack]"))
 		return
 	if(!used_stack.can_use(5) || !target_stack.can_use(1))
-		to_chat(user, "<span class='warning'>You need five wires and one sheet of [display_name] to make anything useful.</span>")
+		to_chat(user, SPAN_WARNING("You need five wires and one sheet of [display_name] to make anything useful."))
 		return
 
 	used_stack.use(5)
 	target_stack.use(1)
-	to_chat(user, "<span class='notice'>You attach wire to the [name].</span>")
+	to_chat(user, SPAN_NOTICE("You attach wire to the [name]."))
 	var/obj/item/product = new wire_product(get_turf(user))
 	if (user.HasFreeHand())
 		user.put_in_hands(product)

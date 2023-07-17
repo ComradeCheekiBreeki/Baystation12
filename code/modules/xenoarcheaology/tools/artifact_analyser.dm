@@ -38,7 +38,7 @@
 		reconnect_scanner()
 
 	if(!owned_scanner)
-		dat += "<b><font color=red>Unable to locate analysis pad.</font></b><br>"
+		dat += "<b>[SPAN_COLOR("red", "Unable to locate analysis pad.")]</b><br>"
 	else if(scan_in_progress)
 		dat += "Please wait. Analysis in progress.<br>"
 		dat += "<a href='?src=\ref[src];halt_scan=1'>Halt scanning.</a><br>"
@@ -71,13 +71,14 @@
 			results = get_scan_info(scanned_object)
 
 		src.visible_message("<b>[name]</b> states, \"Scanning complete.\"")
-		var/obj/item/paper/P = new(src.loc)
+		var/obj/item/paper/anomaly_scan/P = new(src.loc)
 		P.SetName("[src] report #[++report_num]")
 		P.info = "<b>[src] analysis report #[report_num]</b><br>"
 		P.info += "<br>"
 		P.info += "\icon[scanned_object] [results]"
 		P.stamped = list(/obj/item/stamp)
 		P.queue_icon_update()
+		P.is_copy = FALSE
 
 		if(scanned_object && istype(scanned_object, /obj/machinery/artifact))
 			var/obj/machinery/artifact/A = scanned_object

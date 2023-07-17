@@ -217,6 +217,7 @@ world
 #define TO_HEX_DIGIT(n) ascii2text((n&15) + ((n&15)<10 ? 48 : 87))
 
 /icon/proc/MakeLying()
+	RETURN_TYPE(/icon)
 	var/icon/I = new(src,dir=SOUTH)
 	I.BecomeLying()
 	return I
@@ -318,6 +319,7 @@ world
  */
 
 /proc/ReadRGB(rgb)
+	RETURN_TYPE(/list)
 	if(!rgb) return
 
 	// interpret the HSV or HSVA value
@@ -368,6 +370,7 @@ world
 	if(usealpha) . += alpha
 
 /proc/ReadHSV(hsv)
+	RETURN_TYPE(/list)
 	if(!hsv) return
 
 	// interpret the HSV or HSVA value
@@ -432,7 +435,7 @@ world
 		else if(hue >= 255)  {r=mid; g=hi;  b=lo }
 		else                 {r=hi;  g=mid; b=lo }
 
-	return (HSV.len > 3) ? rgb(r,g,b,HSV[4]) : rgb(r,g,b)
+	return (length(HSV) > 3) ? rgb(r,g,b,HSV[4]) : rgb(r,g,b)
 
 /proc/RGBtoHSV(rgb)
 	if(!rgb) return "#0000000"
@@ -463,7 +466,7 @@ world
 			else {hue=1023; dir=-1; mid=g}
 		hue += dir * round((mid-lo) * 255 / (hi-lo), 1)
 
-	return hsv(hue, sat, val, (RGB.len>3 ? RGB[4] : null))
+	return hsv(hue, sat, val, (length(RGB)>3 ? RGB[4] : null))
 
 /proc/hsv(hue, sat, val, alpha)
 	if(hue < 0 || hue >= 1536) hue %= 1536
@@ -503,9 +506,9 @@ world
 	var/list/HSV2 = ReadHSV(hsv2)
 
 	// add missing alpha if needed
-	if(HSV1.len < HSV2.len) HSV1 += 255
-	else if(HSV2.len < HSV1.len) HSV2 += 255
-	var/usealpha = HSV1.len > 3
+	if(length(HSV1) < length(HSV2)) HSV1 += 255
+	else if(length(HSV2) < length(HSV1)) HSV2 += 255
+	var/usealpha = length(HSV1) > 3
 
 	// normalize hsv values in case anything is screwy
 	if(HSV1[1] > 1536) HSV1[1] %= 1536
@@ -557,9 +560,9 @@ world
 	var/list/RGB2 = ReadRGB(rgb2)
 
 	// add missing alpha if needed
-	if(RGB1.len < RGB2.len) RGB1 += 255
-	else if(RGB2.len < RGB1.len) RGB2 += 255
-	var/usealpha = RGB1.len > 3
+	if(length(RGB1) < length(RGB2)) RGB1 += 255
+	else if(length(RGB2) < length(RGB1)) RGB2 += 255
+	var/usealpha = length(RGB1) > 3
 
 	var/r = round(RGB1[1] + (RGB2[1] - RGB1[1]) * amount, 1)
 	var/g = round(RGB1[2] + (RGB2[2] - RGB1[2]) * amount, 1)
@@ -608,13 +611,13 @@ world
 	// decompress hue
 	HSV[1] += round(HSV[1] / 255)
 
-	return hsv(HSV[1], HSV[2], HSV[3], (HSV.len > 3 ? HSV[4] : null))
+	return hsv(HSV[1], HSV[2], HSV[3], (length(HSV) > 3 ? HSV[4] : null))
 
 // Convert an rgb color to grayscale
 /proc/GrayScale(rgb)
 	var/list/RGB = ReadRGB(rgb)
 	var/gray = RGB[1]*0.3 + RGB[2]*0.59 + RGB[3]*0.11
-	return (RGB.len > 3) ? rgb(gray, gray, gray, RGB[4]) : rgb(gray, gray, gray)
+	return (length(RGB) > 3) ? rgb(gray, gray, gray, RGB[4]) : rgb(gray, gray, gray)
 
 // Change grayscale color to black->tone->white range
 /proc/ColorTone(rgb, tone)
@@ -635,6 +638,7 @@ The _flatIcons list is a cache for generated icon files.
 */
 
 /proc/getFlatIcon(image/A, defdir=2, deficon=null, defstate="", defblend=BLEND_DEFAULT, always_use_defdir = 0)
+	RETURN_TYPE(/icon)
 	// We start with a blank canvas, otherwise some icon procs crash silently
 	var/icon/flat = icon('icons/effects/effects.dmi', "icon_state"="nothing") // Final flattened icon
 	if(!A)
@@ -696,7 +700,7 @@ The _flatIcons list is a cache for generated icon files.
 	var/compare // The overlay 'add' is being compared against
 	var/cmpIndex // The index in the layers list of 'compare'
 	while(TRUE)
-		if(curIndex<=process.len)
+		if(curIndex<=length(process))
 			current = process[curIndex]
 			if(current)
 				currentLayer = current:layer
@@ -708,13 +712,13 @@ The _flatIcons list is a cache for generated icon files.
 						currentLayer = A.layer+(1000+currentLayer)/1000
 
 				// Sort add into layers list
-				for(cmpIndex=1,cmpIndex<=layers.len,cmpIndex++)
+				for(cmpIndex=1,cmpIndex<=length(layers),cmpIndex++)
 					compare = layers[cmpIndex]
 					if(currentLayer < layers[compare]) // Associated value is the calculated layer
 						layers.Insert(cmpIndex,current)
 						layers[current] = currentLayer
 						break
-				if(cmpIndex>layers.len) // Reached end of list without inserting
+				if(cmpIndex>length(layers)) // Reached end of list without inserting
 					layers[current]=currentLayer // Place at end
 
 			curIndex++
@@ -740,30 +744,15 @@ The _flatIcons list is a cache for generated icon files.
 
 	for(var/I in layers)
 
+		if(I:plane == EMISSIVE_PLANE) //Just replace this with whatever it is TG is doing these days sometime. Getflaticon breaks emissives
+			continue
+
 		if(I:alpha == 0)
 			continue
 
 		if(I == copy) // 'I' is an /image based on the object being flattened.
 			curblend = BLEND_OVERLAY
 			add = icon(I:icon, I:icon_state, I:dir)
-			// This checks for a silent failure mode of the icon routine. If the requested dir
-			// doesn't exist in this icon state it returns a 32x32 icon with 0 alpha.
-			if (I:dir != SOUTH && add.Width() == 32 && add.Height() == 32)
-				// Check every pixel for blank (computationally expensive, but the process is limited
-				// by the amount of film on the station, only happens when we hit something that's
-				// turned, and bails at the very first pixel it sees.
-				var/blankpixel;
-				for(var/y;y<=32;y++)
-					for(var/x;x<32;x++)
-						blankpixel = isnull(add.GetPixel(x,y))
-						if(!blankpixel)
-							break
-					if(!blankpixel)
-						break
-				// If we ALWAYS returned a null (which happens when GetPixel encounters something with alpha 0)
-				if (blankpixel)
-					// Pull the default direction.
-					add = icon(I:icon, I:icon_state)
 		else // 'I' is an appearance object.
 			if(istype(A,/obj/machinery/atmospherics) && (I in A.underlays))
 				var/image/Im = I
@@ -800,6 +789,7 @@ The _flatIcons list is a cache for generated icon files.
 	return icon(flat, "", SOUTH)
 
 /proc/getIconMask(atom/A)//By yours truly. Creates a dynamic mask for a mob/whatever. /N
+	RETURN_TYPE(/icon)
 	var/icon/alpha_mask = new(A.icon,A.icon_state)//So we want the default icon and icon state of A.
 	for(var/I in A.overlays)//For every image in overlays. var/image/I will not work, don't try it.
 		if(I:layer>A.layer)	continue//If layer is greater than what we need, skip it.
@@ -828,6 +818,7 @@ The _flatIcons list is a cache for generated icon files.
 #define HOLOPAD_LONG_RANGE 2
 
 /proc/getHologramIcon(icon/A, safety=1, noDecolor=FALSE, hologram_color=HOLOPAD_SHORT_RANGE)//If safety is on, a new icon is not created.
+	RETURN_TYPE(/icon)
 	var/icon/flat_icon = safety ? A : new(A)//Has to be a new icon to not constantly change the same icon.
 	if (noDecolor == FALSE)
 		if(hologram_color == HOLOPAD_LONG_RANGE)
@@ -841,6 +832,7 @@ The _flatIcons list is a cache for generated icon files.
 
 //For photo camera.
 /proc/build_composite_icon(atom/A)
+	RETURN_TYPE(/icon)
 	var/icon/composite = icon(A.icon, A.icon_state, A.dir, 1)
 	for(var/O in A.overlays)
 		var/image/I = O
@@ -858,9 +850,10 @@ The _flatIcons list is a cache for generated icon files.
 	return rgb(RGB[1],RGB[2],RGB[3])
 
 /proc/sort_atoms_by_layer(list/atoms)
+	RETURN_TYPE(/list)
 	// Comb sort icons based on levels
 	var/list/result = atoms.Copy()
-	var/gap = result.len
+	var/gap = length(result)
 	var/swapped = 1
 	while (gap > 1 || swapped)
 		swapped = 0
@@ -868,7 +861,7 @@ The _flatIcons list is a cache for generated icon files.
 			gap = round(gap / 1.3) // 1.3 is the emperic comb sort coefficient
 		if(gap < 1)
 			gap = 1
-		for(var/i = 1; gap + i <= result.len; i++)
+		for(var/i = 1; gap + i <= length(result); i++)
 			var/atom/l = result[i]		//Fucking hate
 			var/atom/r = result[gap+i]	//how lists work here
 			if(l.plane > r.plane || (l.plane == r.plane && l.layer > r.layer))		//no "result[i].layer" for me
@@ -882,6 +875,7 @@ cap_mode is capturing mode (optional), user is capturing mob (requred only wehen
 lighting determines lighting capturing (optional), suppress_errors suppreses errors and continues to capture (optional).
 */
 /proc/generate_image(tx as num, ty as num, tz as num, range as num, cap_mode = CAPTURE_MODE_PARTIAL, mob/living/user, lighting = 1, suppress_errors = 1)
+	RETURN_TYPE(/icon)
 	var/list/turfstocapture = list()
 	//Lines below determine what tiles will be rendered
 	for(var/xoff = 0 to range)

@@ -77,8 +77,9 @@
 	playsound(loc, 'sound/effects/splat.ogg', 50, 1)
 	qdel(src)
 
-/obj/effect/blob/post_health_change(health_mod, damage_type)
-	update_icon()
+/obj/effect/blob/post_health_change(health_mod, prior_health, damage_type)
+	..()
+	queue_icon_update()
 
 /obj/effect/blob/proc/regen()
 	restore_health(regen_rate)
@@ -91,30 +92,20 @@
 	var/damage = rand(damage_min, damage_max)
 	var/damage_type = pick(DAMAGE_BRUTE, DAMAGE_BURN)
 
-	if (T.density && !T.health_dead)
+	if (T.density && !T.health_dead())
 		visible_message(SPAN_DANGER("A tendril flies out from \the [src] and smashes into \the [T]!"))
 		playsound(loc, 'sound/effects/attackblob.ogg', 50, 1)
 		T.damage_health(damage)
 		return
 
 	for (var/obj/machinery/door/D in T)
-		if (D.density)
-			if (MACHINE_IS_BROKEN(D))
-				D.open(TRUE)
-				return
-			playsound(loc, 'sound/effects/attackblob.ogg', 50, 1)
-			D.take_damage(damage)
+		if (D.density && MACHINE_IS_BROKEN(D))
+			D.open(TRUE)
 			return
 
 	var/obj/structure/foamedmetal/F = locate() in T
 	if (F)
 		qdel(F)
-		return
-
-	var/obj/machinery/camera/CA = locate() in T
-	if (CA && !MACHINE_IS_BROKEN(CA))
-		playsound(loc, 'sound/effects/attackblob.ogg', 50, 1)
-		CA.take_damage(30)
 		return
 
 	var/sound_played
@@ -185,26 +176,32 @@
 	damage_health(damage, Proj.damage_type)
 	return 0
 
-/obj/effect/blob/attackby(obj/item/W, mob/user)
-	if (user.a_intent == I_HURT)
-		if(isWelder(W))
-			playsound(loc, 'sound/items/Welder.ogg', 100, 1)
-		..()
-		return
 
-	if (isWirecutter(W))
-		if(prob(user.skill_fail_chance(SKILL_SCIENCE, 90, SKILL_EXPERT)))
-			to_chat(user, SPAN_WARNING("You fail to collect a sample from \the [src]."))
-		else
-			if(!pruned)
-				to_chat(user, SPAN_NOTICE("You collect a sample from \the [src]."))
-				new product(user.loc)
-				pruned = TRUE
-			else
-				to_chat(user, SPAN_WARNING("\The [src] has already been pruned."))
-		return
+/obj/effect/blob/use_tool(obj/item/tool, mob/user, list/click_params)
+	if (isWirecutter(tool))
+		if (pruned)
+			USE_FEEDBACK_FAILURE("\The [src] has already been pruned.")
+			return TRUE
+		if (prob(user.skill_fail_chance(SKILL_SCIENCE, 90, SKILL_EXPERIENCED)))
+			USE_FEEDBACK_FAILURE("You fail to collect a sample from \the [src].")
+			return TRUE
+		var/obj/item/sample = new product(user.loc)
+		sample.add_fingerprint(user, tool = tool)
+		pruned = TRUE
+		user.visible_message(
+			SPAN_NOTICE("\The [user] collects \a [sample] from \the [src] with \a [tool]."),
+			SPAN_NOTICE("You collect \a [sample] from \the [src] with \the [tool].")
+		)
+		return TRUE
 
-	..()
+	return ..()
+
+
+/obj/effect/blob/post_use_item(obj/item/tool, mob/user, interaction_handled, use_call, click_params)
+	. = ..()
+	if (interaction_handled && use_call == "weapon" && isWelder(tool))
+		playsound(loc, 'sound/items/Welder.ogg', 100, TRUE)
+
 
 /obj/effect/blob/core
 	name = "master nucleus"
@@ -226,6 +223,23 @@
 
 	/// Health state tracker to prevent redundant var updates in `process_core_health()
 	var/core_health_state = null
+
+
+/obj/effect/blob/core/Initialize()
+	. = ..()
+	var/obj/effect/overmap/visitable/visitable = map_sectors["[get_z(src)]"]
+	if (!visitable)
+		return
+	if (++visitable.blob_count == 1)
+		visitable.add_scan_data("blob", SPAN_COLOR(COLOR_RED, "Level-7 biohazard outbreak detected."))
+
+
+/obj/effect/blob/core/Destroy()
+	var/obj/effect/overmap/visitable/visitable = map_sectors["[get_z(src)]"]
+	if (visitable && --visitable.blob_count == 0)
+		visitable.remove_scan_data("blob")
+	return ..()
+
 
 /*
 the master core becomes more vulnereable to damage as it weakens,
@@ -421,6 +435,11 @@ regen() will cover update_icon() for this proc
 			user.drop_from_inventory(src)
 			new /obj/effect/decal/cleanable/ash(src.loc)
 			qdel(src)
+
+
+/obj/item/blob_tendril/IsHeatSource()
+	return damtype == DAMAGE_BURN ? 1000 : 0
+
 
 /obj/item/blob_tendril/core
 	name = "asteroclast nucleus sample"

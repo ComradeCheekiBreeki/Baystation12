@@ -7,11 +7,11 @@
 /atom/get_view_variables_header()
 	return {"
 		<a href='?_src_=vars;datumedit=\ref[src];varnameedit=name'><b>[src]</b></a>
-		<br><font size='1'>
+		<br><span style='font-size: 10px'>
 		<a href='?_src_=vars;rotatedatum=\ref[src];rotatedir=left'><=</a>
 		<a href='?_src_=vars;datumedit=\ref[src];varnameedit=dir'>[dir2text(dir)]</a>
 		<a href='?_src_=vars;rotatedatum=\ref[src];rotatedir=right'>=></a>
-		</font>
+		</span>
 		"}
 
 /atom/movable/get_view_variables_options()
@@ -22,7 +22,7 @@
 
 /mob/living/get_view_variables_header()
 	return {"
-		<a href='?_src_=vars;rename=\ref[src]'><b>[src]</b></a><font size='1'>
+		<a href='?_src_=vars;rename=\ref[src]'><b>[src]</b></a><span style='font-size: 10px'>
 		<br><a href='?_src_=vars;rotatedatum=\ref[src];rotatedir=left'><=</a> <a href='?_src_=vars;datumedit=\ref[src];varnameedit=dir'>[dir2text(dir)]</a> <a href='?_src_=vars;rotatedatum=\ref[src];rotatedir=right'>=></a>
 		<br><a href='?_src_=vars;datumedit=\ref[src];varnameedit=ckey'>[ckey ? ckey : "No ckey"]</a> / <a href='?_src_=vars;datumedit=\ref[src];varnameedit=real_name'>[real_name ? real_name : "No real name"]</a>
 		<br>
@@ -32,7 +32,7 @@
 		OXY:<a href='?_src_=vars;mobToDamage=\ref[src];adjustDamage=oxygen'>[getOxyLoss()]</a>
 		CLONE:<a href='?_src_=vars;mobToDamage=\ref[src];adjustDamage=clone'>[getCloneLoss()]</a>
 		BRAIN:<a href='?_src_=vars;mobToDamage=\ref[src];adjustDamage=brain'>[getBrainLoss()]</a>
-		</font>
+		</span>
 		"}
 
 // Same for these as for get_view_variables_header() above
@@ -189,25 +189,26 @@
 /client/VV_ckey_edit()
 	return list("key", "ckey")
 
-/datum/proc/may_edit_var(user, var_to_edit)
-	if(!user)
-		return FALSE
-	if(!(var_to_edit in vars))
-		to_chat(user, "<span class='warning'>\The [src] does not have a var '[var_to_edit]'</span>")
-		return FALSE
-	if(var_to_edit in VV_static())
-		return FALSE
-	if((var_to_edit in VV_secluded()) && !check_rights(R_ADMIN|R_DEBUG, FALSE, C = user))
-		return FALSE
-	if((var_to_edit in VV_locked()) && !check_rights(R_DEBUG, C = user))
-		return FALSE
-	if((var_to_edit in VV_ckey_edit()) && !check_rights(R_SPAWN|R_DEBUG, C = user))
-		return FALSE
-	if((var_to_edit in VV_icon_edit_lock()) && !check_rights(R_FUN|R_DEBUG, C = user))
-		return FALSE
-	return TRUE
+/datum/proc/may_not_edit_var(user, var_to_edit, silent)
+	if (!user)
+		return 1
+	if (!(var_to_edit in vars))
+		if (!silent)
+			to_chat(user, SPAN_WARNING("\The [src] does not have a var '[var_to_edit]'"))
+		return 2
+	if (var_to_edit in VV_static())
+		return 3
+	if ((var_to_edit in VV_secluded()) && !check_rights(R_ADMIN|R_DEBUG, !silent, user))
+		return 4
+	if ((var_to_edit in VV_locked()) && !check_rights(R_DEBUG, !silent, user))
+		return 5
+	if ((var_to_edit in VV_ckey_edit()) && !check_rights(R_SPAWN|R_DEBUG, !silent, user))
+		return 6
+	if ((var_to_edit in VV_icon_edit_lock()) && !check_rights(R_FUN|R_DEBUG, !silent, user))
+		return 7
+	return FALSE
 
 /proc/forbidden_varedit_object_types()
  	return list(
-		/datum/admins						//Admins editing their own admin-power object? Yup, sounds like a good idea.
+		/datum/admins
 	)

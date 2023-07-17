@@ -12,6 +12,9 @@
 	var/accessibility_weight = 0
 	var/template_flags = TEMPLATE_FLAG_ALLOW_DUPLICATES
 
+	/// Null, or a string reason for this type to be skipped in unit testing.
+	var/skip_main_unit_tests
+
 /datum/map_template/New(list/paths = null, rename = null)
 	if(paths && !islist(paths))
 		crash_with("Non-list paths passed into map template constructor.")
@@ -117,6 +120,7 @@
 			bounds = extend_bounds_if_needed(bounds, M.bounds)
 			atoms_to_initialise += M.atoms_to_initialise
 		else
+			log_debug("Failed to load map file [mappath] for [src].")
 			return FALSE
 
 	for (var/z_index = bounds[MAP_MINZ]; z_index <= bounds[MAP_MAXZ]; z_index++)
@@ -141,10 +145,13 @@
 	if(centered)
 		T = locate(T.x - round(width/2) , T.y - round(height/2) , T.z)
 	if(!T)
+		log_debug("[src] map template failed to load, could not locate a center turf.")
 		return
 	if(T.x+width > world.maxx)
+		log_debug("[src] map template failed to load, map would extend past world X bound.")
 		return
 	if(T.y+height > world.maxy)
+		log_debug("[src] map template failed to load, map would extend past world Y bound.")
 		return
 
 	var/list/atoms_to_initialise = list()
@@ -156,6 +163,7 @@
 		if (M)
 			atoms_to_initialise += M.atoms_to_initialise
 		else
+			log_debug("Failed to load map file [mappath] for [src].")
 			return FALSE
 
 	//initialize things that are normally initialized after map load

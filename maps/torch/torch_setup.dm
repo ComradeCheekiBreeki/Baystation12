@@ -13,7 +13,7 @@
 /datum/map/torch/send_welcome()
 	var/obj/effect/overmap/visitable/ship/torch = SSshuttle.ship_by_type(/obj/effect/overmap/visitable/ship/torch)
 
-	var/welcome_text = "<center><img src = sollogo.png /><br /><font size = 3><b>SEV Torch</b> Sensor Readings:</font><br>"
+	var/welcome_text = "<center><img src = sollogo.png /><br />[FONT_LARGE("<b>SEV Torch</b> Sensor Readings:")]<br>"
 	welcome_text += "Report generated on [stationdate2text()] at [stationtime2text()]</center><br /><br />"
 	welcome_text += "<hr>Current system:<br /><b>[torch ? system_name : "Unknown"]</b><br /><br>"
 
@@ -38,9 +38,7 @@
 		for(var/obj/effect/overmap/visitable/O in space_things)
 			var/location_desc = " at present co-ordinates."
 			if(O.loc != torch.loc)
-				var/bearing = round(90 - Atan2(O.x - torch.x, O.y - torch.y),5) //fucking triangles how do they work
-				if(bearing < 0)
-					bearing += 360
+				var/bearing = get_bearing(torch, O)
 				location_desc = ", bearing [bearing]."
 			welcome_text += "<li>\A <b>[O.name]</b>[location_desc]</li>"
 

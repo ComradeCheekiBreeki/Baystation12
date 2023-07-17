@@ -11,7 +11,7 @@ var/global/list/recentmessages = list() // global list of recent messages broadc
 var/global/message_delay = 0 // To make sure restarting the recentmessages list is kept in sync
 
 /obj/machinery/telecomms/broadcaster
-	name = "Subspace Broadcaster"
+	name = "subspace broadcaster"
 	icon = 'icons/obj/stationobjs.dmi'
 	icon_state = "broadcaster"
 	desc = "A dish-shaped machine used to broadcast processed subspace signals."
@@ -114,7 +114,7 @@ var/global/message_delay = 0 // To make sure restarting the recentmessages list 
 */
 
 /obj/machinery/telecomms/allinone
-	name = "Telecommunications Mainframe"
+	name = "telecommunications mainframe"
 	icon = 'icons/obj/stationobjs.dmi'
 	icon_state = "comm_server"
 	desc = "A compact machine used for portable subspace telecommuniations processing."
@@ -125,7 +125,7 @@ var/global/message_delay = 0 // To make sure restarting the recentmessages list 
 	machinetype = 6
 	produces_heat = 0
 	circuitboard = /obj/item/stock_parts/circuitboard/telecomms/allinone
-	construct_state = /decl/machine_construction/tcomms/panel_closed/cannot_print
+	construct_state = /singleton/machine_construction/tcomms/panel_closed/cannot_print
 	machine_name = "telecommunications mainframe"
 	machine_desc = "An awkward, clunky machine that serves as an all-in-one telecommunications hub. Provides peer-to-peer communication, and not much else."
 	var/listening_freqs
@@ -145,7 +145,7 @@ var/global/message_delay = 0 // To make sure restarting the recentmessages list 
 
 	if(is_freq_listening(signal)) // detect subspace signals
 
-		if(freq_listening.len) //If we are actively listening to this frequency, go ahead and use the real signal
+		if(length(freq_listening)) //If we are actively listening to this frequency, go ahead and use the real signal
 			signal.data["done"] = 1 // mark the signal as being broadcasted
 			signal.data["compression"] = 0
 

@@ -112,7 +112,7 @@ Middle-Click / Ctrl-Click - Jump a placeholder to a point and deselect it
 	else if (parameters["middle"] || modifier)
 		new /obj/effect/ftl (get_turf(selected))
 		new /obj/effect/ftl (get_turf(atom))
-		addtimer(CALLBACK(src, .proc/RevealShip, selected, atom.x, atom.y), 2 SECONDS)
+		addtimer(new Callback(src, .proc/RevealShip, selected, atom.x, atom.y), 2 SECONDS)
 		animate(selected, time = 0.5 SECONDS)
 		animate(alpha = 0, time = 0.5 SECONDS)
 		selected = null
@@ -144,7 +144,8 @@ Middle-Click / Ctrl-Click - Jump a placeholder to a point and deselect it
 
 /obj/effect/overmap/placeholder
 	scannable = TRUE
-	known = FALSE
+	requires_contact = TRUE
+
 	glide_size = 8
 	appearance_flags = EMPTY_BITFIELD
 	var/scale = 1

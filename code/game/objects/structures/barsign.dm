@@ -51,6 +51,8 @@
 			to_chat(user, "It fills you with a snuggly wuggly sense of warmth and comfort.")
 		if("The Redshirt")
 			to_chat(user, "Mmm... Donuts...")
+		if("The Singulo")
+			to_chat(user, "You spin me right 'round, baby right 'round.")
 		else
 			to_chat(user, "It says '[icon_state]'")
 
@@ -58,20 +60,26 @@
 	..()
 	icon_state = pick(get_valid_states())
 
-/obj/structure/sign/double/barsign/attackby(obj/item/I, mob/user)
-	if(cult)
-		return ..()
 
-	var/obj/item/card/id/card = I.GetIdCard()
-	if(istype(card))
-		if(access_kitchen in card.GetAccess())
-			var/sign_type = input(user, "What would you like to change the barsign to?") as null|anything in get_valid_states(0)
-			if(!sign_type)
-				return
-			icon_state = sign_type
-			to_chat(user, "<span class='notice'>You change the barsign.</span>")
-		else
-			to_chat(user, "<span class='warning'>Access denied.</span>")
-		return
+/obj/structure/sign/double/barsign/use_tool(obj/item/tool, mob/user, list/click_params)
+	// ID Card - Change barsign
+	var/obj/item/card/id/id = tool.GetIdCard()
+	if (istype(id))
+		var/id_name = GET_ID_NAME(id, tool)
+		if (!check_access(id))
+			USE_FEEDBACK_ID_CARD_DENIED(src, id_name)
+			return TRUE
+		if (cult)
+			USE_FEEDBACK_FAILURE("\The [src]'s display can't be changed.")
+			return TRUE
+		var/input = input(user, "What would you like to change the barsign to?") as null|anything in get_valid_states(FALSE)
+		if (!input || input == icon_state || !user.use_sanity_check(src, tool))
+			return TRUE
+		icon_state = input
+		user.visible_message(
+			SPAN_NOTICE("\The [user] updates \the [src]'s display with \a [tool]."),
+			SPAN_NOTICE("You update \the [src]'s display with [id_name].")
+		)
+		return TRUE
 
 	return ..()

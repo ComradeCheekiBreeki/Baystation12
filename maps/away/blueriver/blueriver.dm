@@ -1,9 +1,9 @@
 //quality code theft
 #include "blueriver_areas.dm"
 /obj/effect/overmap/visitable/sector/arcticplanet
-	name = "arctic planetoid"
+	name = "arctic dwarf planet"
 	desc = "Sensor array detects an arctic planet with a small vessel on the planet's surface. Scans further indicate strange energy emissions from below the planet's surface."
-	in_space = FALSE
+	sector_flags = EMPTY_BITFIELD
 	icon_state = "globe"
 	initial_generic_waypoints = list(
 		"nav_blueriv_1",
@@ -185,16 +185,6 @@
 	density = TRUE
 	anchored = TRUE
 
-/obj/structure/deity/attackby(obj/item/W as obj, mob/user as mob)
-	user.setClickCooldown(DEFAULT_ATTACK_COOLDOWN)
-	user.do_attack_animation(src)
-	playsound(get_turf(src), 'sound/effects/Glasshit.ogg', 50, 1)
-	user.visible_message(
-		"<span class='danger'>[user] hits \the [src] with \the [W]!</span>",
-		"<span class='danger'>You hit \the [src] with \the [W]!</span>",
-		"<span class='danger'>You hear something breaking!</span>"
-		)
-	damage_health(W.force, W.damtype)
 
 /obj/structure/deity/on_death()
 	visible_message(SPAN_DANGER("\The [src] crumbles!"))

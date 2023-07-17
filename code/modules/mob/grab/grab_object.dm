@@ -79,13 +79,13 @@
 /obj/item/grab/resolve_attackby(atom/A, mob/user, click_params)
 	if (QDELETED(src) || !assailant)
 		return TRUE
-	assailant.setClickCooldown(DEFAULT_ATTACK_COOLDOWN)
-	if(!A.grab_attack(src))
-		return ..()
-	action_used()
-	if (current_grab.downgrade_on_action)
-		downgrade()
-	return TRUE
+	if (A.use_grab(src, user, click_params))
+		user.setClickCooldown(DEFAULT_ATTACK_COOLDOWN)
+		action_used()
+		if (current_grab.downgrade_on_action)
+			downgrade()
+		return TRUE
+	return ..()
 
 /obj/item/grab/dropped()
 	..()
@@ -156,27 +156,27 @@
 	if(assailant.anchored || affecting.anchored)
 		return 0
 	if(assailant.get_active_hand())
-		to_chat(assailant, "<span class='notice'>You can't grab someone if your hand is full.</span>")
+		to_chat(assailant, SPAN_NOTICE("You can't grab someone if your hand is full."))
 		return 0
-	if(assailant.grabbed_by.len)
-		to_chat(assailant, "<span class='notice'>You can't grab someone if you're being grabbed.</span>")
+	if(length(assailant.grabbed_by))
+		to_chat(assailant, SPAN_NOTICE("You can't grab someone if you're being grabbed."))
 		return 0
 	var/obj/item/organ/organ = get_targeted_organ()
 	if(!istype(organ))
-		to_chat(assailant, "<span class='notice'>\The [affecting] is missing that body part!</span>")
+		to_chat(assailant, SPAN_NOTICE("\The [affecting] is missing that body part!"))
 		return 0
 	if(assailant == affecting)
 		if(!current_grab.can_grab_self)	//let's not nab ourselves
-			to_chat(assailant, "<span class='notice'>You can't grab yourself!</span>")
+			to_chat(assailant, SPAN_NOTICE("You can't grab yourself!"))
 			return 0
 		var/list/bad_parts = assailant.hand ? list(BP_L_ARM, BP_L_HAND) :  list(BP_R_ARM, BP_R_HAND)
 		if(organ.organ_tag in bad_parts)
-			to_chat(assailant, "<span class='notice'>You can't grab your own [organ.name] with itself!</span>")
+			to_chat(assailant, SPAN_NOTICE("You can't grab your own [organ.name] with itself!"))
 			return 0
 	for(var/obj/item/grab/G in affecting.grabbed_by)
 		if(G.assailant == assailant && G.target_zone == target_zone)
 			var/obj/O = G.get_targeted_organ()
-			to_chat(assailant, "<span class='notice'>You already grabbed [affecting]'s [O.name].</span>")
+			to_chat(assailant, SPAN_NOTICE("You already grabbed [affecting]'s [O.name]."))
 			return 0
 	return 1
 
@@ -218,6 +218,8 @@
 	return (world.time >= last_upgrade + current_grab.upgrade_cooldown)
 
 /obj/item/grab/proc/leave_forensic_traces()
+	if (!affecting)
+		return
 	var/obj/item/clothing/C = affecting.get_covering_equipped_item_by_zone(target_zone)
 	if(istype(C))
 		C.leave_evidence(assailant)
@@ -226,7 +228,7 @@
 
 /obj/item/grab/proc/upgrade(bypass_cooldown = FALSE)
 	if(!check_upgrade_cooldown() && !bypass_cooldown)
-		to_chat(assailant, "<span class='danger'>It's too soon to upgrade.</span>")
+		to_chat(assailant, SPAN_DANGER("It's too soon to upgrade."))
 		return
 
 	var/datum/grab/upgrab = current_grab.upgrade(src)
@@ -331,3 +333,25 @@
 
 /obj/item/grab/proc/resolve_openhand_attack()
 		return current_grab.resolve_openhand_attack(src)
+
+
+/**
+ * Validates that `assailant` can still perform an action with `affecting` and `target`. Performs some grab-specific
+ *   checks, then passes through to `assailant.use_sanity_check()` with both `src` and `affecting`.
+ *
+ * **Parameters**:
+ * - `target` - The atom being interacted with.
+ * - `flags` (Bitflag, any of `SANITY_CHECK_*`, default `SANITY_CHECK_DEFAULT`) - Bitflags of additional settings. See `code\__defines\misc.dm`.
+ *
+ * Returns boolean.
+ */
+/obj/item/grab/proc/use_sanity_check(atom/target, flags = SANITY_CHECK_DEFAULT)
+	if (QDELETED(src) || QDELETED(assailant))
+		return FALSE
+	// Sanity check the grab itself
+	if (!assailant.use_sanity_check(target, src, flags))
+		return FALSE
+	// Sanity check the victim
+	if (!assailant.use_sanity_check(target, affecting, flags))
+		return FALSE
+	return TRUE

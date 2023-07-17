@@ -43,7 +43,7 @@ var/global/list/flooring_cache = list()
 
 		has_smooth = ~(has_border & (NORTH | SOUTH | EAST | WEST))
 
-		if(flooring.can_paint && decals && decals.len)
+		if(flooring.can_paint && decals && length(decals))
 			overlays |= decals
 
 		//We can only have inner corners if we're smoothed with something
@@ -71,9 +71,9 @@ var/global/list/flooring_cache = list()
 				icon_state = flooring.icon_base+"0"
 		*/
 
-	if(decals && decals.len)
+	if(decals && length(decals))
 		for(var/image/I in decals)
-			if(I.layer != DECAL_PLATING_LAYER)
+			if (floor(I.layer) != floor(layer))
 				continue
 			overlays |= I
 
@@ -122,7 +122,7 @@ var/global/list/flooring_cache = list()
 		flooring_cache[cache_key] = I
 	return flooring_cache[cache_key]
 
-/decl/flooring/proc/test_link(turf/origin, turf/T)
+/singleton/flooring/proc/test_link(turf/origin, turf/T)
 	var/is_linked = FALSE
 	//is_wall is true for wall turfs and for floors containing a low wall
 	if(T.is_wall())
@@ -168,5 +168,5 @@ var/global/list/flooring_cache = list()
 						break
 	return is_linked
 
-/decl/flooring/proc/symmetric_test_link(turf/A, turf/B)
+/singleton/flooring/proc/symmetric_test_link(turf/A, turf/B)
 	return test_link(A, B) && test_link(B,A)

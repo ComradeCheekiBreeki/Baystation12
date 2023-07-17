@@ -5,7 +5,7 @@
 		"Science" = TRUE,
 		"Exploration" = TRUE
 	)
-	networks = list(NETWORK_EXPEDITION)
+	networks = list(NETWORK_RESEARCH)
 	sprites = list(
 		"Drone"  = "drone-science",
 		"Eyebot" = "eyebot-science"
@@ -16,11 +16,11 @@
 		/obj/item/stack/flag/red
 	)
 	skills = list(
-		SKILL_ELECTRICAL          = SKILL_PROF,
-		SKILL_ATMOS               = SKILL_PROF,
-		SKILL_PILOT               = SKILL_EXPERT,
-		SKILL_BOTANY              = SKILL_PROF,
-		SKILL_EVA                 = SKILL_PROF,
+		SKILL_ELECTRICAL          = SKILL_MASTER,
+		SKILL_ATMOS               = SKILL_MASTER,
+		SKILL_PILOT               = SKILL_EXPERIENCED,
+		SKILL_BOTANY              = SKILL_MASTER,
+		SKILL_EVA                 = SKILL_MASTER,
 		SKILL_MECH                = HAS_PERK,
 	)
 

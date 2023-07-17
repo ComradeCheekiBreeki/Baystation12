@@ -40,15 +40,17 @@
 /mob/living/simple_animal/construct/cultify()
 	return
 
-/mob/living/simple_animal/construct/New()
-	..()
-	name = text("[initial(name)] ([random_id(/mob/living/simple_animal/construct, 1000, 9999)])")
+
+/mob/living/simple_animal/construct/Initialize()
+	. = ..()
+	SetName("[initial(name)] ([random_id(/mob/living/simple_animal/construct, 1000, 9999)])")
 	real_name = name
 	add_language(LANGUAGE_CULT)
 	add_language(LANGUAGE_CULT_GLOBAL)
 	for(var/spell in construct_spells)
 		add_spell(new spell, "const_spell_ready")
 	update_icon()
+
 
 /mob/living/simple_animal/construct/death(gibbed, deathmessage, show_dead_message)
 	new /obj/item/ectoplasm (src.loc)
@@ -120,8 +122,8 @@
 		var/reflectchance = 80 - round(P.damage/3)
 		if(prob(reflectchance))
 			adjustBruteLoss(P.damage * 0.5)
-			visible_message("<span class='danger'>The [P.name] gets reflected by [src]'s shell!</span>", \
-							"<span class='userdanger'>The [P.name] gets reflected by [src]'s shell!</span>")
+			visible_message(SPAN_DANGER("The [P.name] gets reflected by [src]'s shell!"), \
+							SPAN_CLASS("userdanger", "The [P.name] gets reflected by [src]'s shell!"))
 
 			// Find a turf near or on the original location to bounce to
 			if(P.starting)
@@ -279,6 +281,7 @@
 	overlays += eye_glow
 	set_light(-2, 0.1, 1.5, l_color = "#ffffff")
 
+	z_flags |= ZMM_MANGLE_PLANES
 ////////////////HUD//////////////////////
 
 /mob/living/simple_animal/construct/Life()

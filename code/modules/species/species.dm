@@ -171,7 +171,7 @@
 	var/spawn_flags = 0           // Flags that specify who can spawn as this species
 	var/slowdown = 0              // Passive movement speed malus (or boost, if negative)
 	// Move intents. Earlier in list == default for that type of movement.
-	var/list/move_intents = list(/decl/move_intent/walk, /decl/move_intent/run, /decl/move_intent/creep)
+	var/list/move_intents = list(/singleton/move_intent/walk, /singleton/move_intent/run, /singleton/move_intent/creep)
 
 	var/primitive_form            // Lesser form, if any (ie. monkey for humans)
 	var/greater_form              // Greater form, if any, ie. human for monkeys.
@@ -219,6 +219,7 @@
 	var/list/base_skin_colours
 
 	var/list/genders = list(MALE, FEMALE, PLURAL)
+	var/list/pronouns = PRONOUNS_ALL
 
 	// Bump vars
 	var/bump_flag = HUMAN	// What are we considered to be when bumped?
@@ -227,6 +228,7 @@
 
 	var/pass_flags = 0
 	var/breathing_sound = 'sound/voice/monkey.ogg'
+	var/bodyfall_sound = 'sound/effects/bodyfall.ogg'
 	var/list/equip_adjust = list()
 	var/list/equip_overlays = list()
 
@@ -242,7 +244,10 @@
 	)
 
 	var/standing_jump_range = 2
-	var/list/maneuvers = list(/decl/maneuver/leap)
+	var/list/maneuvers = list(
+		/singleton/maneuver/leap,
+		/singleton/maneuver/leap/quick
+	)
 
 	var/list/available_cultural_info = list(
 		TAG_CULTURE =   list(CULTURE_OTHER),
@@ -259,9 +264,9 @@
 
 	// Order matters, higher pain level should be higher up
 	var/list/pain_emotes_with_pain_level = list(
-		list(/decl/emote/audible/scream, /decl/emote/audible/whimper, /decl/emote/audible/moan, /decl/emote/audible/cry) = 70,
-		list(/decl/emote/audible/grunt, /decl/emote/audible/groan, /decl/emote/audible/moan) = 40,
-		list(/decl/emote/audible/grunt, /decl/emote/audible/groan) = 10,
+		list(/singleton/emote/audible/scream, /singleton/emote/audible/whimper, /singleton/emote/audible/moan, /singleton/emote/audible/cry) = 70,
+		list(/singleton/emote/audible/grunt, /singleton/emote/audible/groan, /singleton/emote/audible/moan) = 40,
+		list(/singleton/emote/audible/grunt, /singleton/emote/audible/groan) = 10,
 	)
 
 
@@ -277,8 +282,15 @@
 	/// When being fed a reagent item, the amount this species eats per bite on help intent.
 	var/ingest_amount = 10
 
-	/// An associative list of /decl/trait and trait level - See individual traits for valid levels
+	/// An associative list of /singleton/trait and trait level - See individual traits for valid levels
 	var/list/traits = list()
+
+	/**
+	* Allows a species to override footprints on worn clothing. Used by get_move_trail.
+	* Uses istype() so child objects should be first in the list relative to parent objects.
+	* For universally overriding footprints on all footwear, use obj/item/clothing instead of /obj/item/clothing/shoes since suit layer clothing that covers the feet (space suits) are a thing.
+	*/
+	var/list/footwear_trail_overrides
 /*
 These are all the things that can be adjusted for equipping stuff and
 each one can be in the NORTH, SOUTH, EAST, and WEST direction. Specify
@@ -424,8 +436,8 @@ The slots that you can use are found in items_clothing.dm and are the inventory 
 		if(FEMALE)
 			t_him = "her"
 
-	H.visible_message("<span class='notice'>[H] hugs [target] to make [t_him] feel better!</span>", \
-					"<span class='notice'>You hug [target] to make [t_him] feel better!</span>")
+	H.visible_message(SPAN_NOTICE("[H] hugs [target] to make [t_him] feel better!"), \
+					SPAN_NOTICE("You hug [target] to make [t_him] feel better!"))
 
 	if(H != target)
 		H.update_personal_goal(/datum/goal/achievement/givehug, TRUE)
@@ -629,6 +641,10 @@ The slots that you can use are found in items_clothing.dm and are the inventory 
 		return /obj/effect/decal/cleanable/blood/tracks/body
 	if(H.shoes || (H.wear_suit && (H.wear_suit.body_parts_covered & FEET)))
 		var/obj/item/clothing/shoes = (H.wear_suit && (H.wear_suit.body_parts_covered & FEET)) ? H.wear_suit : H.shoes // suits take priority over shoes
+		if(footwear_trail_overrides)
+			for (var/key in footwear_trail_overrides)
+				if (istype(shoes, key))
+					return footwear_trail_overrides[key]
 		return shoes.move_trail
 	else
 		return move_trail
@@ -665,9 +681,9 @@ The slots that you can use are found in items_clothing.dm and are the inventory 
 		target.apply_effect(2, EFFECT_WEAKEN, armor_check)
 		playsound(target.loc, 'sound/weapons/thudswoosh.ogg', 50, 1, -1)
 		if(armor_check < 100)
-			target.visible_message("<span class='danger'>[attacker] has pushed [target]!</span>")
+			target.visible_message(SPAN_DANGER("[attacker] has pushed [target]!"))
 		else
-			target.visible_message("<span class='warning'>[attacker] attempted to push [target]!</span>")
+			target.visible_message(SPAN_WARNING("[attacker] attempted to push [target]!"))
 		return
 
 	if(randn <= disarm_threshold)
@@ -679,16 +695,16 @@ The slots that you can use are found in items_clothing.dm and are the inventory 
 		//Actually disarm them
 		for(var/obj/item/I in holding)
 			if(I && target.unEquip(I))
-				target.visible_message("<span class='danger'>[attacker] has disarmed [target]!</span>")
+				target.visible_message(SPAN_DANGER("[attacker] has disarmed [target]!"))
 				playsound(target.loc, 'sound/weapons/thudswoosh.ogg', 50, 1, -1)
 				return
 
 	playsound(target.loc, 'sound/weapons/punchmiss.ogg', 25, 1, -1)
-	target.visible_message("<span class='danger'>[attacker] attempted to disarm \the [target]!</span>")
+	target.visible_message(SPAN_DANGER("[attacker] attempted to disarm \the [target]!"))
 
 /datum/species/proc/disfigure_msg(mob/living/carbon/human/H) //Used for determining the message a disfigured face has on examine. To add a unique message, just add this onto a specific species and change the "return" message.
-	var/datum/gender/T = gender_datums[H.get_gender()]
-	return "<span class='danger'>[T.His] face is horribly mangled!</span>\n"
+	var/datum/pronouns/P = H.choose_from_pronouns()
+	return "[SPAN_DANGER("[P.His] face is horribly mangled!")]\n"
 
 /datum/species/proc/max_skin_tone()
 	if(appearance_flags & SPECIES_APPEARANCE_HAS_SKIN_TONE_GRAV)
@@ -841,7 +857,7 @@ The slots that you can use are found in items_clothing.dm and are the inventory 
 		var/pain_level = pain_emotes_with_pain_level[pain_emotes]
 		if(pain_level >= pain_power)
 			// This assumes that if a pain-level has been defined it also has a list of emotes to go with it
-			var/decl/emote/E = decls_repository.get_decl(pick(pain_emotes))
+			var/singleton/emote/E = GET_SINGLETON(pick(pain_emotes))
 			return E.key
 
 /datum/species/proc/handle_exertion(mob/living/carbon/human/H)
@@ -864,6 +880,6 @@ The slots that you can use are found in items_clothing.dm and are the inventory 
 				H.make_reagent(REM * exertion_reagent_scale, exertion_reagent_path)
 		if (prob(10))
 			var/list/active_emotes = synthetic ? exertion_emotes_synthetic : exertion_emotes_biological
-			var/decl/emote/exertion_emote = decls_repository.get_decl(pick(active_emotes))
+			var/singleton/emote/exertion_emote = GET_SINGLETON(pick(active_emotes))
 			if (exertion_emote)
 				exertion_emote.do_emote(H)

@@ -1,4 +1,4 @@
-/decl/cultural_info/location/human
+/singleton/cultural_info/location/human
 	name = HOME_SYSTEM_MARS
 	description = "Mars, the current capital of the SCG, known by its nickname the Red Planet, is one of the most populous centres of Humanity. \
 	Since the founding of the first colony by Jimmy Gideon many years ago Mars has been an important player on the Human stage. Terraforming on \
@@ -14,7 +14,7 @@
 	economic_power = 1.1
 
 
-/decl/cultural_info/location/human/earth
+/singleton/cultural_info/location/human/earth
 	name = HOME_SYSTEM_EARTH
 	description = "Earth, home of humankind, has long been in a state of recovery following centuries of pollution and exploitation. Today, much of \
 	the Earth exists as a nature reserve, dedicated to preserving the history of humanity. The humans that remain live mostly in large urban zones \
@@ -27,7 +27,7 @@
 	capital = "Geneva"
 	economic_power = 1.2
 
-/decl/cultural_info/location/human/luna
+/singleton/cultural_info/location/human/luna
 	name = HOME_SYSTEM_LUNA
 	distance = "1AU"
 	description = "Luna, the moon of the planet Earth, had long been a goal for humanity and symbol of space exploration. \
@@ -46,7 +46,7 @@
 	economic_power = 1.3
 	secondary_langs = list(LANGUAGE_HUMAN_SELENIAN)
 
-/decl/cultural_info/location/human/venus
+/singleton/cultural_info/location/human/venus
 	name = HOME_SYSTEM_VENUS
 	distance = "0.7AU"
 	description = "Venus, in the Sol System, is a planet which has a largely unsustainable surface atmosphere.\
@@ -63,7 +63,7 @@
 	capital = "Central Administration Zone"
 	economic_power = 1.4
 
-/decl/cultural_info/location/human/ceres
+/singleton/cultural_info/location/human/ceres
 	name = HOME_SYSTEM_CERES
 	distance = "2.7AU"
 	description = "Ceres station, officially the Ceres Mining and Habitation Outpost is historically a significant mining facility for humanity. However \
@@ -75,7 +75,7 @@
 	and some of the best engineers Humanity has to offer."
 	capital = "Government Zone, Ceres Station"
 
-/decl/cultural_info/location/human/pluto
+/singleton/cultural_info/location/human/pluto
 	name = HOME_SYSTEM_PLUTO
 	distance = "45AU"
 	description = "Pluto, nominally a Democratic Republic, is a small planet in the Sol system. Pluto has a fairly small population compared \
@@ -90,23 +90,18 @@
 	economic_power = 0.8
 	secondary_langs = list(LANGUAGE_GUTTER)
 
-/decl/cultural_info/location/human/cetiepsilon
+/singleton/cultural_info/location/human/cetiepsilon
 	name = HOME_SYSTEM_TAU_CETI
 	distance = "11.9 light years"
 	description = "Ceti Epsilon, the only habitable planet in the Tau Ceti system, is home to its largest population centre. \
-	The planet itself is effectively covered in one large city with a few 'green' areas dispersed throughout. The most urban location \
-	in the wider SCG, the planet attracts many to its glittering neon lights and easy to get lost in streets. More importantly, \
-	Ceti Epsilon is home to the Ceti Institute of Technology, the premier learning location in Sol and, arguably, all of humanity. \
-	The Ceti Institute of Technology is a public university and, for the most part, offers free tuition to all. However, places are \
-	competitive and preference is given to natives to the Tau Ceti system. The universe attracts as many newcomers as the rest of the cityscape \
-	combined. Today Ceti Epsilon is a major technology and population hub, being a destination for those seeking a better life, or to simply get \
-	lost.<br><br>The people of Ceti Epsilon are some of the most, well, average in the SCG. Being from a largely built up world with a focus on \
-	the cutting edge, most Episoloners are tech-savvy, at the very least and are usually well educated, with a focus on the sciences. The people \
-	of Ceti Episilon have developed a reputation for being some of the best and brightest that Sol has to offer."
+	Ceti Epsilon is home to the Ceti Institute of Technology, a distinguished public university that offers free tuition to \
+	all, although places are competitive and preference is given to natives to the Tau Ceti system.<br><br> Being from a \
+	near-Sol colony with a focus on the cutting edge, most Episoloners are tech-savvy at the very least and are usually \
+	well educated, with a focus on the sciences."
 	capital = "Verlize"
 	economic_power = 1.4
 
-/decl/cultural_info/location/human/eos
+/singleton/cultural_info/location/human/eos
 	name = HOME_SYSTEM_HELIOS
 	description = "Eos, in the Helios system, is itself a small, hot, dense world. The world itself is of only marginal importance, though it supports a densely packed city, Surya, \
 	which has become known for its banking services. Of more import is the system itself, Helios, and what orbits Eos: The Helios Gateway Installation. The HGI is the largest \
@@ -119,7 +114,7 @@
 	economic_power = 1.3
 	distance = "10 light years"
 
-/decl/cultural_info/location/human/terra
+/singleton/cultural_info/location/human/terra
 	name = HOME_SYSTEM_TERRA
 	description = "Terra, in the Gilgamesh system. Is not the planet Earth as some may be lead to believe. No, Terra is the home of the Gilgamesh Colonial Confederation, and the capital of that \
 	particular superpower. Terra is one of the many affiliated planets in the GCC and the one that is perhaps the most important. Terra, much like most of the GCC, is isolationist, with a minimal \
@@ -133,7 +128,7 @@
 	ruling_body = "Gilgamesh Colonial Confederation"
 	language = LANGUAGE_HUMAN_RUSSIAN
 
-/decl/cultural_info/location/human/saffar
+/singleton/cultural_info/location/human/saffar
 	name = HOME_SYSTEM_SAFFAR
 	distance = "44 light years"
 	description = "Saffar is a gas giant in the Upsilon Andromedae system.  Comparable in size to Jupiter, the surface is uninhabitable to most higher life. \
@@ -144,7 +139,7 @@
 	capital = "Saffar Station"
 	economic_power = 1.2
 
-/decl/cultural_info/location/human/tadmor
+/singleton/cultural_info/location/human/tadmor
 	name = HOME_SYSTEM_TADMOR
 	distance = "45 light years"
 	description = "Tadmor is a desert planet about twice the size of Earth, located in the Gamma Cephei system. Tadmor has been a member state of the Sol Central Government since the \
@@ -154,7 +149,7 @@
 	capital = "Palmyra"
 	economic_power = 1.0
 
-/decl/cultural_info/location/human/pirx
+/singleton/cultural_info/location/human/pirx
 	name = HOME_SYSTEM_PIRX
 	distance = "41 light years"
 	description = "Pirx Prime is a colonized super-earth located in the Pirx system. Covered in a jungle of towering, exotic plantlife, Pirx is closer to unexplored \
@@ -164,7 +159,7 @@
 	capital = "Yuodu"
 	economic_power = 0.7
 
-/decl/cultural_info/location/human/brahe
+/singleton/cultural_info/location/human/brahe
 	name = HOME_SYSTEM_BRAHE
 	distance = "41 light years"
 	description = "Brahe is an ocean planet in the Copernicus system. First colonized alongside Iolaus by sleeper ships c. 2132, contact was temporarily lost during the war between the Terran Commonwealth \
@@ -174,7 +169,7 @@
 	capital = "New Aarhus"
 	economic_power = 1.1
 
-/decl/cultural_info/location/human/iolaus
+/singleton/cultural_info/location/human/iolaus
 	name = HOME_SYSTEM_IOLAUS
 	distance = "41 light years"
 	description = "Iolaus is a super-earth in the Copernicus system. First colonized alongside Brahe by sleeper ships c. 2132, contact was temporarily lost during the war between the Terran Commonwealth \
@@ -184,18 +179,18 @@
 	capital = "Nemea"
 	economic_power = 1.0
 
-/decl/cultural_info/location/human/gaia
+/singleton/cultural_info/location/human/gaia
 	name = HOME_SYSTEM_GAIA
 	distance = "14 light years"
 	description = "Gaia is the sole planet in the Galilei system, serving as the DMZ between the SCG and the GCC. \
 	It is an agricultural world, though the recent Gaia Conflict has left the planet's surface scarred. The planet is divided into the \
 	Sol-Controlled <b>Gaian Administrative Area</b> and Independent-Backed <b>Protectorate of Gaia</b>, with the International City of New Venice remaining a neutral zone inside the DMZ. \
-	The planet's population remain divided even 10 years after the Gaian Conflict. While Gaia is divided \the current Mayor of New Venice serves as a vital mediator between both sides. \
+	The planet's population remain divided even 10 years after the Gaian Conflict. While Gaia is divided the current Mayor of New Venice serves as a vital mediator between both sides. \
 	<br><br> The Gaian People are tired of war, and are growing bitter to their present situation.  They suffered hard twenty years prior, and won't let themselves suffer again."
 	capital = "New Venice"
 	economic_power = 1.0
 
-/decl/cultural_info/location/human/magnitka
+/singleton/cultural_info/location/human/magnitka
 	name = HOME_SYSTEM_MAGNITKA
 	distance = "24 light years"
 	description = "Magnitka is an independent, industrialized mining and ore processing colony located in the Ursa system. \
@@ -207,7 +202,7 @@
 	economic_power = 0.8
 	ruling_body = "Magnitka"
 
-/decl/cultural_info/location/human/castilla
+/singleton/cultural_info/location/human/castilla
 	name = HOME_SYSTEM_CASTILLA
 	distance = "10 light years"
 	description = "Nueva Castilla is an exoplanet in the Culebre system, currently \
@@ -219,7 +214,7 @@
 	capital = "Placida"
 	economic_power = 1.0
 
-/decl/cultural_info/location/human/fosters
+/singleton/cultural_info/location/human/fosters
 	name = HOME_SYSTEM_FOSTER
 	distance = "11 light years"
 	description = "Foster's World, located in the Sanura system, is a small, icy exoplanet with \

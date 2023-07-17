@@ -58,15 +58,15 @@
 
 /obj/machinery/chem_master/attackby(obj/item/B as obj, mob/user as mob)
 
-	if(istype(B, /obj/item/reagent_containers/glass))
+	if(istype(B, /obj/item/reagent_containers/glass) || istype(B, /obj/item/reagent_containers/ivbag))
 
 		if(beaker)
-			to_chat(user, "A beaker is already loaded into the machine.")
+			to_chat(user, "A container is already loaded into the machine.")
 			return
 		if(!user.unEquip(B, src))
 			return
 		beaker = B
-		to_chat(user, "You add the beaker to the machine!")
+		to_chat(user, "You add the container to the machine!")
 		icon_state = "mixer1"
 		atom_flags |= ATOM_FLAG_OPEN_CONTAINER
 
@@ -96,8 +96,8 @@
 /obj/machinery/chem_master/AltClick(mob/user)
 	if(CanDefaultInteract(user))
 		eject_beaker(user)
-	else
-		..()
+		return TRUE
+	return ..()
 
 /obj/machinery/chem_master/Topic(href, href_list, state)
 	if(..())
@@ -232,7 +232,7 @@
 					P.color = reagents.get_color()
 				reagents.trans_to_obj(P,amount_per_pill)
 				if(loaded_pill_bottle)
-					if(loaded_pill_bottle.contents.len < loaded_pill_bottle.max_storage_space)
+					if(length(loaded_pill_bottle.contents) < loaded_pill_bottle.max_storage_space)
 						P.forceMove(loaded_pill_bottle)
 
 		else if (href_list["createbottle"])
@@ -302,7 +302,7 @@
 
 	if (loaded_pill_bottle)
 		data["loadedPillBottle"] = loaded_pill_bottle
-		data["pillBottleBlurb"] = "Eject Pill Bottle \[[loaded_pill_bottle.contents.len]/[loaded_pill_bottle.max_storage_space]\]"
+		data["pillBottleBlurb"] = "Eject Pill Bottle \[[length(loaded_pill_bottle.contents)]/[loaded_pill_bottle.max_storage_space]\]"
 
 	data["isSloppy"] = sloppy
 	data["isTransferringToBeaker"] = to_beaker

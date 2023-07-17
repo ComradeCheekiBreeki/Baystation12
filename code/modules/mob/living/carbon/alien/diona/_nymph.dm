@@ -12,7 +12,7 @@
 	death_msg = "expires with a pitiful chirrup..."
 	health = 60
 	maxHealth = 60
-	available_maneuvers = list(/decl/maneuver/leap)
+	available_maneuvers = list(/singleton/maneuver/leap)
 	status_flags = NO_ANTAG
 	density = FALSE
 
@@ -39,9 +39,9 @@
 	var/obj/item/holding_item
 	var/mob/living/carbon/alien/diona/next_nymph
 	var/mob/living/carbon/alien/diona/previous_nymph
-	var/tmp/image/flower
-	var/tmp/image/eyes
-	var/tmp/last_glow
+	var/image/flower
+	var/image/eyes
+	var/last_glow
 
 /mob/living/carbon/alien/diona/get_jump_distance()
 	return 3
@@ -87,9 +87,9 @@
 /mob/living/carbon/alien/diona/examine(mob/user)
 	. = ..()
 	if(holding_item)
-		to_chat(user, "<span class='notice'>It is holding [icon2html(holding_item, user)] \a [holding_item].</span>")
+		to_chat(user, SPAN_NOTICE("It is holding [icon2html(holding_item, user)] \a [holding_item]."))
 	if(hat)
-		to_chat(user, "<span class='notice'>It is wearing [icon2html(hat, user)] \a [hat].</span>")
+		to_chat(user, SPAN_NOTICE("It is wearing [icon2html(hat, user)] \a [hat]."))
 
 /mob/living/carbon/alien/diona/IsAdvancedToolUser()
 	return FALSE
@@ -118,7 +118,7 @@
 			available_nymphs += nymph
 
 	// Make sure there's a home for the player
-	if(!available_nymphs.len)
+	if(!length(available_nymphs))
 		available_nymphs += new /mob/living/carbon/alien/diona/sterile(donor.loc)
 
 	// Link availalbe nymphs together
@@ -131,7 +131,7 @@
 			nymph.set_previous_nymph(last_nymph)
 			last_nymph.set_next_nymph(nymph)
 		last_nymph = nymph
-	if(available_nymphs.len > 1)
+	if(length(available_nymphs) > 1)
 		first_nymph.set_previous_nymph(last_nymph)
 		last_nymph.set_next_nymph(first_nymph)
 
@@ -148,6 +148,6 @@
 	for(var/obj/item/W in donor)
 		donor.drop_from_inventory(W)
 
-	donor.visible_message("<span class='warning'>\The [donor] quivers slightly, then splits apart with a wet slithering noise.</span>")
+	donor.visible_message(SPAN_WARNING("\The [donor] quivers slightly, then splits apart with a wet slithering noise."))
 	if (!dying)
 		qdel(donor)

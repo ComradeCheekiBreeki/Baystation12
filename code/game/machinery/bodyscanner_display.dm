@@ -1,5 +1,5 @@
 /obj/machinery/body_scan_display
-	name = "Body Scan Display"
+	name = "body scan display"
 	desc = "A wall-mounted display linked to a body scanner."
 	icon = 'icons/obj/modular_telescreen.dmi'
 	icon_state = "operating"
@@ -8,7 +8,7 @@
 	density = FALSE
 	idle_power_usage = 75
 	active_power_usage = 300
-	construct_state = /decl/machine_construction/default/panel_closed
+	construct_state = /singleton/machine_construction/default/panel_closed
 	uncreated_component_parts = null
 	stat_immune = 0
 	w_class = ITEM_SIZE_HUGE

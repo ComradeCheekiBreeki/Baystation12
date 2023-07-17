@@ -59,7 +59,7 @@
 	var/value = 1
 
 	var/scent //refer to _scent.dm
-	var/scent_intensity = /decl/scent_intensity/normal
+	var/scent_intensity = /singleton/scent_intensity/normal
 	var/scent_descriptor = SCENT_DESC_SMELL
 	var/scent_range = 1
 
@@ -112,6 +112,7 @@
 	if(touch_met && (location == CHEM_TOUCH))
 		removed = touch_met
 	removed = M.get_adjusted_metabolism(removed)
+	removed = min(removed, volume)
 
 	//adjust effective amounts - removed, dose, and max_dose - for mob size
 	var/effective = removed

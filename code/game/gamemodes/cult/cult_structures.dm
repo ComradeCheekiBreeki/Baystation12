@@ -27,19 +27,22 @@
 	health_min_damage = 4
 	damage_hitsound = 'sound/effects/Glasshit.ogg'
 
-/obj/structure/cult/pylon/attackby(obj/item/W, mob/user)
-	if (istype(W, /obj/item/natural_weapon/cult_builder))
-		if (!health_damaged())
-			to_chat(user, SPAN_WARNING("\The [src] is fully repaired."))
-		else
-			user.visible_message(
-				SPAN_NOTICE("\The [user] mends some of the cracks on \the [src]."),
-				SPAN_NOTICE("You repair some of \the [src]'s damage.")
-			)
-			restore_health(5)
-		return
 
-	..()
+/obj/structure/cult/pylon/use_tool(obj/item/tool, mob/user, list/click_params)
+	// Cult Builder - Repair pylon
+	if (istype(tool, /obj/item/natural_weapon/cult_builder))
+		if (!health_damaged())
+			USE_FEEDBACK_FAILURE("\The [src] does not need repairs.")
+			return TRUE
+		user.visible_message(
+			SPAN_NOTICE("\The [user] mends some of the cracks on \the [src]."),
+			SPAN_NOTICE("You repair some of \the [src]'s damage.")
+		)
+		restore_health(5)
+		return TRUE
+
+	return ..()
+
 
 /obj/structure/cult/tome
 	name = "Desk"
@@ -89,7 +92,7 @@
 
 /obj/effect/gateway/active/New()
 	..()
-	addtimer(CALLBACK(src, .proc/create_and_delete), rand(30,60) SECONDS)
+	addtimer(new Callback(src, .proc/create_and_delete), rand(30,60) SECONDS)
 
 
 /obj/effect/gateway/active/proc/create_and_delete()
@@ -114,8 +117,8 @@
 
 		M.AddMovementHandler(/datum/movement_handler/mob/transformation)
 		M.icon = null
-		M.overlays.len = 0
-		M.set_invisibility(101)
+		M.overlays.Cut()
+		M.set_invisibility(INVISIBILITY_ABSTRACT)
 
 		if(istype(M, /mob/living/silicon/robot))
 			var/mob/living/silicon/robot/Robot = M

@@ -8,7 +8,7 @@ var/global/list/all_virtual_listeners = list()
 	sight = SEE_SELF
 
 	virtual_mob = null
-	no_z_overlay = TRUE
+	z_flags = ZMM_IGNORE
 
 	var/atom/movable/host
 	var/host_type = /atom/movable
@@ -17,8 +17,9 @@ var/global/list/all_virtual_listeners = list()
 
 	var/static/list/overlay_icons
 
-/mob/observer/virtual/New(location, atom/movable/host)
-	..()
+/mob/observer/virtual/Initialize(mapload, atom/movable/host)
+	. = ..()
+
 	if(!istype(host, host_type))
 		CRASH("Received an unexpected host type. Expected [host_type], was [log_info_line(host)].")
 	src.host = host
@@ -28,8 +29,6 @@ var/global/list/all_virtual_listeners = list()
 
 	update_icon()
 
-/mob/observer/virtual/Initialize()
-	. = ..()
 	STOP_PROCESSING_MOB(src)
 
 /mob/observer/virtual/Destroy()

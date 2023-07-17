@@ -70,9 +70,9 @@
 		if (answer == "Yes")
 			var/turf/T = get_turf_or_move(P.loc)
 			for (var/mob/v in viewers(T))
-				v.show_message("<span class='notice'>[M] presses \his thumb against [P].</span>", 3, "<span class='notice'>[P] makes a sharp clicking sound as it extracts DNA material from [M].</span>", 2)
+				v.show_message(SPAN_NOTICE("[M] presses \his thumb against [P]."), 3, SPAN_NOTICE("[P] makes a sharp clicking sound as it extracts DNA material from [M]."), 2)
 			var/datum/dna/dna = M.dna
-			to_chat(P, "<font color = red><h3>[M]'s UE string : [dna.unique_enzymes]</h3></font>")
+			to_chat(P, "<h3 style='font-color: red'>[M]'s UE string : [dna.unique_enzymes]</h3>")
 			if (dna.unique_enzymes == P.master_dna)
 				to_chat(P, "<b>DNA is a match to stored Master DNA.</b>")
 			else
@@ -100,7 +100,7 @@
 		var/ch_dat[0]
 		ch_dat["name"] = ch_name
 		ch_dat["listening"] = !!(ch_stat & user.silicon_radio.FREQ_LISTENING)
-		channels[++channels.len] = ch_dat
+		channels[LIST_PRE_INC(channels)] = ch_dat
 	data["channels"] = channels
 	ui = SSnano.try_update_ui(user, user, id, ui, data, force_open)
 	if (!ui)
@@ -186,9 +186,9 @@
 	var/turf/T = get_turf_or_move(loc)
 	for (var/mob/living/silicon/ai/AI in GLOB.player_list)
 		if(T.loc)
-			to_chat(AI, "<font color = red><b>Network Alert: Brute-force encryption crack in progress in [T.loc].</b></font>")
+			to_chat(AI, SPAN_COLOR("red", "<b>Network Alert: Brute-force encryption crack in progress in [T.loc].</b>"))
 		else
-			to_chat(AI, "<font color = red><b>Network Alert: Brute-force encryption crack in progress. Unable to pinpoint location.</b></font>")
+			to_chat(AI, SPAN_COLOR("red", "<b>Network Alert: Brute-force encryption crack in progress. Unable to pinpoint location.</b>"))
 	var/obj/machinery/door/D = cable.machine
 	if (!istype(D))
 		hack_aborted = 1
@@ -241,7 +241,7 @@
 			var/gas[0]
 			gas["name"] = gas_data.name[g]
 			gas["percent"] = round((env.gas[g] / t_moles) * 100)
-			gases[++gases.len] = gas
+			gases[LIST_PRE_INC(gases)] = gas
 		data["gas"] = gases
 	ui = SSnano.try_update_ui(user, user, id, ui, data, force_open)
 	if (!ui)

@@ -13,8 +13,8 @@
 	max_damage = 45
 	var/eye_icon = 'icons/mob/human_races/species/default_eyes.dmi'
 	var/apply_eye_colour = TRUE
-	var/tmp/last_cached_eye_colour
-	var/tmp/last_eye_cache_key
+	var/last_cached_eye_colour
+	var/last_eye_cache_key
 	var/flash_mod
 	var/darksight_range
 	var/darksight_tint
@@ -77,7 +77,7 @@
 	var/oldbroken = is_broken()
 	. = ..()
 	if(is_broken() && !oldbroken && owner && !owner.stat)
-		to_chat(owner, "<span class='danger'>You go blind!</span>")
+		to_chat(owner, SPAN_DANGER("You go blind!"))
 
 /obj/item/organ/internal/eyes/Process() //Eye damage replaces the old eye_stat var.
 	..()

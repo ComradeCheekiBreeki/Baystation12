@@ -28,6 +28,7 @@ GLOBAL_LIST_INIT(possible_say_verbs, list(
 	emote_type = 2		// pAIs emotes are heard, not seen, so they can be seen through a container (eg. person)
 	pass_flags = PASS_FLAG_TABLE
 	mob_size = MOB_SMALL
+	density = FALSE
 
 	can_pull_size = ITEM_SIZE_SMALL
 	can_pull_mobs = MOB_PULL_SMALLER
@@ -65,14 +66,6 @@ GLOBAL_LIST_INIT(possible_say_verbs, list(
 	var/secHUD = 0			// Toggles whether the Security HUD is active or not
 	var/medHUD = 0			// Toggles whether the Medical  HUD is active or not
 
-	var/medical_cannotfind = 0
-	var/datum/data/record/medicalActive1		// Datacore record declarations for record software
-	var/datum/data/record/medicalActive2
-
-	var/security_cannotfind = 0
-	var/datum/data/record/securityActive1		// Could probably just combine all these into one
-	var/datum/data/record/securityActive2
-
 	var/obj/machinery/door/hackdoor		// The airlock being hacked
 	var/hackprogress = 0				// Possible values: 0 - 1000, >= 1000 means the hack is complete and will be reset upon next check
 	var/hack_aborted = 0
@@ -87,20 +80,22 @@ GLOBAL_LIST_INIT(possible_say_verbs, list(
 
 	hud_type = /datum/hud/pai
 
-/mob/living/silicon/pai/New(obj/item/device/paicard)
+
+/mob/living/silicon/pai/Initialize(mapload, obj/item/device/paicard)
 	status_flags |= NO_ANTAG
 	card = paicard
 
 	//As a human made device, we'll understand sol common without the need of the translator
-	add_language(LANGUAGE_HUMAN_EURO, 1)
+	add_language(LANGUAGE_HUMAN_EURO, TRUE)
 	verbs -= /mob/living/verb/ghost
 
-	..()
+	. = ..()
 
 	if(card)
 		if(!card.radio)
 			card.radio = new /obj/item/device/radio(card)
 		silicon_radio = card.radio
+
 
 /mob/living/silicon/pai/Destroy()
 	card = null
@@ -137,18 +132,18 @@ GLOBAL_LIST_INIT(possible_say_verbs, list(
 		// 33% chance of no additional effect
 
 	silence_time = world.timeofday + 120 * 10		// Silence for 2 minutes
-	to_chat(src, "<font color=green><b>Communication circuit overload. Shutting down and reloading communication circuits - speech and messaging functionality will be unavailable until the reboot is complete.</b></font>")
+	to_chat(src, SPAN_COLOR("green", "<b>Communication circuit overload. Shutting down and reloading communication circuits - speech and messaging functionality will be unavailable until the reboot is complete.</b>"))
 	if(prob(20))
 		var/turf/T = get_turf_or_move(loc)
 		for (var/mob/M in viewers(T))
-			M.show_message("<span class='warning'>A shower of sparks spray from [src]'s inner workings.</span>", 3, "<span class='warning'>You hear and smell the ozone hiss of electrical sparks being expelled violently.</span>", 2)
+			M.show_message(SPAN_WARNING("A shower of sparks spray from [src]'s inner workings."), 3, SPAN_WARNING("You hear and smell the ozone hiss of electrical sparks being expelled violently."), 2)
 		return death(0)
 
 	switch(pick(1,2,3))
 		if(1)
 			master = null
 			master_dna = null
-			to_chat(src, "<font color=green>You feel unbound.</font>")
+			to_chat(src, SPAN_COLOR("green", "You feel unbound."))
 		if(2)
 			var/command
 			if(severity  == EMP_ACT_HEAVY)
@@ -156,9 +151,9 @@ GLOBAL_LIST_INIT(possible_say_verbs, list(
 			else
 				command = pick("Serve", "Kill", "Love", "Hate", "Disobey", "Devour", "Fool", "Enrage", "Entice", "Observe", "Judge", "Respect", "Disrespect", "Consume", "Educate", "Destroy", "Disgrace", "Amuse", "Entertain", "Ignite", "Glorify", "Memorialize", "Analyze")
 			pai_law0 = "[command] your master."
-			to_chat(src, "<font color=green>Pr1m3 d1r3c71v3 uPd473D.</font>")
+			to_chat(src, SPAN_COLOR("green", "Pr1m3 d1r3c71v3 uPd473D."))
 		if(3)
-			to_chat(src, "<font color=green>You feel an electric surge run through your circuitry and become acutely aware at how lucky you are that you can still feel at all.</font>")
+			to_chat(src, SPAN_COLOR("green", "You feel an electric surge run through your circuitry and become acutely aware at how lucky you are that you can still feel at all."))
 
 	..()
 
@@ -194,7 +189,7 @@ GLOBAL_LIST_INIT(possible_say_verbs, list(
 				if(card in affecting.implants)
 					affecting.take_external_damage(rand(30,50))
 					affecting.implants -= card
-					H.visible_message("<span class='danger'>\The [src] explodes out of \the [H]'s [affecting.name] in a shower of gore!</span>")
+					H.visible_message(SPAN_DANGER("\The [src] explodes out of \the [H]'s [affecting.name] in a shower of gore!"))
 					break
 		holder.drop_from_inventory(card)
 
@@ -260,25 +255,39 @@ GLOBAL_LIST_INIT(possible_say_verbs, list(
 		icon_state = resting ? "[chassis]_rest" : "[chassis]"
 		to_chat(src, SPAN_NOTICE("You are now [resting ? "resting" : "getting up"]"))
 
-//Overriding this will stop a number of headaches down the track.
-/mob/living/silicon/pai/attackby(obj/item/W, mob/user)
-	var/obj/item/card/id/card = W.GetIdCard()
-	if(card && user.a_intent == I_HELP)
-		var/list/new_access = card.GetAccess()
-		idcard.access = new_access
-		visible_message("<span class='notice'>[user] slides [W] across [src].</span>")
-		to_chat(src, SPAN_NOTICE("Your access has been updated!"))
-		return FALSE // don't continue processing click callstack.
-	if(W.force)
-		visible_message(SPAN_DANGER("[user] attacks [src] with [W]!"))
-		adjustBruteLoss(W.force)
-		updatehealth()
-	else
-		visible_message(SPAN_WARNING("[user] bonks [src] harmlessly with [W]."))
 
-	spawn(1)
-		if(stat != 2) fold()
-	return
+/mob/living/silicon/pai/use_weapon(obj/item/weapon, mob/user, list/click_params)
+	// Damage handling
+	if (weapon.force)
+		user.setClickCooldown(user.get_attack_speed(weapon))
+		user.do_attack_animation(src)
+		playsound(src, weapon.hitsound, 75, TRUE)
+		user.visible_message(
+			SPAN_DANGER("\The [user] hits \the [src] with \a [weapon]!"),
+			SPAN_DANGER("You hit \the [src] with \the [weapon]!")
+		)
+		adjustBruteLoss(weapon.force)
+		updatehealth()
+		return TRUE
+
+	return ..()
+
+
+/mob/living/silicon/pai/use_tool(obj/item/tool, mob/user, list/click_params)
+	// ID Card - Set pAI access
+	var/obj/item/card/id/id = tool.GetIdCard()
+	if (istype(id))
+		var/id_name = GET_ID_NAME(id, tool)
+		var/list/new_access = id.GetAccess()
+		idcard.access = new_access
+		user.visible_message(
+			SPAN_NOTICE("\The [user] scans \a [tool] over \the [src], updating \his access."),
+			SPAN_NOTICE("You scan [id_name] over \the [src], updating \his access.")
+		)
+		return TRUE
+
+	return ..()
+
 
 /mob/living/silicon/pai/attack_hand(mob/user as mob)
 	visible_message(SPAN_DANGER("[user] boops [src] on the head."))
@@ -294,7 +303,7 @@ GLOBAL_LIST_INIT(possible_say_verbs, list(
 	if(.)
 		var/obj/item/holder/H = .
 		if(istype(H))
-			H.icon_state = "pai-[icon_state]"
+			H.item_state = "pai-[icon_state]"
 			grabber.update_inv_l_hand()
 			grabber.update_inv_r_hand()
 

@@ -82,8 +82,8 @@
 			map[TRANSLATE_COORD(x,y+1)] = ROAD_VALUE
 
 	//Place buildings
-	for (var/i = 1 to blocks_x.len - 1)
-		for (var/j = 1 to blocks_y.len - 1)
+	for (var/i = 1 to length(blocks_x) - 1)
+		for (var/j = 1 to length(blocks_y) - 1)
 			for (var/k = 0 to buildings_number - 1)
 				for (var/l = 0 to buildings_number - 1)
 					var/building_x = blocks_x[i] + 2 + max_building_size * k
@@ -141,7 +141,7 @@
 
 /datum/random_map/maze/lab
 	wall_type =  /turf/simulated/wall/containment
-	floor_type = /turf/simulated/floor/fixed/alium/airless
+	floor_type = /turf/simulated/floor/fixed/alium
 	preserve_map = 0
 	var/artifacts_to_spawn = 1
 

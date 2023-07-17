@@ -44,24 +44,39 @@
 /obj/item/device/suit_sensor_jammer/get_cell()
 	return bcell
 
-/obj/item/device/suit_sensor_jammer/attackby(obj/item/I as obj, mob/user as mob)
-	if(isCrowbar(I))
-		if(bcell)
-			to_chat(user, "<span class='notice'>You remove \the [bcell].</span>")
-			disable()
-			bcell.dropInto(loc)
-			bcell = null
-		else
-			to_chat(user, "<span class='warning'>There is no cell to remove.</span>")
-	else if(istype(I, /obj/item/cell))
-		if(bcell)
-			to_chat(user, "<span class='warning'>There's already a cell in \the [src].</span>")
-		else if(user.unEquip(I))
-			I.forceMove(src)
-			bcell = I
-			to_chat(user, "<span class='notice'>You insert \the [bcell] into \the [src]..</span>")
-		else
-			to_chat(user, "<span class='warning'>You're unable to insert the battery.</span>")
+
+/obj/item/device/suit_sensor_jammer/use_tool(obj/item/tool, mob/user, list/click_params)
+	// Crowbar - Remove cell
+	if (isCrowbar(tool))
+		if (!bcell)
+			USE_FEEDBACK_FAILURE("\The [src] has no cell to remove.")
+			return TRUE
+		disable()
+		user.put_in_hands(bcell)
+		user.visible_message(
+			SPAN_NOTICE("\The [user] removes \a [bcell] from \a [src] with \a [tool]."),
+			SPAN_NOTICE("You remove \the [bcell] from \the [src] with \the [tool].")
+		)
+		bcell = null
+		return TRUE
+
+	// Power Cell - Install cell
+	if (istype(tool, /obj/item/cell))
+		if (bcell)
+			USE_FEEDBACK_FAILURE("\The [src] already has \a [bcell] installed.")
+			return TRUE
+		if (!user.unEquip(tool, src))
+			FEEDBACK_UNEQUIP_FAILURE(user, tool)
+			return TRUE
+		bcell = tool
+		user.visible_message(
+			SPAN_NOTICE("\The [user] installs \a [tool] into \a [src]."),
+			SPAN_NOTICE("you install \the [tool] into \the [src].")
+		)
+		return TRUE
+
+	return ..()
+
 
 /obj/item/device/suit_sensor_jammer/on_update_icon()
 	overlays.Cut()
@@ -122,7 +137,7 @@
 /obj/item/device/suit_sensor_jammer/ui_interact(mob/user, ui_key = "main", datum/nanoui/ui = null, force_open = 1)
 	var/list/methods = new
 	for(var/suit_sensor_jammer_method/ssjm in suit_sensor_jammer_methods)
-		methods[++methods.len] = list("name" = ssjm.name, "cost" = ssjm.energy_cost, "ref" = "\ref[ssjm]")
+		methods[LIST_PRE_INC(methods)] = list("name" = ssjm.name, "cost" = ssjm.energy_cost, "ref" = "\ref[ssjm]")
 
 	var/list/data = list(
 		"active" = active,
@@ -133,7 +148,7 @@
 		"methods" = methods,
 		"current_method" = "\ref[jammer_method]",
 		"current_cost" = jammer_method.energy_cost,
-		"total_cost" = "[Ceil(JAMMER_POWER_CONSUMPTION(10))]"
+		"total_cost" = "[ceil(JAMMER_POWER_CONSUMPTION(10))]"
 	)
 
 	ui = SSnano.try_update_ui(user, src, ui_key, ui, data, force_open)

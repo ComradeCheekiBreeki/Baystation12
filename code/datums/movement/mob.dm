@@ -78,24 +78,26 @@
 		return MOVEMENT_PROCEED
 	return (MOVEMENT_PROCEED|MOVEMENT_HANDLED)
 
+/datum/movement_handler/mob/space
+	var/allow_move
+
 // Space movement
 /datum/movement_handler/mob/space/DoMove(direction, mob/mover)
-	if(!mob.check_solid_ground())
-		var/allowmove = mob.Allow_Spacemove(0)
-		if(!allowmove)
+	if(!mob.has_gravity())
+		if(!allow_move)
 			return MOVEMENT_HANDLED
-		else if(allowmove == -1 && mob.handle_spaceslipping()) //Check to see if we slipped
+		if(!mob.space_do_move(allow_move, direction))
 			return MOVEMENT_HANDLED
-		else
-			mob.inertia_dir = 0 //If not then we can reset inertia and move
 
 /datum/movement_handler/mob/space/MayMove(mob/mover, is_external)
 	if(IS_NOT_SELF(mover) && is_external)
 		return MOVEMENT_PROCEED
 
-	if(!mob.check_solid_ground())
-		if(!mob.Allow_Spacemove(0))
+	if(!mob.has_gravity())
+		allow_move = mob.Process_Spacemove(1)
+		if(!allow_move)
 			return MOVEMENT_STOP
+
 	return MOVEMENT_PROCEED
 
 // Buckle movement
@@ -172,23 +174,23 @@
 /datum/movement_handler/mob/physically_restrained/MayMove(mob/mover)
 	if(mob.anchored)
 		if(mover == mob)
-			to_chat(mob, "<span class='notice'>You're anchored down!</span>")
+			to_chat(mob, SPAN_NOTICE("You're anchored down!"))
 		return MOVEMENT_STOP
 
 	if(istype(mob.buckled) && !mob.buckled.buckle_movable)
 		if(mover == mob)
-			to_chat(mob, "<span class='notice'>You're buckled to \the [mob.buckled]!</span>")
+			to_chat(mob, SPAN_NOTICE("You're buckled to \the [mob.buckled]!"))
 		return MOVEMENT_STOP
 
 	if(LAZYLEN(mob.pinned))
 		if(mover == mob)
-			to_chat(mob, "<span class='notice'>You're pinned down by \a [mob.pinned[1]]!</span>")
+			to_chat(mob, SPAN_NOTICE("You're pinned down by \a [mob.pinned[1]]!"))
 		return MOVEMENT_STOP
 
 	for(var/obj/item/grab/G in mob.grabbed_by)
 		if(G.assailant != mob && G.stop_move())
 			if(mover == mob)
-				to_chat(mob, "<span class='notice'>You're stuck in a grab!</span>")
+				to_chat(mob, SPAN_NOTICE("You're stuck in a grab!"))
 			mob.ProcessGrabs()
 			return MOVEMENT_STOP
 
@@ -197,7 +199,7 @@
 			if(M.pulling == mob)
 				if(!M.incapacitated() && mob.Adjacent(M))
 					if(mover == mob)
-						to_chat(mob, "<span class='notice'>You're restrained! You can't move!</span>")
+						to_chat(mob, SPAN_NOTICE("You're restrained! You can't move!"))
 					return MOVEMENT_STOP
 				else
 					M.stop_pulling()
@@ -207,7 +209,7 @@
 
 /mob/living/ProcessGrabs()
 	//if we are being grabbed
-	if(grabbed_by.len)
+	if(length(grabbed_by))
 		resist() //shortcut for resisting grabs
 
 /mob/proc/ProcessGrabs()
@@ -270,7 +272,7 @@
 /mob/living/carbon/human/get_stamina_used_per_step()
 	var/mod = (1-((get_skill_value(SKILL_HAULING) - SKILL_MIN)/(SKILL_MAX - SKILL_MIN)))
 	if(species && (species.species_flags & SPECIES_FLAG_LOW_GRAV_ADAPTED))
-		if(has_gravity(src))
+		if(has_gravity())
 			mod *= 1.2
 		else
 			mod *= 0.8
@@ -286,7 +288,7 @@
 		. = max(., G.grab_slowdown())
 		var/list/L = mob.ret_grab()
 		if(istype(L, /list))
-			if(L.len == 2)
+			if(length(L) == 2)
 				L -= mob
 				var/mob/M = L[1]
 				if(M)

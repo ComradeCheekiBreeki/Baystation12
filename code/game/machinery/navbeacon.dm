@@ -5,7 +5,7 @@ var/global/list/navbeacons = list()
 	icon_state = "navbeacon0-f"
 	name = "navigation beacon"
 	desc = "A radio beacon used for bot navigation."
-	level = 1
+	level = ATOM_LEVEL_UNDER_TILE
 	layer = ABOVE_WIRE_LAYER
 	anchored = TRUE
 
@@ -25,7 +25,7 @@ var/global/list/navbeacons = list()
 	navbeacons += src
 
 /obj/machinery/navbeacon/hide(intact)
-	set_invisibility(intact ? 101 : 0)
+	set_invisibility(intact ? INVISIBILITY_ABSTRACT : 0)
 	update_icon()
 
 /obj/machinery/navbeacon/on_update_icon()
@@ -55,7 +55,7 @@ var/global/list/navbeacons = list()
 				src.locked = !src.locked
 				to_chat(user, "Controls are now [src.locked ? "locked." : "unlocked."]")
 			else
-				to_chat(user, "<span class='warning'>Access denied.</span>")
+				to_chat(user, SPAN_WARNING("Access denied."))
 			updateDialog()
 		else
 			to_chat(user, "You must open the cover first!")

@@ -44,6 +44,34 @@
 /obj/random/single/spawn_choices()
 	return list(spawn_object)
 
+
+/obj/random/single/color
+	name = "randomly colored object"
+	desc = "This item is used to spawn a given object with a random color at round-start."
+	spawn_nothing_percentage = 0
+
+/obj/random/single/color/proc/color_choices()
+	return list(
+		COLOR_RED,
+		COLOR_BLUE,
+		COLOR_YELLOW,
+		COLOR_PURPLE,
+		COLOR_GREEN,
+		COLOR_ORANGE,
+		COLOR_BROWN,
+		COLOR_WHITE,
+		COLOR_DARK_GRAY // Black but not void
+	)
+
+/obj/random/single/color/spawn_item()
+	var/atom/A = ..()
+	if (!istype(A))
+		return A
+	A.set_color(pickweight(color_choices()))
+	return A
+
+
+
 /obj/random/tool
 	name = "random tool"
 	desc = "This is a random tool."
@@ -126,7 +154,7 @@
 				/obj/random/bomb_supply = 2,
 				/obj/item/extinguisher = 1,
 				/obj/item/clothing/gloves/insulated/cheap = 1,
-				/obj/item/stack/cable_coil/random = 2,
+				/obj/random/single/color/cable_coil = 2,
 				/obj/random/toolbox = 2,
 				/obj/item/storage/belt/utility = 2,
 				/obj/item/storage/belt/utility/atmostech = 1,
@@ -278,26 +306,26 @@
 	icon_state = "revolver"
 
 /obj/random/projectile/spawn_choices()
-	return list(/obj/item/gun/projectile/automatic/battlerifle = 4,
-				/obj/item/gun/projectile/sniper/garand = 4,
-				/obj/item/gun/projectile/sniper/semistrip = 4,
+	return list(/obj/item/gun/projectile/automatic/battlerifle = 2,
+				/obj/item/gun/projectile/sniper/garand = 3,
+				/obj/item/gun/projectile/sniper/semistrip = 2,
 				/obj/item/gun/projectile/shotgun/pump = 3,
 				/obj/item/gun/projectile/automatic/merc_smg = 2,
-				/obj/item/gun/projectile/automatic/assault_rifle = 2,
+				/obj/item/gun/projectile/automatic/assault_rifle = 3,
 				/obj/item/gun/projectile/automatic/bullpup_rifle = 2,
 				/obj/item/gun/projectile/pistol/sec = 4,
-				/obj/item/gun/projectile/pistol/holdout = 4,
-				/obj/item/gun/projectile/pirate = 5,
-				/obj/item/gun/projectile/revolver = 2,
+				/obj/item/gun/projectile/pistol/holdout = 2,
+				/obj/item/gun/projectile/pirate = 2,
+				/obj/item/gun/projectile/revolver = 4,
 				/obj/item/gun/projectile/automatic/sec_smg = 3,
-				/obj/item/gun/projectile/revolver/holdout = 4,
-				/obj/item/gun/projectile/revolver = 2,
-				/obj/item/gun/projectile/shotgun/doublebarrel = 4,
+				/obj/item/gun/projectile/revolver/holdout = 2,
+				/obj/item/gun/projectile/shotgun/doublebarrel = 3,
 				/obj/item/gun/projectile/shotgun/doublebarrel/sawn = 3,
 				/obj/item/gun/projectile/heavysniper = 1,
 				/obj/item/gun/projectile/shotgun/pump/combat = 2,
-				/obj/item/gun/projectile/pistol/throwback = 1,
-				/obj/item/gun/projectile/pistol/broomstick = 1)
+				/obj/item/gun/projectile/pistol/throwback = 3,
+				/obj/item/gun/projectile/pistol/broomstick = 1,
+				/obj/item/gun/projectile/shotgun/magshot = 3)
 
 /obj/random/handgun
 	name = "Random Handgun"
@@ -472,20 +500,6 @@
 		var/vermin_type = pickweight(locker_vermin)
 		new vermin_type(.)
 
-/obj/random/coin
-	name = "random coin"
-	desc = "This is a random coin."
-	icon = 'icons/obj/coin.dmi'
-	icon_state = "coin1"
-
-/obj/random/coin/spawn_choices()
-	return list(/obj/item/material/coin/gold = 3,
-				/obj/item/material/coin/silver = 4,
-				/obj/item/material/coin/diamond = 2,
-				/obj/item/material/coin/iron = 4,
-				/obj/item/material/coin/uranium = 3,
-				/obj/item/material/coin/platinum = 1,
-				/obj/item/material/coin/phoron = 1)
 
 /obj/random/toy
 	name = "random toy"
@@ -568,14 +582,32 @@
 /obj/random/soap
 	name = "Random Cleaning Supplies"
 	desc = "This is a random bar of soap. Soap! SOAP?! SOAP!!!"
-	icon = 'icons/obj/items.dmi'
-	icon_state = "soaprandom"
+	icon = 'icons/obj/soap.dmi'
+	icon_state = "soap"
 
 /obj/random/soap/spawn_choices()
-	return list(/obj/item/soap = 12,
-				/obj/item/reagent_containers/glass/rag = 2,
-				/obj/item/reagent_containers/spray/cleaner = 2,
-				/obj/item/grenade/chem_grenade/cleaner = 1)
+	return list(/obj/item/soap/random,
+				/obj/item/soap/space_soap,
+				/obj/item/soap/space_soap,
+				/obj/item/soap/water_soap,
+				/obj/item/soap/fire_soap,
+				/obj/item/soap/rainbow_soap,
+				/obj/item/soap/diamond_soap,
+				/obj/item/soap/uranium_soap,
+				/obj/item/soap/silver_soap,
+				/obj/item/soap/brown_soap,
+				/obj/item/soap/white_soap,
+				/obj/item/soap/grey_soap,
+				/obj/item/soap/pink_soap,
+				/obj/item/soap/purple_soap,
+				/obj/item/soap/blue_soap,
+				/obj/item/soap/cyan_soap,
+				/obj/item/soap/green_soap,
+				/obj/item/soap/yellow_soap,
+				/obj/item/soap/orange_soap,
+				/obj/item/soap/red_soap,
+				/obj/item/soap/golden_soap,
+)
 
 /obj/random/obstruction //Large objects to block things off in maintenance
 	name = "random obstruction"
@@ -640,15 +672,15 @@
 	icon_state = "Bpacket"
 
 /obj/random/smokes/spawn_choices()
-	return list(/obj/item/storage/fancy/cigarettes = 5,
-				/obj/item/storage/fancy/cigarettes/dromedaryco = 4,
-				/obj/item/storage/fancy/cigarettes/killthroat = 1,
-				/obj/item/storage/fancy/cigarettes/luckystars = 3,
-				/obj/item/storage/fancy/cigarettes/jerichos = 3,
-				/obj/item/storage/fancy/cigarettes/menthols = 2,
-				/obj/item/storage/fancy/cigarettes/carcinomas = 3,
-				/obj/item/storage/fancy/cigarettes/professionals = 2,
-				/obj/item/storage/fancy/cigar = 1,
+	return list(/obj/item/storage/fancy/smokable/transstellar = 5,
+				/obj/item/storage/fancy/smokable/dromedaryco = 4,
+				/obj/item/storage/fancy/smokable/killthroat = 1,
+				/obj/item/storage/fancy/smokable/luckystars = 3,
+				/obj/item/storage/fancy/smokable/jerichos = 3,
+				/obj/item/storage/fancy/smokable/menthols = 2,
+				/obj/item/storage/fancy/smokable/carcinomas = 3,
+				/obj/item/storage/fancy/smokable/professionals = 2,
+				/obj/item/storage/fancy/smokable/cigar = 1,
 				/obj/item/clothing/mask/smokable/cigarette = 2,
 				/obj/item/clothing/mask/smokable/cigarette/menthol = 2,
 				/obj/item/clothing/mask/smokable/cigarette/cigar = 1,
@@ -730,7 +762,7 @@
 		/obj/item/storage/box/autoinjectors = 3,
 		/obj/item/storage/box/beakers = 4,
 		/obj/item/storage/box/syringes = 4,
-		/obj/item/storage/box/gloves = 4,
+		/obj/item/storage/box/latexgloves = 4,
 		/obj/item/storage/box/large = 3,
 		/obj/item/storage/box/glowsticks = 4,
 		/obj/item/storage/wallet = 2,
@@ -759,8 +791,6 @@
 				/obj/item/clothing/shoes/magboots = 1,
 				/obj/item/clothing/shoes/laceup = 4,
 				/obj/item/clothing/shoes/black = 4,
-				/obj/item/clothing/shoes/jungleboots = 3,
-				/obj/item/clothing/shoes/desertboots = 3,
 				/obj/item/clothing/shoes/dutyboots = 3,
 				/obj/item/clothing/shoes/tactical = 1,
 				/obj/item/clothing/shoes/dress = 3,
@@ -843,6 +873,7 @@
 				/obj/item/clothing/suit/storage/toggle/labcoat = 4,
 				/obj/item/clothing/suit/space/emergency = 1,
 				/obj/item/clothing/suit/armor/vest = 4,
+				/obj/item/clothing/suit/storage/security_chest_rig = 4,
 				/obj/item/clothing/suit/storage/vest/tactical = 1,
 				/obj/item/clothing/suit/storage/vest = 3,
 				/obj/item/clothing/suit/storage/toggle/bomber = 3,
@@ -902,10 +933,10 @@ GLOBAL_LIST_INIT(random_backpacks, list(
 	/obj/item/storage/backpack/security/exo,
 	/obj/item/storage/backpack/command,
 	/obj/item/storage/backpack/industrial,
-	/obj/item/storage/backpack/toxins,
+	/obj/item/storage/backpack/corpsci,
 	/obj/item/storage/backpack/hydroponics,
 	/obj/item/storage/backpack/genetics,
-	/obj/item/storage/backpack/virology,
+	/obj/item/storage/backpack/sci,
 	/obj/item/storage/backpack/chemistry
 ))
 
@@ -1020,7 +1051,7 @@ something, make sure it's not in one of the other lists.*/
 				/obj/item/clothing/suit/straight_jacket = 6,
 				/obj/item/clothing/head/helmet/merc = 3,
 				/obj/item/stack/material/diamond/ten = 7,
-				/obj/item/stack/material/glass/phoronrglass/ten = 7,
+				/obj/item/stack/material/glass/boron_reinforced/ten = 7,
 				/obj/item/stack/material/marble/ten = 8,
 				/obj/item/stack/material/phoron/ten = 7,
 				/obj/item/stack/material/gold/ten = 7,
@@ -1047,7 +1078,7 @@ something, make sure it's not in one of the other lists.*/
 				/obj/item/bonesetter = 7,
 				/obj/item/bonegel = 7,
 				/obj/item/circular_saw = 7,
-				/obj/item/scalpel = 7,
+				/obj/item/scalpel/basic = 7,
 				/obj/item/melee/baton/loaded = 9,
 				/obj/item/device/radio/headset/syndicate = 6)
 
@@ -1152,7 +1183,7 @@ var/global/list/multi_point_spawns
 /obj/random_multi/Destroy()
 	var/list/spawnpoints = multi_point_spawns[id]
 	spawnpoints -= src
-	if(!spawnpoints.len)
+	if(!length(spawnpoints))
 		multi_point_spawns -= id
 	. = ..()
 
@@ -1189,54 +1220,51 @@ var/global/list/multi_point_spawns
 	id = "Maint Skeleton"
 	item_path = /obj/structure/skele_stand/maint
 
-var/global/list/random_junk_
-var/global/list/random_useful_
+
 /proc/get_random_useful_type()
-	if(!random_useful_)
-		random_useful_ = list()
-		random_useful_ += /obj/item/pen/crayon/random
-		random_useful_ += /obj/item/pen
-		random_useful_ += /obj/item/pen/blue
-		random_useful_ += /obj/item/pen/red
-		random_useful_ += /obj/item/pen/multi
-		random_useful_ += /obj/item/storage/box/matches
-		random_useful_ += /obj/item/stack/material/cardboard
-		random_useful_ += /obj/item/storage/fancy/cigarettes
-		random_useful_ += /obj/item/deck/cards
-	return pick(random_useful_)
+	RETURN_TYPE(/obj)
+	var/static/list/options = list(
+		/obj/random/crayon,
+		/obj/item/pen,
+		/obj/item/pen/blue,
+		/obj/item/pen/red,
+		/obj/item/pen/multi,
+		/obj/item/storage/fancy/matches/matchbook,
+		/obj/item/stack/material/cardboard,
+		/obj/item/storage/fancy/smokable/transstellar,
+		/obj/item/deck/cards
+	)
+	return pick(options)
+
 
 /proc/get_random_junk_type()
-	if(prob(20)) // Misc. clutter
+	RETURN_TYPE(/obj)
+	var/static/list/options = ((\
+		typesof(/obj/item/trash/cigbutt) +\
+		subtypesof(/obj/item/trash)) - list(
+			/obj/item/trash/plate,
+			/obj/item/trash/snack_bowl,
+			/obj/item/trash/syndi_cakes,
+			/obj/item/trash/tray
+		)) + list(
+			/obj/effect/decal/cleanable/spiderling_remains,
+			/obj/item/remains/mouse,
+			/obj/item/remains/robot,
+			/obj/item/paper/crumpled,
+			/obj/item/inflatable/torn,
+			/obj/effect/decal/cleanable/molten_item,
+			/obj/item/material/shard,
+			/obj/item/hand/missing_card
+		)
+	if (prob(20))
 		return /obj/effect/decal/cleanable/generic
-
-	// 80% chance that we reach here
-	if(prob(95)) // Misc. junk
-		if(!random_junk_)
-			random_junk_ = subtypesof(/obj/item/trash)
-			random_junk_ += typesof(/obj/item/trash/cigbutt)
-			random_junk_ += /obj/effect/decal/cleanable/spiderling_remains
-			random_junk_ += /obj/item/remains/mouse
-			random_junk_ += /obj/item/remains/robot
-			random_junk_ += /obj/item/paper/crumpled
-			random_junk_ += /obj/item/inflatable/torn
-			random_junk_ += /obj/effect/decal/cleanable/molten_item
-			random_junk_ += /obj/item/material/shard
-			random_junk_ += /obj/item/hand/missing_card
-
-			random_junk_ -= /obj/item/trash/plate
-			random_junk_ -= /obj/item/trash/snack_bowl
-			random_junk_ -= /obj/item/trash/syndi_cakes
-			random_junk_ -= /obj/item/trash/tray
-		return pick(random_junk_)
-
-	// Misc. actually useful stuff or perhaps even food
-	// 4% chance that we reach here
-	if(prob(75))
+	if (prob(95))
+		return pick(options)
+	if (prob(75))
 		return get_random_useful_type()
-
-	// 1% chance that we reach here
 	var/lunches = lunchables_lunches()
 	return lunches[pick(lunches)]
+
 
 /obj/random/clipboard
 	name = "random clipboard"
@@ -1386,7 +1414,7 @@ var/global/list/random_useful_
 	name = "random vending machine"
 	desc = "This is a randomly selected vending machine."
 	icon = 'icons/obj/vending.dmi'
-	icon_state = ""
+	icon_state = "green-outline"
 
 /obj/random/vendor/spawn_choices()
 	return list(/obj/machinery/vending/weeb,
@@ -1412,3 +1440,38 @@ var/global/list/random_useful_
 	icon = 'icons/obj/drinks.dmi'
 	icon_state = "cola"
 	spawn_object = /obj/item/reagent_containers/food/drinks/cans/cola
+
+
+/* Place holders */
+/obj/random/rare
+
+/obj/random/rare/spawn_choices()
+	return list(
+		/obj/random/single/playing_cards,
+		/obj/item/device/flashlight/flashdark
+		)
+
+
+/obj/random/tech_loot
+
+/obj/random/tech_loot/spawn_choices()
+	return list(/obj/random/single/lighter)
+
+/obj/random/machine
+
+/obj/random/machine/spawn_choices()
+	return list(/obj/machinery/jukebox)
+/obj/random/scrap/dense_even
+
+/obj/random/scrap/dense_even/spawn_choices()
+	return list(/obj/structure/rubble/lab)
+
+/obj/random/rare
+
+/obj/random/rare/spawn_choices()
+	return list(/obj/random/single/cola)
+
+/obj/random/junkfood
+
+/obj/random/junkfood/spawn_choices()
+	return list(/obj/item/trash/chips)

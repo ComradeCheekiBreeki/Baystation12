@@ -44,7 +44,7 @@
 #define HOME_SYSTEM_GAIA       "Gaia"
 #define HOME_SYSTEM_MAGNITKA   "Magnitka"
 #define HOME_SYSTEM_CASTILLA   "Nueva Castilla"
-#define HOME_SYSTEM_FOSTER	   "Foster's Planet"
+#define HOME_SYSTEM_FOSTER	   "Foster's World"
 #define HOME_SYSTEM_STATELESS  "Stateless"
 #define HOME_SYSTEM_OTHER      "Other System"
 #define HOME_SYSTEM_DEEP_SPACE "Deep Space"
@@ -143,11 +143,9 @@
 #define RELIGION_VOX           "Auralis Reverence"
 
 // IPC cultures.
-#define CULTURE_POSITRONICS    "Union Member"
-
-#define HOME_SYSTEM_ROOT       "Root"
-
-#define FACTION_POSITRONICS    "Positronic Union"
+#define CULTURE_POSITRONICS_GEN1   "First Generation"
+#define CULTURE_POSITRONICS_GEN2   "Second Generation"
+#define CULTURE_POSITRONICS_GEN3   "Third Generation"
 
 // Diona cultures.
 #define CULTURE_DIONA          "Diona Chorus"

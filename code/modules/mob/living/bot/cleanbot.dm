@@ -15,9 +15,11 @@
 	var/blood = 1
 	var/list/target_types = list()
 
-/mob/living/bot/cleanbot/New()
-	..()
+
+/mob/living/bot/cleanbot/Initialize(mapload)
+	. = ..()
 	get_targets()
+
 
 /mob/living/bot/cleanbot/handleIdle()
 	if(!screwloose && !oddbutton && prob(5))
@@ -84,7 +86,7 @@
 
 /mob/living/bot/cleanbot/explode()
 	on = 0
-	visible_message("<span class='danger'>[src] blows apart!</span>")
+	visible_message(SPAN_DANGER("[src] blows apart!"))
 	var/turf/Tsec = get_turf(src)
 
 	new /obj/item/reagent_containers/glass/bucket(Tsec)
@@ -138,10 +140,23 @@
 	. = ..()
 	if(!screwloose || !oddbutton)
 		if(user)
-			to_chat(user, "<span class='notice'>The [src] buzzes and beeps.</span>")
+			to_chat(user, SPAN_NOTICE("The [src] buzzes and beeps."))
 		oddbutton = 1
 		screwloose = 1
 		return 1
+
+
+/mob/living/bot/cleanbot/get_construction_info()
+	return list(
+		"Attach a <b>Proximity Sensor</b> to a <b>Bucket</b>.",
+		"Add a <b>Robot Arm</b> to complete the cleanbot."
+	)
+
+
+/mob/living/bot/cleanbot/get_antag_interactions_info()
+	. = ..()
+	.[CODEX_INTERACTION_EMAG] += "<p>Turns on malfunctions that causes \the [initial(name)] to spew out gibs and water.</p>"
+
 
 /mob/living/bot/cleanbot/proc/get_targets()
 	target_types = list()

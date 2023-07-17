@@ -6,11 +6,11 @@
 /obj/effect/overmap/visitable/sector/vox_start
 	name = "Empty Space"
 	desc = "Just some empty space, with an irregular sensor echo."
-	in_space = TRUE
-	known = FALSE
+
 	place_near_main = list(2, 4)
 	icon_state = "event"
 	hide_from_reports = TRUE
+	sensor_visibility = 10
 	initial_generic_waypoints = list(
 		"nav_vox_raider_start"
 	)
@@ -33,7 +33,7 @@
 	warmup_time = 5
 	range = 2
 	fuel_consumption = 0
-	skill_needed = SKILL_NONE
+	skill_needed = SKILL_UNSKILLED
 	knockdown = FALSE
 
 /turf/simulated/floor/tiled/dark/vox

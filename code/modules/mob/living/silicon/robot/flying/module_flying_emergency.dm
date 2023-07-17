@@ -27,18 +27,19 @@
 		/obj/item/stack/medical/advanced/ointment,
 		/obj/item/stack/medical/advanced/bruise_pack,
 		/obj/item/stack/medical/splint,
-		/obj/item/robot_rack/roller,
+		/obj/item/robot_rack/roller_bed,
 		/obj/item/gripper/auto_cpr,
-		/obj/item/gripper/ivbag
+		/obj/item/gripper/ivbag,
+		/obj/item/reagent_containers/spray/cleaner/drone
 	)
 	synths = list(/datum/matter_synth/medicine = 15000)
 	emag = /obj/item/reagent_containers/spray
 	skills = list(
 		SKILL_ANATOMY      = SKILL_BASIC,
-		SKILL_MEDICAL      = SKILL_PROF,
-		SKILL_EVA          = SKILL_EXPERT,
-		SKILL_CONSTRUCTION = SKILL_EXPERT,
-		SKILL_ELECTRICAL   = SKILL_EXPERT
+		SKILL_MEDICAL      = SKILL_MASTER,
+		SKILL_EVA          = SKILL_EXPERIENCED,
+		SKILL_CONSTRUCTION = SKILL_EXPERIENCED,
+		SKILL_ELECTRICAL   = SKILL_EXPERIENCED
 	)
 
 /obj/item/robot_module/flying/emergency/finalize_emag()
@@ -57,11 +58,12 @@
 		stack.uses_charge = 1
 		stack.charge_costs = list(1000)
 	// Start out equipped with a roller bed
-	var/obj/item/robot_rack/roller/roller_rack = locate() in equipment
-	roller_rack.held += new /obj/item/roller()
+	var/obj/item/robot_rack/roller_bed/roller_rack = locate() in equipment
+	roller_rack.held += new /obj/item/roller_bed()
 	// and an auto-compressor
 	var/obj/item/gripper/auto_cpr/cpr_gripper = locate() in equipment
 	cpr_gripper.wrapped = new /obj/item/auto_cpr()
+	cpr_gripper.update_icon()
 
 /obj/item/robot_module/flying/emergency/finalize_synths()
 	. = ..()

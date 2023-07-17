@@ -36,7 +36,7 @@ var/global/list/obj/machinery/message_server/message_servers = list()
 /obj/machinery/message_server
 	icon = 'icons/obj/machines/research.dmi'
 	icon_state = "server"
-	name = "Messaging Server"
+	name = "messaging server"
 	density = TRUE
 	anchored = TRUE
 	idle_power_usage = 10
@@ -98,12 +98,12 @@ var/global/list/obj/machinery/message_server/message_servers = list()
 				Console.icon_state = "req_comp[priority]"
 			if(priority > 1)
 				playsound(Console.loc, 'sound/machines/chime.ogg', 80, 1)
-				Console.audible_message("[icon2html(Console, viewers(get_turf(Console)))]<span class='warning'>\The [Console] announces: 'High priority message received from [sender]!'</span>", hearing_distance = 8)
-				Console.message_log += "<FONT color='red'>High Priority message from <A href='?src=\ref[Console];write=[sender]'>[sender]</A></FONT><BR>[authmsg]"
+				Console.audible_message("[icon2html(Console, viewers(get_turf(Console)))][SPAN_WARNING("\The [Console] announces: 'High priority message received from [sender]!'")]", hearing_distance = 8)
+				Console.message_log += "[SPAN_COLOR("red", "High Priority message from <A href='?src=\ref[Console];write=[sender]'>[sender]</A>")]<BR>[authmsg]"
 			else
 				if(!Console.silent)
 					playsound(Console.loc, 'sound/machines/twobeep.ogg', 50, 1)
-					Console.audible_message("[icon2html(Console, viewers(get_turf(Console)))]<span class='notice'>\The [Console] announces: 'Message received from [sender].'</span>", hearing_distance = 5)
+					Console.audible_message("[icon2html(Console, viewers(get_turf(Console)))][SPAN_NOTICE("\The [Console] announces: 'Message received from [sender].'")]", hearing_distance = 5)
 				Console.message_log += "<B>Message from <A href='?src=\ref[Console];write=[sender]'>[sender]</A></B><BR>[authmsg]"
 			Console.set_light(0.3, 0.1, 2)
 
@@ -144,12 +144,16 @@ var/global/list/obj/machinery/message_server/message_servers = list()
 		if(!device || !(get_z(device) in GLOB.using_map.station_levels))
 			continue
 
-		var/datum/job/J = SSjobs.get_by_title(H.get_authentification_rank())
-		if(!J)
+		var/rank = H.get_authentification_rank()
+		var/datum/job/J = SSjobs.get_by_title(rank)
+		if (!J)
+			continue
+		if(!istype(J))
+			log_debug(append_admin_tools("MESSAGE SERVER: Mob has an invalid job, skipping. Mob: '[H]'. Rank: '[rank]'. Job: '[J]'."))
 			continue
 
 		if(J.department_flag & department)
-			to_chat(H, "<span class='notice'>Your [device.name] alerts you to the fact that somebody is requesting your presence at your department.</span>")
+			to_chat(H, SPAN_NOTICE("Your [device.name] alerts you to the fact that somebody is requesting your presence at your department."))
 			reached++
 
 	return reached

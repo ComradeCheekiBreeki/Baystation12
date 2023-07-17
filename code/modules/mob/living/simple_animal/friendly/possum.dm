@@ -67,10 +67,10 @@
 	if(!resting && stat == CONSCIOUS)
 		if(!is_angry)
 			is_angry = TRUE
-			custom_emote(src, "hisses!")
+			custom_emote(AUDIBLE_MESSAGE, "hisses!")
 		else
 			resting = TRUE
-			custom_emote(src, "dies!")
+			custom_emote(VISIBLE_MESSAGE, "dies!")
 		update_icon()
 
 /mob/living/simple_animal/passive/opossum/on_update_icon()
@@ -101,11 +101,11 @@
 
 /mob/living/simple_animal/passive/opossum/poppy/hear_broadcast(datum/language/language, mob/speaker, speaker_name, message)
 	. = ..()
-	addtimer(CALLBACK(src, .proc/check_keywords, message), rand(1 SECOND, 3 SECONDS))
+	addtimer(new Callback(src, .proc/check_keywords, message), rand(1 SECOND, 3 SECONDS))
 
 /mob/living/simple_animal/passive/opossum/poppy/hear_say(message, verb = "says", datum/language/language = null, alt_name = "",italics = 0, mob/speaker = null, sound/speech_sound, sound_vol)
 	. = ..()
-	addtimer(CALLBACK(src, .proc/check_keywords, message), rand(1 SECOND, 3 SECONDS))
+	addtimer(new Callback(src, .proc/check_keywords, message), rand(1 SECOND, 3 SECONDS))
 
 /mob/living/simple_animal/passive/opossum/poppy/proc/check_keywords(message)
 	if(!client && stat == CONSCIOUS)

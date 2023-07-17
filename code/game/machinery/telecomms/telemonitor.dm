@@ -8,7 +8,7 @@
 
 
 /obj/machinery/computer/telecomms/monitor
-	name = "Telecommunications Monitor"
+	name = "telecommunications monitor"
 	icon_screen = "comm_monitor"
 	machine_name = "telecomms monitor console"
 	machine_desc = "Tracks the traffic of a telecommunications network, and maintains information about connected machines."
@@ -36,7 +36,7 @@
 		if(0)
 			dat += "<br>[temp]<br><br>"
 			dat += "<br>Current Network: <a href='?src=\ref[src];network=1'>[network]</a><br>"
-			if(machinelist.len)
+			if(length(machinelist))
 				dat += "<br>Detected Network Entities:<ul>"
 				for(var/obj/machinery/telecomms/T in machinelist)
 					dat += "<li><a href='?src=\ref[src];viewmachine=[T.id]'>\ref[T] [T.name]</a> ([T.id])</li>"
@@ -92,18 +92,18 @@
 				screen = 0
 
 			if("probe")
-				if(machinelist.len > 0)
-					temp = "<font color = #d70b00>- FAILED: CANNOT PROBE WHEN BUFFER FULL -</font>"
+				if(length(machinelist) > 0)
+					temp = SPAN_COLOR("#d70b00", "- FAILED: CANNOT PROBE WHEN BUFFER FULL -")
 
 				else
 					for(var/obj/machinery/telecomms/T in range(25, src))
 						if(T.network == network)
 							machinelist.Add(T)
 
-					if(!machinelist.len)
-						temp = "<font color = #d70b00>- FAILED: UNABLE TO LOCATE NETWORK ENTITIES IN \[[network]\] -</font>"
+					if(!length(machinelist))
+						temp = SPAN_COLOR("#d70b00", "- FAILED: UNABLE TO LOCATE NETWORK ENTITIES IN \[[network]\] -")
 					else
-						temp = "<font color = #336699>- [machinelist.len] ENTITIES LOCATED & BUFFERED -</font>"
+						temp = SPAN_COLOR("#336699", "- [length(machinelist)] ENTITIES LOCATED & BUFFERED -")
 
 					screen = 0
 
@@ -113,13 +113,13 @@
 		var/newnet = input(usr, "Which network do you want to view?", "Comm Monitor", network) as null|text
 		if(newnet && ((usr in range(1, src) || issilicon(usr))))
 			if(length(newnet) > 15)
-				temp = "<font color = #d70b00>- FAILED: NETWORK TAG STRING TOO LENGHTLY -</font>"
+				temp = SPAN_COLOR("#d70b00", "- FAILED: NETWORK TAG STRING TOO LENGHTLY -")
 
 			else
 				network = newnet
 				screen = 0
 				machinelist = list()
-				temp = "<font color = #336699>- NEW NETWORK TAG SET IN ADDRESS \[[network]\] -</font>"
+				temp = SPAN_COLOR("#336699", "- NEW NETWORK TAG SET IN ADDRESS \[[network]\] -")
 
 	updateUsrDialog()
 	return
@@ -129,6 +129,6 @@
 		playsound(src.loc, 'sound/effects/sparks4.ogg', 75, 1)
 		emagged = TRUE
 		req_access.Cut()
-		to_chat(user, "<span class='notice'>You you disable the security protocols</span>")
+		to_chat(user, SPAN_NOTICE("You you disable the security protocols"))
 		src.updateUsrDialog()
 		return 1

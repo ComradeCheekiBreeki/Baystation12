@@ -71,20 +71,20 @@ var/global/datum/species/shapeshifter/promethean/prometheans
 
 	var/heal_rate = 5 // Temp. Regen per tick.
 
-	traits = list(/decl/trait/malus/water = TRAIT_LEVEL_MODERATE)
+	traits = list(/singleton/trait/malus/water = TRAIT_LEVEL_MODERATE)
 
 /datum/species/shapeshifter/promethean/New()
 	..()
 	prometheans = src
 
 /datum/species/shapeshifter/promethean/hug(mob/living/carbon/human/H,mob/living/target)
-	var/datum/gender/G = gender_datums[target.gender]
-	H.visible_message("<span class='notice'>\The [H] glomps [target] to make [G.him] feel better!</span>", \
-					"<span class='notice'>You glomps [target] to make [G.him] feel better!</span>")
+	var/datum/gender/G = GLOB.gender_datums[target.gender]
+	H.visible_message(SPAN_NOTICE("\The [H] glomps [target] to make [G.him] feel better!"), \
+					SPAN_NOTICE("You glomps [target] to make [G.him] feel better!"))
 	H.apply_stored_shock_to(target)
 
 /datum/species/shapeshifter/promethean/handle_death(mob/living/carbon/human/H)
-	addtimer(CALLBACK(H, /mob/proc/gib),0)
+	addtimer(new Callback(H, /mob/proc/gib),0)
 
 /datum/species/shapeshifter/promethean/handle_environment_special(mob/living/carbon/human/H)
 
@@ -146,7 +146,7 @@ var/global/datum/species/shapeshifter/promethean/prometheans
 
 	if(!stored_shock_by_ref["\ref[H]"])
 		return
-	var/datum/gender/G = gender_datums[H.gender]
+	var/datum/gender/G = GLOB.gender_datums[H.gender]
 
 	switch(stored_shock_by_ref["\ref[H]"])
 		if(1 to 10)
@@ -154,6 +154,6 @@ var/global/datum/species/shapeshifter/promethean/prometheans
 		if(11 to 20)
 			return "[G.He] [G.is] glowing gently with moderate levels of electrical activity.\n"
 		if(21 to 35)
-			return "<span class='warning'>[G.He] [G.is] glowing brightly with high levels of electrical activity.</span>"
+			return SPAN_WARNING("[G.He] [G.is] glowing brightly with high levels of electrical activity.")
 		if(35 to INFINITY)
-			return "<span class='danger'>[G.He] [G.is] radiating massive levels of electrical activity!</span>"
+			return SPAN_DANGER("[G.He] [G.is] radiating massive levels of electrical activity!")

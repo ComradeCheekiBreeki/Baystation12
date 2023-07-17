@@ -62,7 +62,7 @@
 	atmos_canpass = CANPASS_NEVER
 	connect_types = CONNECT_TYPE_REGULAR|CONNECT_TYPE_FUEL
 
-	construct_state = /decl/machine_construction/default/panel_closed
+	construct_state = /singleton/machine_construction/default/panel_closed
 	maximum_component_parts = list(/obj/item/stock_parts = 6)//don't want too many, let upgraded component shine
 	uncreated_component_parts = list(/obj/item/stock_parts/power/apc/buildable = 1)
 
@@ -111,13 +111,13 @@
 	. = list()
 	.+= "Location: [get_area(src)]."
 	if(!is_powered())
-		.+= "<span class='average'>Insufficient power to operate.</span>"
+		.+= SPAN_CLASS("average", "Insufficient power to operate.")
 	if(!check_fuel())
-		.+= "<span class='average'>Insufficient fuel for a burn.</span>"
+		.+= SPAN_CLASS("average", "Insufficient fuel for a burn.")
 	if(MACHINE_IS_BROKEN(src))
-		.+= "<span class='average'>Inoperable engine configuration.</span>"
+		.+= SPAN_CLASS("average", "Inoperable engine configuration.")
 	if(blockage)
-		.+= "<span class='average'>Obstruction of airflow detected.</span>"
+		.+= SPAN_CLASS("average", "Obstruction of airflow detected.")
 
 	.+= "Propellant total mass: [round(air_contents.get_mass(),0.01)] kg."
 	.+= "Propellant used per burn: [round(air_contents.specific_mass() * moles_per_burn * thrust_limit,0.01)] kg."
@@ -163,7 +163,7 @@
 	if(!is_on())
 		return 0
 	if(!check_fuel() || (0 < use_power_oneoff(charge_per_burn)) || check_blockage())
-		audible_message("<span class='warning'>[src] coughs once and goes silent!</span>")
+		audible_message(SPAN_WARNING("[src] coughs once and goes silent!"))
 		update_use_power(POWER_USE_OFF)
 		return 0
 
@@ -212,7 +212,7 @@
 		qdel(src)
 
 /obj/item/stock_parts/circuitboard/unary_atmos/engine//why don't we move this elsewhere?
-	name = T_BOARD("gas thruster")
+	name = "circuit board (gas thruster)"
 	icon_state = "mcontroller"
 	build_path = /obj/machinery/atmospherics/unary/engine
 	origin_tech = list(TECH_POWER = 1, TECH_ENGINEERING = 2)
@@ -225,5 +225,5 @@
 
 /obj/machinery/atmospherics/unary/engine/terminal
 	base_type = /obj/machinery/atmospherics/unary/engine
-	stock_part_presets = list(/decl/stock_part_preset/terminal_setup)
+	stock_part_presets = list(/singleton/stock_part_preset/terminal_setup)
 	uncreated_component_parts = list(/obj/item/stock_parts/power/terminal/buildable = 1)

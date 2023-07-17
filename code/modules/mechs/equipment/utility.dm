@@ -1,6 +1,6 @@
 //Pile of garbage for when a clam is uninstalled or destroyed with +1 dense items inside
 /obj/structure/cargopile
-	name = "\improper spilled cargo"
+	name = "spilled cargo"
 	desc = "The jetsam of some unfortunate power loader."
 	icon = 'icons/obj/rubble.dmi'
 	icon_state = "base"
@@ -45,7 +45,7 @@
 		else if(chosen_obj.dropInto(get_turf(src)))
 			src.visible_message(SPAN_NOTICE("\The [user] pulls \the [chosen_obj] from \the [src]."))
 
-		if(!contents.len)
+		if(!length(contents))
 			qdel_self()
 		else update_icon()
 
@@ -100,7 +100,7 @@
 							playsound(FD, 'sound/effects/meteorimpact.ogg', 100, 1)
 							playsound(FD, 'sound/machines/airlock_creaking.ogg', 100, 1)
 							FD.blocked = FALSE
-							addtimer(CALLBACK(FD, /obj/machinery/door/firedoor/.proc/open, TRUE), 0)
+							addtimer(new Callback(FD, /obj/machinery/door/firedoor/.proc/open, TRUE), 0)
 							FD.set_broken(TRUE)
 							FD.visible_message(SPAN_WARNING("\The [owner] tears \the [FD] open!"))
 					else
@@ -109,10 +109,10 @@
 							playsound(FD, 'sound/machines/airlock_creaking.ogg', 100, 1)
 							if(FD.density)
 								FD.visible_message(SPAN_DANGER("\The [owner] forces \the [FD] open!"))
-								addtimer(CALLBACK(FD, /obj/machinery/door/firedoor/.proc/open, TRUE), 0)
+								addtimer(new Callback(FD, /obj/machinery/door/firedoor/.proc/open, TRUE), 0)
 							else
 								FD.visible_message(SPAN_WARNING("\The [owner] forces \the [FD] closed!"))
-								addtimer(CALLBACK(FD, /obj/machinery/door/firedoor/.proc/close, TRUE), 0)
+								addtimer(new Callback(FD, /obj/machinery/door/firedoor/.proc/close, TRUE), 0)
 					return
 				else if(istype(O, /obj/machinery/door/airlock))
 					var/obj/machinery/door/airlock/AD = O
@@ -125,7 +125,7 @@
 								playsound(AD, 'sound/effects/meteorimpact.ogg', 100, 1)
 								playsound(AD, 'sound/machines/airlock_creaking.ogg', 100, 1)
 								AD.visible_message(SPAN_DANGER("\The [owner] tears \the [AD] open!"))
-								addtimer(CALLBACK(AD, /obj/machinery/door/airlock/.proc/open, TRUE), 0)
+								addtimer(new Callback(AD, /obj/machinery/door/airlock/.proc/open, TRUE), 0)
 								AD.set_broken(TRUE)
 								return
 						else
@@ -133,12 +133,12 @@
 							if((MACHINE_IS_BROKEN(AD) || !AD.is_powered() || do_after(owner, 5 SECONDS, AD, DO_DEFAULT | DO_USER_UNIQUE_ACT | DO_PUBLIC_PROGRESS)) && !(AD.operating || AD.welded || AD.locked))
 								playsound(AD, 'sound/machines/airlock_creaking.ogg', 100, 1)
 								if(AD.density)
-									addtimer(CALLBACK(AD, /obj/machinery/door/airlock/.proc/open, TRUE), 0)
+									addtimer(new Callback(AD, /obj/machinery/door/airlock/.proc/open, TRUE), 0)
 									if(!MACHINE_IS_BROKEN(AD) && AD.is_powered())
 										AD.set_broken(TRUE)
 									AD.visible_message(SPAN_DANGER("\The [owner] forces \the [AD] open!"))
 								else
-									addtimer(CALLBACK(AD, /obj/machinery/door/airlock/.proc/close, TRUE), 0)
+									addtimer(new Callback(AD, /obj/machinery/door/airlock/.proc/close, TRUE), 0)
 									if(!MACHINE_IS_BROKEN(AD) && AD.is_powered())
 										AD.set_broken(TRUE)
 									AD.visible_message(SPAN_DANGER("\The [owner] forces \the [AD] closed!"))
@@ -176,7 +176,7 @@
 					return
 				M.attack_generic(owner, (owner.arms ? owner.arms.melee_damage * 1.5 : 0), "slammed") //Honestly you should not be able to do this without hands, but still
 				M.throw_at(get_edge_target_turf(owner ,owner.dir),5, 2)
-				to_chat(user, "<span class='warning'>You slam [target] with [src.name].</span>")
+				to_chat(user, SPAN_WARNING("You slam [target] with [src.name]."))
 				owner.visible_message(SPAN_DANGER("[owner] slams [target] with the hydraulic clamp."))
 			else
 				step_away(M, owner)
@@ -191,8 +191,8 @@
 /obj/item/mech_equipment/clamp/CtrlClick(mob/user)
 	if(owner)
 		drop_carrying(user, FALSE)
-	else
-		..()
+		return TRUE
+	return ..()
 
 /obj/item/mech_equipment/clamp/proc/drop_carrying(mob/user, choose_object)
 	if(!length(carrying))
@@ -246,7 +246,7 @@
 				var/turf/location = get_turf(src)
 				var/list/turfs = location.AdjacentTurfsSpace()
 				if(load.density)
-					if(turfs.len > 0)
+					if(length(turfs) > 0)
 						location = pick(turfs)
 						turfs -= location
 					else
@@ -337,7 +337,7 @@
 
 /obj/effect/ebeam/warp
 	plane = WARP_EFFECT_PLANE
-	no_z_overlay = TRUE
+	z_flags = ZMM_IGNORE
 
 /obj/effect/effect/warp/small
 	plane = WARP_EFFECT_PLANE
@@ -346,7 +346,7 @@
 	icon_state = "singularity_s3"
 	pixel_x = -32
 	pixel_y = -32
-	no_z_overlay = TRUE
+	z_flags = ZMM_IGNORE
 
 /obj/item/mech_equipment/catapult/proc/beamdestroyed()
 	if(beam)
@@ -440,7 +440,7 @@
 					alpha = 0,
 					time = 1.25 SECONDS
 				)
-				addtimer(CALLBACK(warpeffect, /atom/movable/proc/forceMove, null), 1.25 SECONDS)
+				addtimer(new Callback(warpeffect, /atom/movable/proc/forceMove, null), 1.25 SECONDS)
 				playsound(warpeffect, 'sound/effects/heavy_cannon_blast.ogg', 50, 1)
 
 				var/list/atoms = list()
@@ -726,7 +726,7 @@
 		)
 
 /obj/item/mech_equipment/ionjets
-	name = "\improper exosuit manouvering unit"
+	name = "exosuit maneuvering unit"
 	desc = "A testament to the fact that sometimes more is actually more. These oversized electric resonance boosters allow exosuits to move in microgravity and can even provide brief speed boosts. The stabilizers can be toggled with ctrl-click."
 	icon_state = "mech_jet_off"
 	restricted_hardpoints = list(HARDPOINT_BACK)
@@ -774,8 +774,8 @@
 		if (active)
 			stabilizers = !stabilizers
 			to_chat(user, SPAN_NOTICE("You toggle the stabilizers [stabilizers ? "on" : "off"]"))
-	else
-		..()
+		return TRUE
+	return ..()
 
 /obj/item/mech_equipment/ionjets/proc/activate()
 	passive_power_use = activated_passive_power
@@ -846,7 +846,7 @@
 	equipment_delay = 10
 
 	origin_tech = list(TECH_MATERIAL = 1, TECH_ENGINEERING = 2, TECH_MAGNET = 2)
-	var/obj/machinery/camera/network/thunder/camera
+	var/obj/machinery/camera/network/helmet/camera
 	var/list/additional_networks //If you want to make a subtype for mercs, ert etc... Write here the extra networks
 
 /obj/item/mech_equipment/camera/Destroy()
@@ -859,6 +859,7 @@
 	camera.c_tag = "null"
 	camera.set_status(FALSE)
 	camera.is_helmet_cam = TRUE //Can transmit locally regardless of network
+	camera.set_stat_immunity(MACHINE_STAT_NOPOWER) //Camera power comes from the mech, not the camera itself.
 
 /obj/item/mech_equipment/camera/installed(mob/living/exosuit/_owner)
 	. = ..()

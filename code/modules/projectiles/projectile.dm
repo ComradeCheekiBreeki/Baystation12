@@ -45,7 +45,8 @@
 	var/projectile_type = /obj/item/projectile
 	var/penetrating = 0 //If greater than zero, the projectile will pass through dense objects as specified by on_penetrate()
 	var/life_span = 50 //This will de-increment every process(). When 0, it will delete the projectile.
-		//Effects
+
+	//Effects
 	var/stun = 0
 	var/weaken = 0
 	var/paralyze = 0
@@ -55,7 +56,9 @@
 	var/drowsy = 0
 	var/agony = 0
 	var/embed = FALSE // whether or not the projectile can embed itself in the mob
-	var/penetration_modifier = 0.2 //How much internal damage this projectile can deal, as a multiplier.
+	var/penetration_modifier = 0.2 //How likely this projectile is to embed or rupture artery
+	var/knockback = 0 //SIERRA
+	var/space_knockback = 0	//whether or not it will knock things back in space
 
 	var/hitscan = FALSE		// whether the projectile should be hitscan
 	var/step_delay = 1	// the delay between iterations if not a hitscan projectile
@@ -97,7 +100,7 @@
 	var/mob/living/L = target
 
 	L.apply_effects(0, weaken, paralyze, stutter, eyeblur, drowsy, 0, blocked)
-	L.stun_effect_act(stun, agony, def_zone, src)
+	L.stun_effect_act(stun, (agony - blocked), def_zone, src)
 	//radiation protection is handled separately from other armour types.
 	L.apply_damage(irradiate, DAMAGE_RADIATION, damage_flags = DAMAGE_FLAG_DISPERSED)
 
@@ -110,6 +113,17 @@
 		var/turf/T = get_turf(A)
 		if(T)
 			T.hotspot_expose(700, 5)
+
+	if(space_knockback && ismovable(A))
+		var/atom/movable/AM = A
+		if(!AM.anchored && !AM.has_gravity())
+			if(ismob(AM))
+				var/mob/M = AM
+				if(M.check_space_footing())
+					return
+			var/old_dir = AM.dir
+			step(AM,get_dir(firer,AM))
+			AM.set_dir(old_dir)
 
 //Checks if the projectile is eligible for embedding. Not that it necessarily will.
 /obj/item/projectile/can_embed()
@@ -160,7 +174,7 @@
 	original = target
 	def_zone = target_zone
 
-	addtimer(CALLBACK(src, .proc/finalize_launch, curloc, targloc, x_offset, y_offset, angle_offset),0)
+	addtimer(new Callback(src, .proc/finalize_launch, curloc, targloc, x_offset, y_offset, angle_offset),0)
 	return 0
 
 /obj/item/projectile/proc/launch_from_mob(atom/target, mob/user, target_zone, x_offset = 0, y_offset = 0, angle_offset = 0)
@@ -241,16 +255,16 @@
 
 	if(result == PROJECTILE_FORCE_MISS)
 		if(!silenced)
-			target_mob.visible_message("<span class='notice'>\The [src] misses [target_mob] narrowly!</span>")
+			target_mob.visible_message(SPAN_NOTICE("\The [src] misses [target_mob] narrowly!"))
 			if(LAZYLEN(miss_sounds))
 				playsound(target_mob.loc, pick(miss_sounds), 60, 1)
 		return 0
 
 	//hit messages
 	if(silenced)
-		to_chat(target_mob, "<span class='danger'>You've been hit in the [parse_zone(def_zone)] by \the [src]!</span>")
+		to_chat(target_mob, SPAN_DANGER("You've been hit in the [parse_zone(def_zone)] by \the [src]!"))
 	else
-		target_mob.visible_message("<span class='danger'>\The [target_mob] is hit by \the [src] in the [parse_zone(def_zone)]!</span>")//X has fired Y is now given by the guns so you cant tell who shot you if you could not see the shooter
+		target_mob.visible_message(SPAN_DANGER("\The [target_mob] is hit by \the [src] in the [parse_zone(def_zone)]!"))//X has fired Y is now given by the guns so you cant tell who shot you if you could not see the shooter
 
 	//admin logs
 	if(!no_attack_log)
@@ -326,7 +340,7 @@
 	on_impact(A)
 
 	set_density(0)
-	set_invisibility(101)
+	set_invisibility(INVISIBILITY_ABSTRACT)
 
 	qdel(src)
 	return 1
@@ -443,7 +457,7 @@
 
 //"Tracing" projectile
 /obj/item/projectile/test //Used to see if you can hit them.
-	invisibility = 101 //Nope!  Can't see me!
+	invisibility = INVISIBILITY_ABSTRACT //Nope!  Can't see me!
 	yo = null
 	xo = null
 	var/result = 0 //To pass the message back to the gun.
@@ -541,3 +555,6 @@
 		SP.SetName((name != "shrapnel")? "[name] shrapnel" : "shrapnel")
 		SP.desc += " It looks like it was fired from [shot_from]."
 		return SP
+
+/obj/item/projectile/Process_Spacemove()
+	return TRUE	//Bullets don't drift in space

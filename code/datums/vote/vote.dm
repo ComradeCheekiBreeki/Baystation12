@@ -52,8 +52,8 @@
 	var/text = get_start_text()
 
 	log_vote(text)
-	to_world("<font color='purple'><b>[text]</b>\nType <b>vote</b> or click <a href='?src=\ref[SSvote];vote_panel=1'>here</a> to place your votes.\nYou have [config.vote_period/10] seconds to vote.</font>")
-	sound_to(world, sound('sound/ambience/alarm4.ogg', repeat = 0, wait = 0, volume = 50, channel = GLOB.vote_sound_channel))
+	to_world(SPAN_COLOR("purple", "<b>[text]</b>\nType <b>vote</b> or click <a href='?src=\ref[SSvote];vote_panel=1'>here</a> to place your votes.\nYou have [config.vote_period/10] seconds to vote."))
+	sound_to(world, sound('sound/ui/vote-notify.ogg', repeat = 0, wait = 0, volume = 33, channel = GLOB.vote_sound_channel))
 
 /datum/vote/proc/get_start_text()
 	return "[capitalize(name)] vote started by [initiator]."
@@ -104,8 +104,13 @@
 		return 1
 
 	var/text = get_result_announcement()
+	var/admin_text = get_vote_statistics()
+	log_vote(admin_text)
 	log_vote(text)
-	to_world("<font color='purple'>[text]</font>")
+	to_world(SPAN_COLOR("purple", "[text]\n"))
+
+	for (var/client/C in GLOB.admins)
+		to_chat(C, SPAN_COLOR("purple", "[admin_text]"))
 
 	if(!(result[result[1]] > 0))
 		return 1
@@ -123,6 +128,16 @@
 				runner_ups += display_choices[runner_up]
 			text += english_list(runner_ups)
 
+	return JOINTEXT(text)
+
+/datum/vote/proc/get_vote_statistics()
+	var/list/text = list()
+	text += "<b>Total Votes: [length(votes)]/[length(GLOB.clients)]</b>\n"
+	text += "\n"
+	text += "<b>Votes Per Option:</b>"
+	for(var/R in result)
+		if (result[R] > 0)
+			text += "\n[R]: [result[R]]"
 	return JOINTEXT(text)
 
 
@@ -193,7 +208,7 @@
 	. += additional_header
 	. += "</tr>"
 
-	for(var/i = 1, i <= choices.len, i++)
+	for(var/i = 1, i <= length(choices), i++)
 		var/choice = choices[i]
 		var/voted_for = votes[user.ckey] && (i in votes[user.ckey])
 

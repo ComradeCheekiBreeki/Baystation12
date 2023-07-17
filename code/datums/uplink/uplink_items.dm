@@ -124,7 +124,7 @@ var/global/datum/uplink/uplink = new()
 
 	if(istype(I, /list))
 		var/list/L = I
-		if(L.len) I = L[1]
+		if(length(L)) I = L[1]
 
 	if(istype(I) && ishuman(user))
 		var/mob/living/carbon/human/A = user
@@ -150,6 +150,7 @@ var/global/datum/uplink/uplink = new()
 * Support procs *
 ****************/
 /proc/get_random_uplink_items(obj/item/device/uplink/U, remaining_TC, loc)
+	RETURN_TYPE(/list)
 	var/list/bought_items = list()
 	while(remaining_TC)
 		var/datum/uplink_random_selection/uplink_selection = get_uplink_random_selection_by_type(/datum/uplink_random_selection/default)

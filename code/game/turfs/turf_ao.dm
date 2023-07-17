@@ -3,10 +3,10 @@
 
 /turf/var/permit_ao = TRUE
 /// Current ambient occlusion overlays. Tracked so we can reverse them without dropping all priority overlays.
-/turf/var/tmp/list/ao_overlays
-/turf/var/tmp/ao_neighbors
-/turf/var/tmp/list/ao_overlays_mimic
-/turf/var/tmp/ao_neighbors_mimic
+/turf/var/list/ao_overlays
+/turf/var/ao_neighbors
+/turf/var/list/ao_overlays_mimic
+/turf/var/ao_neighbors_mimic
 /turf/var/ao_queued = AO_UPDATE_NONE
 
 /turf/proc/regenerate_ao()
@@ -28,6 +28,7 @@
 		CALCULATE_NEIGHBORS(src, ao_neighbors, T, AO_TURF_CHECK(T))
 
 /proc/make_ao_image(corner, i, px = 0, py = 0, pz = 0, pw = 0)
+	RETURN_TYPE(/image)
 	var/list/cache = SSao.image_cache
 	var/cstr = "[corner]"
 	var/key = "[cstr]-[i]-[px]/[py]/[pz]/[pw]"

@@ -27,7 +27,7 @@
 		owner.bodytemperature += burn
 		burn = 0
 		if(prob(25))
-			owner.visible_message("<span class='warning'>\The [owner]'s crystalline [name] shines with absorbed energy!</span>")
+			owner.visible_message(SPAN_WARNING("\The [owner]'s crystalline [name] shines with absorbed energy!"))
 
 	if(used_weapon)
 		add_autopsy_data("[used_weapon]", brute + burn)
@@ -62,7 +62,7 @@
 			brute /= 2
 			burn /= 2
 
-	if(status & ORGAN_BROKEN && brute)
+	if (owner && (status & ORGAN_BROKEN) && brute)
 		jostle_bone(brute)
 		if(can_feel_pain() && prob(40))
 			owner.emote("scream")	//getting hit on broken hand hurts
@@ -84,7 +84,7 @@
 	if(burn)
 		if(laser)
 			createwound(INJURY_TYPE_LASER, burn)
-			if(prob(40))
+			if(owner && prob(40))
 				owner.IgniteMob()
 		else
 			createwound(INJURY_TYPE_BURN, burn)
@@ -100,22 +100,23 @@
 				W.disinfected = 0
 				W.salved = 0
 				disturbed += W.damage
-		if(disturbed)
-			to_chat(owner,"<span class='warning'>Ow! Your burns were disturbed.</span>")
+		if(owner && disturbed)
+			to_chat(owner,SPAN_WARNING("Ow! Your burns were disturbed."))
 			add_pain(0.5*disturbed)
 
 	//If there are still hurties to dispense
-	if (spillover)
+	if (owner && spillover)
 		owner.shock_stage += spillover * config.organ_damage_spillover_multiplier
 
 	// sync the organ's damage with its wounds
 	update_damages()
-	owner.updatehealth()
-	if(status & ORGAN_BLEEDING)
-		owner.update_bandages()
+	if (owner)
+		owner.updatehealth()
+		if(status & ORGAN_BLEEDING)
+			owner.update_bandages()
 
-	if(owner && update_damstate())
-		owner.UpdateDamageIcon()
+		if(update_damstate())
+			owner.UpdateDamageIcon()
 
 	if(created_wound && isobj(used_weapon))
 		var/obj/O = used_weapon
@@ -215,7 +216,7 @@
 	if(genetic_degradation <= 30)
 		if(status & ORGAN_MUTATED)
 			unmutate()
-			to_chat(src, "<span class = 'notice'>Your [name] is shaped normally again.</span>")
+			to_chat(src, SPAN_NOTICE("Your [name] is shaped normally again."))
 	return -(genetic_degradation - last_gene_dam)
 
 /obj/item/organ/external/proc/add_genetic_damage(amount)
@@ -228,7 +229,7 @@
 	if(genetic_degradation > 30)
 		if(!(status & ORGAN_MUTATED) && prob(genetic_degradation))
 			mutate()
-			to_chat(owner, "<span class = 'notice'>Something is not right with your [name]...</span>")
+			to_chat(owner, SPAN_NOTICE("Something is not right with your [name]..."))
 	return (genetic_degradation - last_gene_dam)
 
 /obj/item/organ/external/proc/mutate()
@@ -295,7 +296,7 @@
 				return 1
 
 		else if(agony_amount > 0.5 * max_damage)
-			owner.visible_message("<span class='warning'>[owner] reels in pain!</span>")
+			owner.visible_message(SPAN_WARNING("[owner] reels in pain!"))
 			if(agony_amount > max_damage)
 				owner.Weaken(4)
 			else

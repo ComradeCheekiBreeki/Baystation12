@@ -87,7 +87,7 @@
 	var/list/damageable_components = list()
 	for(var/obj/item/robot_parts/robot_component/RC in contents)
 		damageable_components += RC
-	if(!damageable_components.len) return
+	if(!length(damageable_components)) return
 	var/obj/item/robot_parts/robot_component/RC = pick(damageable_components)
 	if(RC.take_damage(brute, burn))
 		qdel(RC)
@@ -95,13 +95,13 @@
 
 /obj/item/mech_component/attackby(obj/item/thing, mob/user)
 	if(isScrewdriver(thing))
-		if(contents.len)
+		if(length(contents))
 			//Filter non movables
 			var/list/valid_contents = list()
 			for(var/atom/movable/A in contents)
 				if(!A.anchored)
 					valid_contents += A
-			if(!valid_contents.len)
+			if(!length(valid_contents))
 				return
 			var/obj/item/removed = pick(valid_contents)
 			if(!(removed in contents))
@@ -175,14 +175,14 @@
 /obj/item/mech_component/proc/get_damage_string()
 	switch(damage_state)
 		if(MECH_COMPONENT_DAMAGE_UNDAMAGED)
-			return FONT_COLORED(COLOR_GREEN, "undamaged")
+			return SPAN_COLOR(COLOR_GREEN, "undamaged")
 		if(MECH_COMPONENT_DAMAGE_DAMAGED)
-			return FONT_COLORED(COLOR_YELLOW, "damaged")
+			return SPAN_COLOR(COLOR_YELLOW, "damaged")
 		if(MECH_COMPONENT_DAMAGE_DAMAGED_BAD)
-			return FONT_COLORED(COLOR_ORANGE, "badly damaged")
+			return SPAN_COLOR(COLOR_ORANGE, "badly damaged")
 		if(MECH_COMPONENT_DAMAGE_DAMAGED_TOTAL)
-			return FONT_COLORED(COLOR_RED, "almost destroyed")
-	return FONT_COLORED(COLOR_RED, "destroyed")
+			return SPAN_COLOR(COLOR_RED, "almost destroyed")
+	return SPAN_COLOR(COLOR_RED, "destroyed")
 
 /obj/item/mech_component/proc/return_diagnostics(mob/user)
 	to_chat(user, SPAN_NOTICE("[capitalize(src.name)]:"))

@@ -29,6 +29,7 @@ var/global/list/ai_status_emotions = list(
 	)
 
 /proc/get_ai_emotions(ckey)
+	RETURN_TYPE(/list)
 	var/list/emotions = new
 	for(var/emotion_name in ai_status_emotions)
 		var/datum/ai_emotion/emotion = ai_status_emotions[emotion_name]
@@ -57,7 +58,7 @@ var/global/list/ai_status_emotions = list(
 /obj/machinery/ai_status_display
 	icon = 'icons/obj/status_display.dmi'
 	icon_state = "frame"
-	name = "AI display"
+	name = "\improper AI display"
 	anchored = TRUE
 	density = FALSE
 
@@ -90,6 +91,7 @@ var/global/list/ai_status_emotions = list(
 
 /obj/machinery/ai_status_display/proc/set_picture(state)
 	picture_state = state
-	if(overlays.len)
+	if(length(overlays))
 		overlays.Cut()
-	overlays += image('icons/obj/status_display.dmi', icon_state=picture_state)
+	overlays += overlay_image('icons/obj/status_display.dmi', icon_state=picture_state, plane = EFFECTS_ABOVE_LIGHTING_PLANE, layer = ABOVE_LIGHTING_LAYER)
+	set_light(0.8, 0.1, 1, l_color = "#0093ff")

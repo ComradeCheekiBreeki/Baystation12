@@ -11,13 +11,16 @@
 	return TRUE
 
 /obj/machinery/computer/mining/interact(mob/user)
+	if (!connected)
+		to_chat(user, SPAN_WARNING("\The [src] is not connected to a processing machine. <a href='?src=\ref[src];scan_for_machine=1'>Scan</a>"))
+		return
 	var/datum/browser/popup = new(user, "mining-[name]", "[src] Control Panel")
 	popup.set_content(jointext(connected.get_console_data(), "<br>"))
 	popup.open()
 
 /obj/machinery/computer/mining/CanUseTopic(mob/user)
 	if(!connected)
-		to_chat(user, "<span class='warning'>\The [src] is not connected to a processing machine. <a href='?src=\ref[src];scan_for_machine=1'>Scan</a></span>")
+		to_chat(user, SPAN_WARNING("\The [src] is not connected to a processing machine. <a href='?src=\ref[src];scan_for_machine=1'>Scan</a>"))
 		return STATUS_CLOSE
 	. = ..()
 

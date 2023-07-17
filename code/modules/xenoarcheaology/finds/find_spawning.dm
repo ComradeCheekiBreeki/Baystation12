@@ -1,4 +1,5 @@
 /proc/get_archeological_find_by_findtype(find_type)
+	RETURN_TYPE(/obj/item/archaeological_find)
 	for(var/T in typesof(/obj/item/archaeological_find))
 		var/obj/item/archaeological_find/F = T
 		if(find_type == initial(F.find_type))
@@ -44,11 +45,11 @@
 			descriptors.Add("is encircled with bands of [pick("quadrinium","cordite","ferritic-alloy","plasteel","duranium")]")
 		if(prob(30))
 			descriptors.Add("menaces with spikes of [pick("solid phoron","uranium","white pearl","black steel")]")
-		if(descriptors.len > 0)
+		if(length(descriptors) > 0)
 			decorations = "It "
-			for(var/index=1, index <= descriptors.len, index++)
+			for(var/index=1, index <= length(descriptors), index++)
 				if(index > 1)
-					if(index == descriptors.len)
+					if(index == length(descriptors))
 						decorations += " and "
 					else
 						decorations += ", "
@@ -208,9 +209,7 @@
 	apply_image_decorations = 1
 
 /obj/item/archaeological_find/coin/spawn_item()
-	var/obj/item/material/coin/C = pick(subtypesof(/obj/item/material/coin))
-	C = new C(loc)
-	return C
+	return new_simple_coin (loc)
 
 /obj/item/archaeological_find/trap
 	item_type = "trap"
@@ -239,6 +238,7 @@
 	var/storage_amount = BASE_STORAGE_COST(new_box.max_w_class)
 	new_box.max_storage_space = rand(storage_amount, storage_amount * 10)
 	new_box.icon_state = "box"
+	new_box.foldable = null
 	if(prob(30))
 		apply_image_decorations = 1
 	return new_box
@@ -290,7 +290,7 @@
 
 /obj/item/archaeological_find/material/exotic
 	item_type = "rare material lump"
-	possible_materials = list(MATERIAL_ALIENALLOY, MATERIAL_PHORON, MATERIAL_HYDROGEN, MATERIAL_PHORON_GLASS)
+	possible_materials = list(MATERIAL_ALIENALLOY, MATERIAL_PHORON, MATERIAL_HYDROGEN, MATERIAL_BORON_GLASS)
 
 /obj/item/archaeological_find/crystal
 	item_type = "crystal"

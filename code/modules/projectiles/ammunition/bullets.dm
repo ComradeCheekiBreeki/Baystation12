@@ -26,12 +26,12 @@
 /obj/item/ammo_casing/pistol/small/rubber
 	desc = "A small pistol rubber bullet casing."
 	projectile_type = /obj/item/projectile/bullet/pistol/rubber/holdout
-	icon_state = "pistolcasing_r"
+	icon_state = "smallcasing_r"
 
 /obj/item/ammo_casing/pistol/small/practice
 	desc = "A small pistol practice bullet casing."
 	projectile_type = /obj/item/projectile/bullet/pistol/practice
-	icon_state = "pistolcasing_p"
+	icon_state = "smallcasing_p"
 
 /obj/item/ammo_casing/pistol/magnum
 	desc = "A high-power pistol bullet casing."
@@ -65,7 +65,7 @@
 	spent_icon = "slshell-spent"
 	caliber = CALIBER_SHOTGUN
 	projectile_type = /obj/item/projectile/bullet/shotgun
-	matter = list(MATERIAL_STEEL = 360)
+	matter = list(MATERIAL_STEEL = 160)
 	fall_sounds = list('sound/weapons/guns/shotgun_fall.ogg')
 
 /obj/item/ammo_casing/shotgun/pellet
@@ -74,13 +74,11 @@
 	icon_state = "gshell"
 	spent_icon = "gshell-spent"
 	projectile_type = /obj/item/projectile/bullet/pellet/shotgun
-	matter = list(MATERIAL_STEEL = 360)
 
 /obj/item/ammo_casing/shotgun/flechette
 	name = "flechette shell"
 	desc = "A flechette shell."
 	projectile_type = /obj/item/projectile/bullet/pellet/shotgun/flechette
-	matter = list(MATERIAL_STEEL = 360)
 
 /obj/item/ammo_casing/shotgun/blank
 	name = "shotgun shell"
@@ -88,7 +86,7 @@
 	icon_state = "blshell"
 	spent_icon = "blshell-spent"
 	projectile_type = /obj/item/projectile/bullet/blank
-	matter = list(MATERIAL_STEEL = 90)
+	matter = list(MATERIAL_STEEL = 60)
 
 /obj/item/ammo_casing/shotgun/practice
 	name = "shotgun shell"
@@ -96,7 +94,7 @@
 	icon_state = "pshell"
 	spent_icon = "pshell-spent"
 	projectile_type = /obj/item/projectile/bullet/shotgun/practice
-	matter = list(MATERIAL_STEEL = 90)
+	matter = list(MATERIAL_STEEL = 60)
 
 /obj/item/ammo_casing/shotgun/beanbag
 	name = "beanbag shell"
@@ -104,7 +102,7 @@
 	icon_state = "bshell"
 	spent_icon = "bshell-spent"
 	projectile_type = /obj/item/projectile/bullet/shotgun/beanbag
-	matter = list(MATERIAL_STEEL = 180)
+	matter = list(MATERIAL_STEEL = 140)
 
 //Can stun in one hit if aimed at the head, but
 //is blocked by clothing that stops tasers and is vulnerable to EMP
@@ -115,7 +113,7 @@
 	spent_icon = "stunshell-spent"
 	projectile_type = /obj/item/projectile/energy/electrode/stunshot
 	leaves_residue = FALSE
-	matter = list(MATERIAL_STEEL = 360, MATERIAL_GLASS = 720)
+	matter = list(MATERIAL_STEEL = 160, MATERIAL_GLASS = 320)
 
 /obj/item/ammo_casing/shotgun/stunshell/emp_act(severity)
 	if(prob(100/severity)) BB = null
@@ -129,7 +127,7 @@
 	icon_state = "fshell"
 	spent_icon = "fshell-spent"
 	projectile_type = /obj/item/projectile/energy/flash/flare
-	matter = list(MATERIAL_STEEL = 90, MATERIAL_GLASS = 90)
+	matter = list(MATERIAL_STEEL = 80, MATERIAL_GLASS = 80)
 
 /obj/item/ammo_casing/rifle
 	desc = "A rifle bullet casing."
@@ -137,6 +135,11 @@
 	projectile_type = /obj/item/projectile/bullet/rifle
 	icon_state = "riflecasing"
 	spent_icon = "riflecasing-spent"
+
+/obj/item/ammo_casing/rifle/practice
+	desc = "A rifle practice bullet casing."
+	projectile_type = /obj/item/projectile/bullet/rifle/practice
+	icon_state = "riflecasing_p"
 
 /obj/item/ammo_casing/shell
 	name = "shell casing"
@@ -155,9 +158,12 @@
 /obj/item/ammo_casing/rifle/military
 	desc = "A military rifle bullet casing."
 	caliber = CALIBER_RIFLE_MILITARY
-	projectile_type = /obj/item/projectile/bullet/rifle/military
 	icon_state = "rifle_mil"
 	spent_icon = "rifle_mil-spent"
+
+/obj/item/ammo_casing/rifle/military/light
+	desc = "A low-power military rifle bullet casing."
+	projectile_type = /obj/item/projectile/bullet/rifle/military
 
 /obj/item/ammo_casing/rifle/military/practice
 	desc = "A military rifle practice bullet casing."
@@ -198,4 +204,4 @@
 	icon_state = "empshell"
 	spent_icon = "empshell-spent"
 	projectile_type  = /obj/item/projectile/ion
-	matter = list(MATERIAL_STEEL = 260, MATERIAL_URANIUM = 200)
+	matter = list(MATERIAL_STEEL = 160, MATERIAL_URANIUM = 160)

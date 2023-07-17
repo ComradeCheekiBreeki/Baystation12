@@ -17,7 +17,7 @@
 #define dispense_clothing(item) if(!isopen){return}if(item){item.dropInto(loc); item = null}
 
 /obj/machinery/suit_storage_unit
-	name = "Suit Storage Unit"
+	name = "suit storage unit"
 	desc = "An industrial U-Stor-It Storage unit designed to accomodate all kinds of space suits. Its on-board equipment also allows the user to decontaminate the contents through a UV-ray purging cycle. There's a warning label dangling from the control pad, reading \"STRICTLY NO BIOLOGICALS IN THE CONFINES OF THE UNIT\"."
 	icon = 'icons/obj/suitstorage.dmi'
 	icon_state = "close"
@@ -103,7 +103,7 @@
 
 /obj/machinery/suit_storage_unit/attackby(obj/item/I, mob/user)
 	if(isScrewdriver(I))
-		if(do_after(user, 5 SECONDS, src, DO_REPAIR_CONSTRUCT))
+		if(do_after(user, (I.toolspeed * 5) SECONDS, src, DO_REPAIR_CONSTRUCT))
 			panelopen = !panelopen
 			playsound(loc, 'sound/items/Screwdriver.ogg', 100, 1)
 			to_chat(user, SPAN_NOTICE("You [panelopen ? "open" : "close"] the unit's maintenance panel."))
@@ -113,7 +113,7 @@
 	if(isCrowbar(I))
 		if(inoperable() && !islocked && !isopen)
 			to_chat(user, SPAN_NOTICE("You begin prying the unit open."))
-			if(do_after(user, 5 SECONDS, src, DO_REPAIR_CONSTRUCT))
+			if(do_after(user, (I.toolspeed * 5) SECONDS, src, DO_REPAIR_CONSTRUCT))
 				isopen = TRUE
 				to_chat(user, SPAN_NOTICE("You pry the unit open."))
 				SSnano.update_uis(src)
@@ -290,7 +290,7 @@
 		to_chat(user, SPAN_NOTICE("The unit is offline."))
 		return
 	if(!allowed(user))
-		to_chat(user, FEEDBACK_ACCESS_DENIED)
+		FEEDBACK_ACCESS_DENIED(user, src)
 		return
 	if(occupant && safetieson)
 		to_chat(user, SPAN_WARNING("The Unit's safety protocols disallow locking when a biological form is detected inside its compartments."))
@@ -320,11 +320,11 @@
 	update_icon()
 	SSnano.update_uis(src)
 
-	var/datum/callback/uvburn = CALLBACK(src, .proc/uv_burn)
+	var/datum/callback/uvburn = new Callback(src, .proc/uv_burn)
 	addtimer(uvburn, 5 SECONDS)
 	addtimer(uvburn, 10 SECONDS)
 	addtimer(uvburn, 15 SECONDS)
-	addtimer(CALLBACK(src, .proc/uv_finish), 20 SECONDS)
+	addtimer(new Callback(src, .proc/uv_finish), 20 SECONDS)
 
 /obj/machinery/suit_storage_unit/proc/uv_burn()
 	if(occupant)

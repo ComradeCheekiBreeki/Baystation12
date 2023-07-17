@@ -21,15 +21,15 @@
 	var/static/list/overlay_cache = list() //cache recent overlays
 
 /obj/item/device/t_scanner/Destroy()
-	. = ..()
-	if(on)
+	if (on)
 		set_active(FALSE)
+	return ..()
 
 /obj/item/device/t_scanner/on_update_icon()
 	icon_state = "t-ray[on]"
 
 /obj/item/device/t_scanner/emp_act()
-	audible_message("<span class = 'notice'> \The [src] buzzes oddly.</span>")
+	audible_message(SPAN_NOTICE(" \The [src] buzzes oddly."))
 	set_active(FALSE)
 	..()
 
@@ -40,7 +40,7 @@
 /obj/item/device/t_scanner/afterattack(atom/target, mob/user, proximity_flag, click_parameters)
 	var/obj/structure/disposalpipe/D = target
 	if(D && istype(D))
-		to_chat(user, "<span class='info'>Pipe segment integrity: [100 - D.get_damage_percentage()]%</span>")
+		to_chat(user, SPAN_INFO("Pipe segment integrity: [100 - D.get_damage_percentage()]%"))
 
 /obj/item/device/t_scanner/proc/set_active(active)
 	on = active
@@ -118,8 +118,8 @@
 
 	// Add it to cache, cutting old entries if the list is too long
 	overlay_cache[scanned] = .
-	if(overlay_cache.len > OVERLAY_CACHE_LEN)
-		overlay_cache.Cut(1, overlay_cache.len-OVERLAY_CACHE_LEN-1)
+	if(length(overlay_cache) > OVERLAY_CACHE_LEN)
+		overlay_cache.Cut(1, length(overlay_cache)-OVERLAY_CACHE_LEN-1)
 
 /obj/item/device/t_scanner/proc/get_scanned_objects(scan_dist)
 	. = list()
@@ -142,7 +142,7 @@
 			continue
 
 		for(var/obj/O in T.contents)
-			if(O.level != 1)
+			if(O.level != ATOM_LEVEL_UNDER_TILE)
 				continue
 			if(!O.invisibility)
 				continue //if it's already visible don't need an overlay for it

@@ -49,7 +49,7 @@ var/global/explosion_in_progress = 0
 		severity /= max(3, power / 3) // One third the total explosion power - One third because there are three power levels and I want each one to take up a third of the crater
 		severity = clamp(severity, 1, 3) // Sanity
 		severity = 4 - severity // Invert the value to accomodate lower numbers being a higher severity. Removing this inversion would require a lot of refactoring of math in `ex_act()` handlers.
-		severity = Floor(severity)
+		severity = floor(severity)
 
 		var/x = T.x
 		var/y = T.y
@@ -64,7 +64,7 @@ var/global/explosion_in_progress = 0
 			if(AM && AM.simulated && !T.protects_atom(AM))
 				AM.ex_act(severity)
 				if(!QDELETED(AM) && !AM.anchored)
-					addtimer(CALLBACK(AM, /atom/movable/.proc/throw_at, throw_target, 9/severity, 9/severity), 0)
+					addtimer(new Callback(AM, /atom/movable/.proc/throw_at, throw_target, 9/severity, 9/severity), 0)
 
 	explosion_turfs.Cut()
 	explosion_in_progress = 0
@@ -105,7 +105,12 @@ var/global/explosion_in_progress = 0
 /turf/unsimulated/explosion_spread(power)
 	return //So it doesn't get to the parent proc, which simulates explosions
 
-/atom/var/explosion_resistance
+/// Float. The atom's explosion resistance value. Used to calculate how much of an explosion is 'absorbed' and not passed on to tiles on the other side of the atom's turf. See `/proc/explosion_rec()`.
+/atom/var/explosion_resistance = 0
+
+/**
+ * Retrieves the atom's explosion resistance. Generally, this is `explosion_resistance` for simulated atoms.
+ */
 /atom/proc/get_explosion_resistance()
 	if(simulated)
 		return explosion_resistance

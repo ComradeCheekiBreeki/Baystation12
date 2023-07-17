@@ -1,6 +1,6 @@
 /obj/item/gun/projectile/automatic
 	name = "prototype SMG"
-	desc = "A protoype lightweight, fast firing submachine gun."
+	desc = "A protoype lightweight, fast firing submachine gun chambered in a small caliber."
 	icon = 'icons/obj/guns/prototype_smg.dmi'
 	icon_state = "prototype"
 	item_state = "saber"
@@ -27,7 +27,7 @@
 
 /obj/item/gun/projectile/automatic/machine_pistol
 	name = "machine pistol"
-	desc = "The Hephaestus Industries MP6 Vesper, A fairly common machine pistol. Sometimes refered to as an 'uzi' by the backwater spacers it is often associated with."
+	desc = "The Hephaestus Industries MP6 Vesper, A fairly common machine pistol based off a mid 20th century design. Sometimes refered to as an 'uzi' by the backwater spacers it is often associated with."
 	icon = 'icons/obj/guns/machine_pistol.dmi'
 	icon_state = "mpistolen"
 	safety_icon = "safety"
@@ -61,7 +61,7 @@
 
 /obj/item/gun/projectile/automatic/merc_smg
 	name = "submachine gun"
-	desc = "The NanoTrasen C-20r is a lightweight and rapid firing SMG, for when you REALLY need someone dead. Has a 'Per falcis, per pravitas' buttstamp."
+	desc = "The Novaya Zemlya Arms C-20r is a lightweight and rapid firing SMG. In production since the 2280s, the C-20r has proliferated across human space, in some part due to it being issued to smaller ICCGN vessels."
 	icon = 'icons/obj/guns/merc_smg.dmi'
 	icon_state = "c20r"
 	item_state = "c20r"
@@ -90,13 +90,13 @@
 /obj/item/gun/projectile/automatic/merc_smg/on_update_icon()
 	..()
 	if(ammo_magazine)
-		icon_state = "c20r-[round(ammo_magazine.stored_ammo.len,4)]"
+		icon_state = "c20r-[round(length(ammo_magazine.stored_ammo),4)]"
 	else
 		icon_state = "c20r"
 
 /obj/item/gun/projectile/automatic/assault_rifle
 	name = "assault rifle"
-	desc = "The rugged STS-35 is a durable automatic weapon of a make popular on the frontier worlds. Originally produced by Hephaestus. The serial number has been scratched off."
+	desc = "The rugged STS-35 is a durable automatic weapon of a make popular on the frontier worlds. Originally designed in the mid 20th century, today variants are made by most firearm producers. This one appears to be HI made, with the serial number conveniently absent."
 	icon = 'icons/obj/guns/assault_rifle.dmi'
 	icon_state = "arifle"
 	item_state = null
@@ -107,11 +107,11 @@
 	slot_flags = SLOT_BACK
 	load_method = MAGAZINE
 	magazine_type = /obj/item/ammo_magazine/rifle
-	allowed_magazines = /obj/item/ammo_magazine/rifle
 	one_hand_penalty = 8
+	allowed_magazines = /obj/item/ammo_magazine/rifle
 	accuracy_power = 7
 	accuracy = 2
-	bulk = GUN_BULK_RIFLE + 1
+	bulk = GUN_BULK_HEAVY_RIFLE
 	wielded_item_state = "arifle-wielded"
 	mag_insert_sound = 'sound/weapons/guns/interaction/ltrifle_magin.ogg'
 	mag_remove_sound = 'sound/weapons/guns/interaction/ltrifle_magout.ogg'
@@ -145,7 +145,7 @@
 	slot_flags = SLOT_BELT
 	ammo_type = /obj/item/ammo_casing/pistol/small
 	load_method = MAGAZINE
-	magazine_type = /obj/item/ammo_magazine/smg_top/rubber
+	magazine_type = /obj/item/ammo_magazine/smg_top
 	allowed_magazines = /obj/item/ammo_magazine/smg_top
 	accuracy_power = 7
 	one_hand_penalty = 3
@@ -160,15 +160,18 @@
 /obj/item/gun/projectile/automatic/sec_smg/on_update_icon()
 	..()
 	if(ammo_magazine)
-		overlays += image(icon, "mag-[round(ammo_magazine.stored_ammo.len,5)]")
+		overlays += image(icon, "mag-[round(length(ammo_magazine.stored_ammo),5)]")
 	if(ammo_magazine && LAZYLEN(ammo_magazine.stored_ammo))
 		overlays += image(icon, "ammo-ok")
 	else
 		overlays += image(icon, "ammo-bad")
 
+/obj/item/gun/projectile/automatic/sec_smg/empty
+	starts_loaded = FALSE
+
 /obj/item/gun/projectile/automatic/bullpup_rifle
 	name = "bullpup assault rifle"
-	desc = "The Hephaestus Industries Z8 Bulldog is an older model bullpup carbine. Makes you feel like a space marine when you hold it."
+	desc = "The Hephaestus Industries Z8 is one of the oldest weapons currently in service with the SCGDF. Despite its age, it still remains the de-facto rifle of the SCG Army, due to its ease of handling, cheap production costs, reliability, and plentiful surplus stock."
 	icon = 'icons/obj/guns/bullpup_rifle.dmi'
 	icon_state = "carbine"
 	item_state = "z8carbine"
@@ -176,11 +179,10 @@
 	force = 10
 	caliber = CALIBER_RIFLE_MILITARY
 	origin_tech = list(TECH_COMBAT = 8, TECH_MATERIAL = 3)
-	ammo_type = /obj/item/ammo_casing/rifle/military
 	slot_flags = SLOT_BACK
 	load_method = MAGAZINE
-	magazine_type = /obj/item/ammo_magazine/mil_rifle
-	allowed_magazines = /obj/item/ammo_magazine/mil_rifle
+	magazine_type = /obj/item/ammo_magazine/mil_rifle/heavy
+	allowed_magazines = /obj/item/ammo_magazine/mil_rifle //Interchangable but poor performance
 	auto_eject = 1
 	auto_eject_sound = 'sound/weapons/smg_empty_alarm.ogg'
 	accuracy = 2
@@ -204,11 +206,15 @@
 	. = ..()
 	launcher = new(src)
 
-/obj/item/gun/projectile/automatic/bullpup_rifle/attackby(obj/item/I, mob/user)
-	if((istype(I, /obj/item/grenade)))
-		launcher.load(I, user)
-	else
-		..()
+
+/obj/item/gun/projectile/automatic/bullpup_rifle/use_tool(obj/item/tool, mob/user, list/click_params)
+	// Grenade - Load launcher
+	if (istype(tool, /obj/item/grenade))
+		launcher.load(tool, user)
+		return TRUE
+
+	return ..()
+
 
 /obj/item/gun/projectile/automatic/bullpup_rifle/attack_hand(mob/user)
 	if(user.get_inactive_hand() == src && use_launcher)
@@ -227,7 +233,7 @@
 /obj/item/gun/projectile/automatic/bullpup_rifle/on_update_icon()
 	..()
 	if(ammo_magazine)
-		if(ammo_magazine.stored_ammo.len)
+		if(length(ammo_magazine.stored_ammo))
 			icon_state = "carbine-loaded"
 		else
 			icon_state = "carbine-empty"
@@ -241,12 +247,29 @@
 	else
 		to_chat(user, "\The [launcher] is empty.")
 
+/obj/item/gun/projectile/automatic/bullpup_rifle/light
+	name = "light bullpup assault rifle"
+	desc = "The standard-issue rifle of the SCGDF. The Z9 Pitbull is the modern answer to violence's question. It has been given a blued finish with a Sol yellow stripe for easy identification of its owner. It's slightly more accurate than its larger cousin, the Z8."
+	icon = 'icons/obj/guns/bullpup_rifle_light.dmi'
+	item_state = "z9carbine"
+	magazine_type = /obj/item/ammo_magazine/mil_rifle/light
+	one_hand_penalty = 6 //Slightly lighter than the Z8. Still don't try it.
+	bulk = GUN_BULK_LIGHT_RIFLE
+	wielded_item_state = "z9carbine-wielded"
+	firemodes = list( //Two round bursts. More accurate than the Z8 due to less maximum dispersion. More delay between shots, however, so slower.
+		list(mode_name="semi auto",       burst=1,    fire_delay=null,    move_delay=null, use_launcher=null, one_hand_penalty=6, burst_accuracy=null, dispersion=null),
+		list(mode_name="2-round bursts", burst=2,    fire_delay=null, move_delay=6,    use_launcher=null, one_hand_penalty=7, burst_accuracy=list(0,-1), dispersion=list(0.0, 0.6))
+		)
+
+
+
 /obj/item/gun/projectile/automatic/l6_saw
 	name = "light machine gun"
-	desc = "A rather traditionally made L6 SAW with a pleasantly lacquered wooden pistol grip. Has 'Aussec Armoury- 2281' engraved on the reciever." //probably should refluff this
+	desc = "An unbranded machine gun, based off a design made long ago."
 	icon = 'icons/obj/guns/saw.dmi'
 	icon_state = "l6closed50"
 	item_state = "l6closedmag"
+	wielded_item_state = "l6closed-wielded"
 	w_class = ITEM_SIZE_HUGE
 	bulk = 10
 	force = 10
@@ -260,7 +283,6 @@
 	magazine_type = /obj/item/ammo_magazine/box/machinegun
 	allowed_magazines = list(/obj/item/ammo_magazine/box/machinegun, /obj/item/ammo_magazine/rifle)
 	one_hand_penalty = 10
-	wielded_item_state = "gun_wielded"
 	mag_insert_sound = 'sound/weapons/guns/interaction/lmg_magin.ogg'
 	mag_remove_sound = 'sound/weapons/guns/interaction/lmg_magout.ogg'
 	can_special_reload = FALSE
@@ -280,54 +302,67 @@
 
 /obj/item/gun/projectile/automatic/l6_saw/special_check(mob/user)
 	if(cover_open)
-		to_chat(user, "<span class='warning'>[src]'s cover is open! Close it before firing!</span>")
+		to_chat(user, SPAN_WARNING("[src]'s cover is open! Close it before firing!"))
 		return 0
 	return ..()
 
 /obj/item/gun/projectile/automatic/l6_saw/proc/toggle_cover(mob/user)
 	cover_open = !cover_open
-	to_chat(user, "<span class='notice'>You [cover_open ? "open" : "close"] [src]'s cover.</span>")
+	to_chat(user, SPAN_NOTICE("You [cover_open ? "open" : "close"] [src]'s cover."))
 	update_icon()
+	user.update_inv_l_hand()
+	user.update_inv_r_hand()
 
 /obj/item/gun/projectile/automatic/l6_saw/attack_self(mob/user as mob)
 	if(cover_open)
 		toggle_cover(user) //close the cover
+		update_icon()
+		user.update_inv_l_hand()
+		user.update_inv_r_hand()
+
 	else
 		return ..() //once closed, behave like normal
 
 /obj/item/gun/projectile/automatic/l6_saw/attack_hand(mob/user as mob)
 	if(!cover_open && user.get_inactive_hand() == src)
 		toggle_cover(user) //open the cover
+		update_icon()
+		user.update_inv_l_hand()
+		user.update_inv_r_hand()
+
 	else
 		return ..() //once open, behave like normal
 
 /obj/item/gun/projectile/automatic/l6_saw/on_update_icon()
 	..()
 	if(istype(ammo_magazine, /obj/item/ammo_magazine/box))
-		icon_state = "l6[cover_open ? "open" : "closed"][round(ammo_magazine.stored_ammo.len, 10)]"
+		icon_state = "l6[cover_open ? "open" : "closed"][round(length(ammo_magazine.stored_ammo), 10)]"
 		item_state = "l6[cover_open ? "open" : "closed"]"
+		wielded_item_state = "l6[cover_open ? "open" : "closed"]-wielded"
 	else if(ammo_magazine)
 		icon_state = "l6[cover_open ? "open" : "closed"]mag"
 		item_state = "l6[cover_open ? "open" : "closed"]mag"
+		wielded_item_state = "l6[cover_open ? "open" : "closed"]mag-wielded"
 	else
 		icon_state = "l6[cover_open ? "open" : "closed"]-empty"
 		item_state = "l6[cover_open ? "open" : "closed"]-empty"
+		wielded_item_state = "l6[cover_open ? "open" : "closed"]-empty-wielded"
 
 /obj/item/gun/projectile/automatic/l6_saw/load_ammo(obj/item/A, mob/user)
 	if(!cover_open)
-		to_chat(user, "<span class='warning'>You need to open the cover to load that into [src].</span>")
+		to_chat(user, SPAN_WARNING("You need to open the cover to load that into [src]."))
 		return
 	..()
 
 /obj/item/gun/projectile/automatic/l6_saw/unload_ammo(mob/user, allow_dump=1)
 	if(!cover_open)
-		to_chat(user, "<span class='warning'>You need to open the cover to unload [src].</span>")
+		to_chat(user, SPAN_WARNING("You need to open the cover to unload [src]."))
 		return
 	..()
 
 /obj/item/gun/projectile/automatic/battlerifle
 	name = "battle rifle"
-	desc = "The battle rifle hasn't changed much since its inception in the mid 20th century. Built to last in the toughest conditions, you can't tell if this one was even made this century."
+	desc = "The battle rifle hasn't changed much since its inception in the mid 20th century. Built to last in the toughest conditions, the select fire rifle is well reguarded as a dependable weapon."
 	icon = 'icons/obj/guns/battlerifle.dmi'
 	icon_state = "battlerifle"
 	item_state = null
@@ -337,12 +372,12 @@
 	origin_tech = list(TECH_COMBAT = 4, TECH_MATERIAL = 1, TECH_ESOTERIC = 5)
 	slot_flags = SLOT_BACK
 	load_method = MAGAZINE
-	magazine_type = /obj/item/ammo_magazine/mil_rifle
+	magazine_type = /obj/item/ammo_magazine/mil_rifle/heavy
 	allowed_magazines = /obj/item/ammo_magazine/mil_rifle
 	one_hand_penalty = 10
 	accuracy_power = 9
 	accuracy = 1
-	bulk = GUN_BULK_RIFLE + 1
+	bulk = GUN_BULK_HEAVY_RIFLE
 	wielded_item_state = "battlerifle-wielded"
 	mag_insert_sound = 'sound/weapons/guns/interaction/ltrifle_magin.ogg'
 	mag_remove_sound = 'sound/weapons/guns/interaction/ltrifle_magout.ogg'

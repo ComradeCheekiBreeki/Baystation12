@@ -6,8 +6,7 @@
 	can_plate = 0
 	can_reinforce = 0
 	flipped = -1
-
-	material = DEFAULT_FURNITURE_MATERIAL
+	obj_flags = EMPTY_BITFIELD // No tabling objects
 
 /obj/structure/table/rack/New()
 	..()
@@ -31,7 +30,7 @@
 	return FALSE
 
 /obj/structure/table/rack/holorack/dismantle(obj/item/wrench/W, mob/user)
-	to_chat(user, "<span class='warning'>You cannot dismantle \the [src].</span>")
+	to_chat(user, SPAN_WARNING("You cannot dismantle \the [src]."))
 	return
 
 /obj/structure/table/rack/dark

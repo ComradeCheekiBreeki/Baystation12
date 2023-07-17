@@ -1,5 +1,7 @@
 LEGACY_RECORD_STRUCTURE(all_waypoints, waypoint)
 
+GLOBAL_LIST_EMPTY(overmap_helm_computers)
+
 /obj/machinery/computer/ship/helm
 	name = "helm control console"
 	icon_keyboard = "teleport_key"
@@ -21,13 +23,13 @@ LEGACY_RECORD_STRUCTURE(all_waypoints, waypoint)
 
 /obj/machinery/computer/ship/helm/Initialize()
 	. = ..()
-	get_known_sectors()
+	LAZYADD(GLOB.overmap_helm_computers, src)
+	for(var/obj/effect/overmap/visitable/sector as anything in GLOB.known_overmap_sectors)
+		add_known_sector(sector)
 
-/obj/machinery/computer/ship/helm/proc/get_known_sectors()
-	var/area/overmap/map = locate() in world
-	for(var/obj/effect/overmap/visitable/sector/S in map)
-		if (S.known)
-			add_known_sector(S)
+/obj/machinery/computer/ship/helm/Destroy()
+	. = ..()
+	LAZYREMOVE(GLOB.overmap_helm_computers, src)
 
 /obj/machinery/computer/ship/helm/proc/add_known_sector(obj/effect/overmap/visitable/sector/S, notify = FALSE)
 	var/datum/computer_file/data/waypoint/R = new()
@@ -117,9 +119,9 @@ LEGACY_RECORD_STRUCTURE(all_waypoints, waypoint)
 
 		var/speed = round(linked.get_speed()*1000, 0.01)
 		if(linked.get_speed() < SHIP_SPEED_SLOW)
-			speed = "<span class='good'>[speed]</span>"
+			speed = SPAN_GOOD("[speed]")
 		if(linked.get_speed() > SHIP_SPEED_FAST)
-			speed = "<span class='average'>[speed]</span>"
+			speed = SPAN_CLASS("average", "[speed]")
 		data["speed"] = speed
 
 		if(linked.get_speed())
@@ -155,14 +157,14 @@ LEGACY_RECORD_STRUCTURE(all_waypoints, waypoint)
 
 	if (href_list["add"])
 		var/datum/computer_file/data/waypoint/R = new()
-		var/sec_name = input("Input naviation entry name", "New navigation entry", "Sector #[known_sectors.len]") as text
+		var/sec_name = input("Input naviation entry name", "New navigation entry", "Sector #[length(known_sectors)]") as text
 		if(!CanInteract(user,state))
 			return TOPIC_NOACTION
 		if(!sec_name)
-			sec_name = "Sector #[known_sectors.len]"
+			sec_name = "Sector #[length(known_sectors)]"
 		R.fields["name"] = sec_name
 		if(sec_name in known_sectors)
-			to_chat(user, "<span class='warning'>Sector with that name already exists, please input a different name.</span>")
+			to_chat(user, SPAN_WARNING("Sector with that name already exists, please input a different name."))
 			return TOPIC_REFRESH
 		switch(href_list["add"])
 			if("current")
@@ -186,14 +188,14 @@ LEGACY_RECORD_STRUCTURE(all_waypoints, waypoint)
 			qdel(R)
 
 	if (href_list["setx"])
-		var/newx = input("Input new destiniation x coordinate", "Coordinate input", dx) as num|null
+		var/newx = input("Input new destination x coordinate", "Coordinate input", dx) as num|null
 		if(!CanInteract(user,state))
 			return
 		if (newx)
 			dx = clamp(newx, 1, world.maxx)
 
 	if (href_list["sety"])
-		var/newy = input("Input new destiniation y coordinate", "Coordinate input", dy) as num|null
+		var/newy = input("Input new destination y coordinate", "Coordinate input", dy) as num|null
 		if(!CanInteract(user,state))
 			return
 		if (newy)

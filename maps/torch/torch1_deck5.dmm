@@ -114,7 +114,9 @@
 /obj/machinery/light/spot{
 	dir = 1
 	},
-/turf/simulated/floor/reinforced/airless,
+/turf/simulated/floor/reinforced{
+	map_airless = 1
+	},
 /area/shuttle/petrov/toxins)
 "ar" = (
 /obj/machinery/atmospherics/pipe/simple/hidden/supply{
@@ -209,7 +211,9 @@
 /obj/machinery/air_sensor{
 	id_tag = "toxins_sensor"
 	},
-/turf/simulated/floor/reinforced/airless,
+/turf/simulated/floor/reinforced{
+	map_airless = 1
+	},
 /area/shuttle/petrov/toxins)
 "aA" = (
 /obj/effect/wallframe_spawn/reinforced/titanium,
@@ -305,6 +309,10 @@
 	dir = 10
 	},
 /obj/machinery/light,
+/obj/machinery/camera/network/fifth_deck{
+	c_tag = "Fifth Deck Hallway - Lift";
+	dir = 1
+	},
 /turf/simulated/floor/tiled,
 /area/hallway/primary/fifthdeck/fore)
 "aJ" = (
@@ -436,7 +444,7 @@
 	name = "Mixing Chamber Blast Shutters";
 	opacity = 0
 	},
-/turf/simulated/floor/reinforced/airless,
+/turf/simulated/floor/reinforced,
 /area/shuttle/petrov/toxins)
 "aW" = (
 /turf/simulated/wall/prepainted,
@@ -486,7 +494,7 @@
 	name = "Mixing Chamber Blast Shutters";
 	opacity = 0
 	},
-/turf/simulated/floor/reinforced/airless,
+/turf/simulated/floor/reinforced,
 /area/shuttle/petrov/toxins)
 "bf" = (
 /obj/machinery/computer/shuttle_control/explore/exploration_shuttle,
@@ -638,7 +646,9 @@
 	pixel_w = 1;
 	pixel_z = -23
 	},
-/turf/simulated/floor/reinforced/airless,
+/turf/simulated/floor/reinforced{
+	map_airless = 1
+	},
 /area/shuttle/petrov/toxins)
 "bt" = (
 /obj/machinery/atmospherics/pipe/simple/hidden/scrubbers,
@@ -784,9 +794,6 @@
 	name = "Atmospheric Sensors";
 	sensor_tag = "charon_out"
 	},
-/obj/machinery/camera/network/exploration_shuttle{
-	c_tag = "Charon - Crew Compartment"
-	},
 /turf/simulated/floor/tiled/monotile,
 /area/exploration_shuttle/crew)
 "bF" = (
@@ -808,7 +815,7 @@
 	dir = 5
 	},
 /obj/machinery/portable_atmospherics/canister/carbon_dioxide/engine_setup{
-	start_pressure = 7498.00
+	start_pressure = 7498
 	},
 /obj/machinery/atmospherics/portables_connector,
 /obj/effect/floor_decal/industrial/outline/orange,
@@ -967,6 +974,9 @@
 	c_tag = "Charon - Cockpit";
 	dir = 1
 	},
+/obj/structure/handrail{
+	dir = 1
+	},
 /turf/simulated/floor/tiled/monotile,
 /area/exploration_shuttle/cockpit)
 "bW" = (
@@ -1108,8 +1118,9 @@
 /area/guppy_hangar/start)
 "cl" = (
 /obj/machinery/light,
-/obj/machinery/computer/modular/preset/medical{
-	dir = 8
+/obj/machinery/computer/modular/preset/dock{
+	dir = 8;
+	icon_state = "console"
 	},
 /turf/simulated/floor/tiled/monotile,
 /area/exploration_shuttle/crew)
@@ -1171,6 +1182,10 @@
 /obj/machinery/light{
 	dir = 1
 	},
+/obj/machinery/alarm{
+	pixel_y = 24;
+	req_access = list("ACCESS_TORCH_CREW")
+	},
 /turf/simulated/floor/tiled/monotile,
 /area/exploration_shuttle/medical)
 "cv" = (
@@ -1186,9 +1201,6 @@
 /obj/random/medical,
 /obj/structure/table/steel_reinforced,
 /obj/item/bodybag/cryobag,
-/obj/machinery/camera/network/exploration_shuttle{
-	c_tag = "Charon - Medical Compartment"
-	},
 /obj/machinery/firealarm{
 	pixel_y = 24
 	},
@@ -1300,6 +1312,9 @@
 	dir = 1
 	},
 /obj/structure/table/steel,
+/obj/item/device/drone_designator{
+	network = "torch_transport"
+	},
 /turf/simulated/floor/tiled/monotile,
 /area/exploration_shuttle/cargo)
 "cK" = (
@@ -1356,21 +1371,10 @@
 /area/exploration_shuttle/medical)
 "cR" = (
 /obj/structure/bed/padded,
-/obj/item/device/radio/intercom{
-	dir = 8;
-	pixel_x = 21
-	},
 /turf/simulated/floor/tiled,
 /area/exploration_shuttle/medical)
 "cS" = (
-/obj/machinery/firealarm{
-	dir = 8;
-	pixel_x = -24
-	},
 /obj/machinery/atmospherics/unary/vent_scrubber/on{
-	dir = 4
-	},
-/obj/structure/handrail{
 	dir = 4
 	},
 /turf/simulated/floor/tiled,
@@ -1423,6 +1427,9 @@
 /obj/effect/floor_decal/industrial/warning/corner{
 	dir = 4;
 	icon_state = "warningcorner"
+	},
+/obj/item/device/drone_designator{
+	network = "torch_transport"
 	},
 /turf/simulated/floor/tiled/techfloor,
 /area/guppy_hangar/start)
@@ -1507,15 +1514,13 @@
 /turf/simulated/floor/tiled/monotile,
 /area/exploration_shuttle/medical)
 "dh" = (
-/obj/machinery/hologram/holopad/longrange,
-/obj/effect/floor_decal/industrial/outline/yellow,
 /obj/machinery/atmospherics/pipe/simple/hidden/supply{
 	dir = 5
 	},
 /obj/machinery/atmospherics/pipe/simple/hidden/scrubbers{
 	dir = 6
 	},
-/turf/simulated/floor/tiled/monotile,
+/turf/simulated/floor/tiled,
 /area/exploration_shuttle/medical)
 "di" = (
 /obj/structure/cable/cyan{
@@ -1667,9 +1672,17 @@
 	d2 = 2;
 	icon_state = "1-2"
 	},
-/turf/simulated/floor/tiled,
+/obj/machinery/hologram/holopad/longrange,
+/obj/effect/floor_decal/industrial/outline/yellow,
+/obj/structure/handrail{
+	dir = 8
+	},
+/turf/simulated/floor/tiled/monotile,
 /area/exploration_shuttle/medical)
 "dA" = (
+/obj/structure/handrail{
+	dir = 4
+	},
 /turf/simulated/floor/tiled,
 /area/exploration_shuttle/cargo)
 "dB" = (
@@ -1828,16 +1841,15 @@
 "dW" = (
 /obj/structure/cable/cyan,
 /obj/structure/table/steel_reinforced,
-/obj/machinery/alarm{
-	dir = 8;
-	pixel_x = 24;
-	req_access = list("ACCESS_TORCH_CREW")
-	},
 /obj/machinery/power/apc/shuttle/charon{
 	name = "south bump";
 	pixel_y = -28
 	},
 /obj/item/storage/firstaid/radiation,
+/obj/item/device/radio/intercom{
+	dir = 8;
+	pixel_x = 21
+	},
 /turf/simulated/floor/tiled/monotile,
 /area/exploration_shuttle/medical)
 "dY" = (
@@ -1847,6 +1859,10 @@
 	},
 /obj/effect/shuttle_landmark/torch/hangar/exploration_shuttle,
 /obj/effect/overmap/visitable/ship/landable/exploration_shuttle,
+/obj/machinery/firealarm{
+	dir = 8;
+	pixel_x = -24
+	},
 /turf/simulated/floor/tiled/monotile,
 /area/exploration_shuttle/cargo)
 "dZ" = (
@@ -1902,10 +1918,6 @@
 /obj/effect/floor_decal/techfloor,
 /obj/effect/floor_decal/industrial/outline/yellow,
 /obj/structure/closet/firecloset,
-/obj/machinery/camera/network/exploration_shuttle{
-	c_tag = "Charon - Cargo Compartment";
-	dir = 1
-	},
 /turf/simulated/floor/tiled/techfloor/grid,
 /area/exploration_shuttle/cargo)
 "ee" = (
@@ -2157,6 +2169,7 @@
 /obj/machinery/firealarm{
 	pixel_y = 24
 	},
+/obj/machinery/radio_beacon,
 /turf/simulated/floor/tiled/techfloor/grid,
 /area/exploration_shuttle/power)
 "eM" = (
@@ -2613,10 +2626,6 @@
 	},
 /obj/effect/floor_decal/industrial/hatch/yellow,
 /obj/structure/cable/yellow,
-/obj/machinery/camera/network/exploration_shuttle{
-	c_tag = "Charon - Power Compartment";
-	dir = 1
-	},
 /obj/item/stack/material/phoron/ten,
 /turf/simulated/floor/tiled/techfloor/grid,
 /area/exploration_shuttle/power)
@@ -2656,11 +2665,11 @@
 /obj/effect/floor_decal/corner/mauve/half{
 	dir = 4
 	},
-/obj/machinery/computer/modular/preset/civilian{
+/obj/effect/floor_decal/industrial/outline/yellow,
+/obj/machinery/computer/modular/preset/dock{
 	dir = 8;
 	icon_state = "console"
 	},
-/obj/effect/floor_decal/industrial/outline/yellow,
 /turf/simulated/floor/tiled/monotile,
 /area/quartermaster/exploration)
 "fX" = (
@@ -3006,17 +3015,25 @@
 /turf/simulated/wall/prepainted,
 /area/quartermaster/shuttlefuel)
 "gP" = (
-/obj/effect/floor_decal/industrial/outline/yellow,
-/obj/machinery/floodlight,
-/obj/machinery/camera/network/supply{
-	c_tag = "Supply Office - Warehouse Aft";
-	dir = 1
+/obj/structure/cable/cyan{
+	d1 = 4;
+	d2 = 8;
+	icon_state = "4-8"
 	},
-/obj/effect/floor_decal/industrial/warning{
-	dir = 8
+/obj/machinery/atmospherics/pipe/simple/hidden/scrubbers{
+	dir = 4
 	},
-/turf/simulated/floor/tiled/dark/monotile,
-/area/quartermaster/storage)
+/obj/machinery/atmospherics/pipe/simple/hidden/supply{
+	dir = 4
+	},
+/obj/structure/disposalpipe/segment{
+	dir = 4
+	},
+/obj/machinery/camera/network/research{
+	c_tag = "Petrov - Hallway Fore"
+	},
+/turf/simulated/floor/tiled/white,
+/area/shuttle/petrov/hallwaya)
 "gT" = (
 /obj/effect/floor_decal/industrial/outline/grey,
 /obj/machinery/floodlight,
@@ -3200,7 +3217,7 @@
 /area/quartermaster/expedition/eva)
 "hs" = (
 /obj/machinery/portable_atmospherics/canister/carbon_dioxide/engine_setup{
-	start_pressure = 7498.00
+	start_pressure = 7498
 	},
 /obj/machinery/atmospherics/portables_connector{
 	dir = 8
@@ -3490,7 +3507,9 @@
 /turf/simulated/floor/plating,
 /area/guppy_hangar/start)
 "ir" = (
-/obj/machinery/camera/network/hangar,
+/obj/machinery/camera/network/fifth_deck{
+	c_tag = "Hangar - Midships Starboard"
+	},
 /turf/simulated/floor/tiled/monotile,
 /area/quartermaster/hangar)
 "iu" = (
@@ -3518,7 +3537,7 @@
 /area/quartermaster/expedition/storage)
 "ix" = (
 /obj/effect/floor_decal/industrial/outline/yellow,
-/obj/structure/anomaly_container,
+/obj/machinery/anomaly_container,
 /obj/item/device/radio/intercom{
 	dir = 4;
 	pixel_x = -21
@@ -3733,10 +3752,6 @@
 /obj/machinery/light{
 	dir = 4
 	},
-/obj/machinery/camera/network/exploration{
-	c_tag = "Exploration Equipment";
-	dir = 8
-	},
 /turf/simulated/floor/tiled/monotile,
 /area/quartermaster/exploration)
 "iP" = (
@@ -3833,9 +3848,6 @@
 "ja" = (
 /obj/effect/floor_decal/industrial/warning{
 	dir = 8
-	},
-/obj/machinery/camera/network/supply{
-	c_tag = "Supply Office - Warehouse Fore"
 	},
 /obj/machinery/computer/guestpass{
 	pixel_y = 32
@@ -4069,7 +4081,7 @@
 /area/command/pilot)
 "jz" = (
 /obj/effect/floor_decal/industrial/outline/yellow,
-/obj/structure/stasis_cage,
+/obj/machinery/stasis_cage,
 /turf/simulated/floor/tiled/dark/monotile,
 /area/quartermaster/expedition/storage)
 "jA" = (
@@ -4083,6 +4095,10 @@
 /obj/effect/floor_decal/industrial/warning/corner{
 	dir = 1;
 	icon_state = "warningcorner"
+	},
+/obj/machinery/camera/network/fifth_deck{
+	c_tag = "Hangar - Fore Starboard";
+	dir = 4
 	},
 /turf/simulated/floor/plating,
 /area/quartermaster/hangar)
@@ -4107,10 +4123,6 @@
 /obj/machinery/light{
 	dir = 1
 	},
-/obj/machinery/camera/network/exploration{
-	c_tag = "Exploration EVA";
-	dir = 4
-	},
 /turf/simulated/floor/tiled/monotile,
 /area/quartermaster/exploration)
 "jF" = (
@@ -4133,10 +4145,6 @@
 "jG" = (
 /obj/structure/table/steel,
 /obj/machinery/chemical_dispenser/bar_soft/full,
-/obj/machinery/camera/network/exploration{
-	c_tag = "Pilot's Lounge";
-	dir = 4
-	},
 /turf/simulated/floor/tiled/dark/monotile,
 /area/command/pilot)
 "jH" = (
@@ -4564,7 +4572,6 @@
 /turf/simulated/floor/tiled/monotile,
 /area/quartermaster/exploration)
 "kv" = (
-/obj/machinery/suit_cycler/pilot,
 /obj/effect/floor_decal/industrial/outline/yellow,
 /obj/effect/floor_decal/industrial/warning{
 	dir = 4
@@ -4572,6 +4579,7 @@
 /obj/structure/sign/ecplaque{
 	pixel_y = -30
 	},
+/obj/machinery/suit_cycler/pilot/alt,
 /turf/simulated/floor/tiled/monotile,
 /area/quartermaster/exploration)
 "kw" = (
@@ -4607,6 +4615,12 @@
 /obj/item/device/scanner/mining,
 /obj/effect/floor_decal/corner/mauve{
 	dir = 10
+	},
+/obj/item/device/drone_designator{
+	network = "torch_transport"
+	},
+/obj/item/device/drone_designator{
+	network = "torch_transport"
 	},
 /turf/simulated/floor/tiled,
 /area/quartermaster/exploration)
@@ -4937,7 +4951,6 @@
 /turf/simulated/floor/tiled/steel_ridged,
 /area/quartermaster/hangar)
 "lm" = (
-/obj/effect/floor_decal/industrial/outline/blue,
 /obj/structure/cable/cyan{
 	d1 = 4;
 	d2 = 8;
@@ -4947,6 +4960,7 @@
 	dir = 4
 	},
 /obj/machinery/portable_atmospherics/powered/pump/filled,
+/obj/effect/floor_decal/industrial/outline,
 /turf/simulated/floor/tiled/dark,
 /area/quartermaster/expedition/atmos)
 "ln" = (
@@ -5009,10 +5023,10 @@
 /turf/simulated/floor/tiled/dark,
 /area/quartermaster/expedition/storage)
 "lt" = (
-/obj/machinery/computer/modular/preset/civilian,
 /obj/machinery/computer/guestpass{
 	pixel_y = 32
 	},
+/obj/machinery/computer/modular/preset/dock,
 /turf/simulated/floor/tiled/dark/monotile,
 /area/command/pilot)
 "lu" = (
@@ -5044,7 +5058,7 @@
 /area/quartermaster/hangar)
 "lx" = (
 /obj/effect/floor_decal/industrial/outline/yellow,
-/obj/structure/anomaly_container,
+/obj/machinery/anomaly_container,
 /obj/machinery/light/small,
 /turf/simulated/floor/tiled/dark/monotile,
 /area/quartermaster/expedition/storage)
@@ -5055,10 +5069,6 @@
 	},
 /obj/structure/ladder/up,
 /obj/machinery/light/small,
-/obj/machinery/camera/network/hangar{
-	c_tag = "Expedition Storage";
-	dir = 1
-	},
 /turf/simulated/floor/tiled/dark/monotile,
 /area/quartermaster/expedition/storage)
 "lz" = (
@@ -5198,10 +5208,6 @@
 	name = "east bump";
 	pixel_y = -24;
 	req_access = list()
-	},
-/obj/machinery/camera/network/pod{
-	c_tag = "General Utility Pod - Crew Compartment";
-	dir = 4
 	},
 /obj/structure/cable/green{
 	d2 = 4;
@@ -5539,10 +5545,6 @@
 /area/quartermaster/hangar)
 "mG" = (
 /obj/machinery/atmospherics/pipe/simple/hidden/universal,
-/obj/machinery/camera/network/exploration_shuttle{
-	c_tag = "Charon - Atmospherics Compartment";
-	dir = 8
-	},
 /obj/structure/handrail{
 	dir = 8
 	},
@@ -5636,6 +5638,10 @@
 /obj/machinery/alarm{
 	dir = 8;
 	pixel_x = 24
+	},
+/obj/machinery/camera/network/fifth_deck{
+	c_tag = "Fifth Deck Hallway - Stairs";
+	dir = 8
 	},
 /turf/simulated/floor/tiled,
 /area/hallway/primary/fifthdeck/fore)
@@ -6025,9 +6031,6 @@
 "nA" = (
 /obj/machinery/suit_storage_unit/science,
 /obj/effect/floor_decal/industrial/outline/yellow,
-/obj/machinery/camera/network/expedition{
-	c_tag = "Expedition - EVA Prep"
-	},
 /turf/simulated/floor/tiled/monotile,
 /area/quartermaster/expedition/eva)
 "nB" = (
@@ -6682,7 +6685,9 @@
 /area/quartermaster/hangar)
 "oI" = (
 /obj/effect/catwalk_plated,
-/obj/machinery/camera/network/hangar,
+/obj/machinery/camera/network/fifth_deck{
+	c_tag = "Hangar - Aft Starboard"
+	},
 /turf/simulated/floor/plating,
 /area/quartermaster/hangar)
 "oJ" = (
@@ -6691,9 +6696,6 @@
 /area/hallway/primary/fifthdeck/fore)
 "oL" = (
 /obj/effect/catwalk_plated,
-/obj/machinery/camera/network/hangar{
-	dir = 8
-	},
 /obj/structure/cable/green{
 	d1 = 1;
 	d2 = 2;
@@ -6707,22 +6709,17 @@
 /area/quartermaster/hangar)
 "oM" = (
 /obj/effect/catwalk_plated,
-/obj/machinery/camera/network/hangar{
+/obj/machinery/camera/network/fifth_deck{
+	c_tag = "Hangar - Fore Port";
 	dir = 4
 	},
 /turf/simulated/floor/plating,
 /area/quartermaster/hangar)
 "oN" = (
 /obj/effect/catwalk_plated,
-/obj/machinery/camera/network/hangar{
+/obj/machinery/camera/network/fifth_deck{
+	c_tag = "Hangar - Aft Port";
 	dir = 8
-	},
-/turf/simulated/floor/plating,
-/area/quartermaster/hangar)
-"oO" = (
-/obj/effect/catwalk_plated,
-/obj/machinery/camera/network/hangar{
-	dir = 1
 	},
 /turf/simulated/floor/plating,
 /area/quartermaster/hangar)
@@ -6787,10 +6784,6 @@
 /obj/effect/floor_decal/corner/mauve/half,
 /obj/effect/floor_decal/industrial/outline/yellow,
 /obj/machinery/light,
-/obj/machinery/camera/network/fifth_deck{
-	c_tag = "Fifth Deck Hallway - Lift";
-	dir = 1
-	},
 /obj/machinery/alarm{
 	dir = 1;
 	pixel_y = -22
@@ -7064,13 +7057,6 @@
 	dir = 8;
 	icon_state = "warning"
 	},
-/turf/simulated/floor/plating,
-/area/maintenance/fifthdeck/aftstarboard)
-"pH" = (
-/obj/effect/floor_decal/industrial/warning{
-	dir = 4;
-	icon_state = "warning"
-	},
 /obj/structure/cable{
 	d1 = 16;
 	d2 = 0;
@@ -7079,6 +7065,18 @@
 /obj/structure/cable{
 	d2 = 4;
 	icon_state = "0-4"
+	},
+/turf/simulated/floor/plating,
+/area/maintenance/fifthdeck/aftstarboard)
+"pH" = (
+/obj/effect/floor_decal/industrial/warning{
+	dir = 4;
+	icon_state = "warning"
+	},
+/obj/structure/cable{
+	d1 = 4;
+	d2 = 8;
+	icon_state = "4-8"
 	},
 /turf/simulated/floor/plating,
 /area/maintenance/fifthdeck/aftstarboard)
@@ -7128,7 +7126,7 @@
 /turf/simulated/floor/tiled/monotile,
 /area/quartermaster/expedition)
 "pM" = (
-/obj/structure/iv_drip,
+/obj/structure/iv_stand,
 /obj/structure/hygiene/sink/kitchen{
 	pixel_x = 32
 	},
@@ -7178,6 +7176,12 @@
 	},
 /obj/item/clothing/glasses/meson{
 	pixel_y = -4
+	},
+/obj/item/device/drone_designator{
+	network = "torch_transport"
+	},
+/obj/item/device/drone_designator{
+	network = "torch_transport"
 	},
 /turf/simulated/floor/tiled/monotile,
 /area/quartermaster/expedition)
@@ -7360,10 +7364,6 @@
 "qk" = (
 /obj/machinery/atmospherics/pipe/manifold/hidden/fuel{
 	dir = 8
-	},
-/obj/machinery/camera/network/exploration_shuttle{
-	c_tag = "Charon - Fuel Compartment";
-	dir = 4
 	},
 /obj/structure/handrail{
 	dir = 4
@@ -7796,7 +7796,7 @@
 	icon_state = "1-2"
 	},
 /obj/machinery/power/smes/buildable/preset/torch/substation{
-	RCon_tag = "Substation - Fifth Deck"
+	RCon_tag = "Substation - 5th Deck"
 	},
 /turf/simulated/floor/plating,
 /area/maintenance/substation/fifthdeck)
@@ -7827,10 +7827,6 @@
 /obj/structure/cable/green{
 	d2 = 8;
 	icon_state = "0-8"
-	},
-/obj/machinery/camera/network/engineering{
-	c_tag = "Substation - Fifth Deck";
-	dir = 1
 	},
 /obj/effect/floor_decal/industrial/warning{
 	dir = 1;
@@ -8192,10 +8188,6 @@
 /obj/machinery/atmospherics/pipe/simple/hidden/scrubbers,
 /obj/machinery/atmospherics/pipe/simple/hidden/supply,
 /obj/structure/disposalpipe/segment,
-/obj/machinery/camera/network/fifth_deck{
-	c_tag = "Fifth Deck Hallway - Stairwell";
-	dir = 4
-	},
 /turf/simulated/floor/plating,
 /area/hallway/primary/fifthdeck/fore)
 "rN" = (
@@ -8476,10 +8468,6 @@
 /turf/simulated/floor/tiled/monotile,
 /area/hallway/primary/fifthdeck/fore)
 "sp" = (
-/obj/machinery/camera/network/expedition{
-	c_tag = "Expedition - Prep";
-	dir = 1
-	},
 /obj/machinery/atmospherics/pipe/simple/hidden/supply{
 	dir = 9
 	},
@@ -9025,9 +9013,6 @@
 /area/shuttle/petrov/hallwaya)
 "tO" = (
 /obj/effect/catwalk_plated,
-/obj/machinery/camera/network/hangar{
-	dir = 4
-	},
 /obj/machinery/rotating_alarm/security_alarm{
 	dir = 4
 	},
@@ -9066,7 +9051,9 @@
 /obj/effect/floor_decal/industrial/warning{
 	dir = 1
 	},
-/turf/simulated/floor/reinforced/airless,
+/turf/simulated/floor/reinforced{
+	map_airless = 1
+	},
 /area/shuttle/petrov/control)
 "tU" = (
 /obj/structure/railing/mapped,
@@ -9729,6 +9716,10 @@
 /obj/structure/handrail{
 	dir = 4
 	},
+/obj/machinery/camera/network/research{
+	c_tag = "Petrov - Anomalies Fore";
+	dir = 4
+	},
 /turf/simulated/floor/tiled/white/monotile,
 /area/shuttle/petrov/isolation)
 "vr" = (
@@ -9757,7 +9748,9 @@
 /obj/effect/floor_decal/industrial/warning{
 	dir = 8
 	},
-/turf/simulated/floor/reinforced/airless,
+/turf/simulated/floor/reinforced{
+	map_airless = 1
+	},
 /area/shuttle/petrov/isolation)
 "vA" = (
 /obj/structure/cable/cyan{
@@ -9966,11 +9959,11 @@
 /turf/simulated/floor/tiled/white/monotile,
 /area/shuttle/petrov/phoron)
 "wr" = (
-/obj/machinery/portable_atmospherics/canister/empty,
-/obj/effect/floor_decal/industrial/outline/red,
 /obj/machinery/firealarm{
 	pixel_y = 24
 	},
+/obj/effect/floor_decal/industrial/outline/blue,
+/obj/machinery/portable_atmospherics/canister/oxygen,
 /turf/simulated/floor/tiled/dark,
 /area/quartermaster/expedition/atmos)
 "ws" = (
@@ -10138,7 +10131,9 @@
 	id_tag = "toxin_exhaust";
 	name = "Toxins Exhaust Blast Doors"
 	},
-/turf/simulated/floor/reinforced/airless,
+/turf/simulated/floor/reinforced{
+	map_airless = 1
+	},
 /area/shuttle/petrov/toxins)
 "wW" = (
 /obj/structure/disposalpipe/segment{
@@ -10499,7 +10494,9 @@
 /area/maintenance/fifthdeck/aftstarboard)
 "yf" = (
 /obj/machinery/atmospherics/pipe/simple/heat_exchanging,
-/turf/simulated/floor/reinforced/airless,
+/turf/simulated/floor/reinforced{
+	map_airless = 1
+	},
 /area/shuttle/petrov/toxins)
 "yi" = (
 /obj/machinery/atmospherics/pipe/simple/hidden/supply{
@@ -10974,9 +10971,6 @@
 /obj/item/device/radio/intercom{
 	pixel_y = 23
 	},
-/obj/machinery/camera/network/petrov{
-	c_tag = "Petrov - Cockpit"
-	},
 /obj/machinery/atmospherics/unary/vent_scrubber/on{
 	dir = 4
 	},
@@ -11128,6 +11122,10 @@
 /obj/structure/handrail{
 	dir = 1
 	},
+/obj/machinery/camera/network/research{
+	c_tag = "Petrov - Entryway";
+	dir = 1
+	},
 /turf/simulated/floor/tiled/white,
 /area/shuttle/petrov/hallwaya)
 "Ap" = (
@@ -11237,8 +11235,8 @@
 /area/maintenance/fifthdeck/aftstarboard)
 "AW" = (
 /obj/effect/paint/hull,
-/obj/effect/wallframe_spawn/reinforced/titanium,
 /obj/machinery/door/firedoor,
+/obj/effect/wallframe_spawn/reinforced/titanium,
 /turf/simulated/floor/plating,
 /area/exploration_shuttle/medical)
 "AY" = (
@@ -11485,7 +11483,9 @@
 /obj/effect/floor_decal/industrial/warning{
 	dir = 8
 	},
-/turf/simulated/floor/reinforced/airless,
+/turf/simulated/floor/reinforced{
+	map_airless = 1
+	},
 /area/shuttle/petrov/custodial)
 "BY" = (
 /obj/machinery/atmospherics/portables_connector,
@@ -11694,7 +11694,9 @@
 /area/shuttle/petrov/custodial)
 "CT" = (
 /obj/effect/floor_decal/industrial/warning,
-/turf/simulated/floor/reinforced/airless,
+/turf/simulated/floor/reinforced{
+	map_airless = 1
+	},
 /area/shuttle/petrov/rd)
 "CV" = (
 /obj/structure/table/standard,
@@ -11745,10 +11747,6 @@
 	pixel_y = -32
 	},
 /obj/machinery/atmospherics/unary/vent_scrubber/on{
-	dir = 4
-	},
-/obj/machinery/camera/network/hangar{
-	c_tag = "Fuel Bay";
 	dir = 4
 	},
 /turf/simulated/floor/tiled/techfloor/grid,
@@ -11928,10 +11926,6 @@
 /turf/simulated/floor/tiled/white/monotile,
 /area/shuttle/petrov/hallwaya)
 "DE" = (
-/obj/machinery/camera/network/petrov{
-	c_tag = "Petrov - EVA";
-	dir = 4
-	},
 /obj/machinery/light_switch{
 	pixel_x = -24;
 	pixel_y = 12
@@ -11989,10 +11983,6 @@
 /obj/machinery/light{
 	dir = 1
 	},
-/obj/machinery/camera/network/petrov{
-	c_tag = "Petrov - Anomaly Aft";
-	dir = 8
-	},
 /obj/item/device/radio/intercom{
 	dir = 8;
 	pixel_x = 20
@@ -12040,7 +12030,9 @@
 /obj/effect/floor_decal/industrial/warning{
 	dir = 1
 	},
-/turf/simulated/floor/reinforced/airless,
+/turf/simulated/floor/reinforced{
+	map_airless = 1
+	},
 /area/shuttle/petrov/equipment)
 "DY" = (
 /obj/structure/railing/mapped{
@@ -12187,10 +12179,6 @@
 	pixel_x = -24;
 	pixel_y = 12
 	},
-/obj/machinery/camera/network/petrov{
-	c_tag = "Petrov - Toxins";
-	dir = 4
-	},
 /obj/structure/cable/cyan{
 	d1 = 1;
 	d2 = 2;
@@ -12263,10 +12251,6 @@
 /turf/simulated/floor/plating,
 /area/maintenance/fifthdeck/aftport)
 "EJ" = (
-/obj/machinery/camera/network/petrov{
-	c_tag = "Petrov - Desublimation";
-	dir = 4
-	},
 /obj/machinery/power/apc{
 	dir = 8;
 	name = "west bump";
@@ -12279,12 +12263,8 @@
 /turf/simulated/floor/tiled/white,
 /area/shuttle/petrov/phoron)
 "EK" = (
-/obj/machinery/portable_atmospherics/canister/empty,
-/obj/effect/floor_decal/industrial/outline/red,
-/obj/machinery/camera/network/hangar{
-	c_tag = "Atmospheric Storage";
-	dir = 8
-	},
+/obj/effect/floor_decal/industrial/outline/blue,
+/obj/machinery/portable_atmospherics/canister/oxygen,
 /turf/simulated/floor/tiled/dark,
 /area/quartermaster/expedition/atmos)
 "EL" = (
@@ -12442,10 +12422,6 @@
 /turf/space,
 /area/space)
 "FU" = (
-/obj/machinery/camera/network/petrov{
-	c_tag = "Petrov - Hallway Aft";
-	dir = 1
-	},
 /obj/machinery/atmospherics/unary/vent_pump/on{
 	dir = 1;
 	level = 2
@@ -12555,7 +12531,7 @@
 /turf/simulated/floor/tiled/white,
 /area/shuttle/petrov/hallwaya)
 "Gq" = (
-/obj/machinery/shipsensors/weak,
+/obj/machinery/shipsensors,
 /turf/simulated/floor/plating,
 /area/guppy_hangar/start)
 "Gr" = (
@@ -12861,6 +12837,10 @@
 	dir = 1;
 	pixel_y = -24
 	},
+/obj/machinery/camera/network/research{
+	c_tag = "Petrov - Hallway Aft";
+	dir = 1
+	},
 /turf/simulated/floor/tiled/white,
 /area/shuttle/petrov/hallwaya)
 "Hv" = (
@@ -13158,9 +13138,6 @@
 /area/shuttle/petrov/equipment)
 "IB" = (
 /obj/machinery/disposal,
-/obj/machinery/camera/network/petrov{
-	c_tag = "Petrov - Fabrication"
-	},
 /obj/machinery/light_switch{
 	pixel_x = -6;
 	pixel_y = 24
@@ -13314,7 +13291,9 @@
 /obj/effect/floor_decal/industrial/warning{
 	dir = 8
 	},
-/turf/simulated/floor/reinforced,
+/turf/simulated/floor/reinforced{
+	map_airless = 1
+	},
 /area/shuttle/petrov/cockpit)
 "Jl" = (
 /obj/effect/paint/silver,
@@ -13567,6 +13546,12 @@
 /obj/effect/paint/silver,
 /turf/simulated/floor/plating,
 /area/shuttle/petrov/rd)
+"Kf" = (
+/obj/machinery/drone_pad{
+	initial_id_tag = "torch_transport"
+	},
+/turf/simulated/floor/tiled/dark/monotile,
+/area/quartermaster/hangar)
 "Kh" = (
 /obj/structure/table/standard,
 /obj/item/folder/nt,
@@ -13578,10 +13563,6 @@
 /area/shuttle/petrov/rnd)
 "Ki" = (
 /obj/effect/floor_decal/industrial/warning/fulltile,
-/obj/machinery/camera/network/petrov{
-	c_tag = "Petrov - Hallway Fore";
-	dir = 1
-	},
 /obj/machinery/alarm{
 	dir = 1;
 	pixel_y = -22
@@ -13634,7 +13615,9 @@
 /obj/structure/shuttle/engine/propulsion{
 	dir = 4
 	},
-/turf/simulated/floor/reinforced/airless,
+/turf/simulated/floor/reinforced{
+	map_airless = 1
+	},
 /area/shuttle/petrov/custodial)
 "Ku" = (
 /obj/structure/cable/cyan{
@@ -14002,7 +13985,9 @@
 /obj/structure/shuttle/engine/propulsion{
 	dir = 4
 	},
-/turf/simulated/floor/reinforced/airless,
+/turf/simulated/floor/reinforced{
+	map_airless = 1
+	},
 /area/shuttle/petrov/isolation)
 "LN" = (
 /obj/effect/paint/silver,
@@ -14038,7 +14023,9 @@
 /obj/machinery/atmospherics/pipe/simple/heat_exchanging{
 	dir = 9
 	},
-/turf/simulated/floor/reinforced/airless,
+/turf/simulated/floor/reinforced{
+	map_airless = 1
+	},
 /area/shuttle/petrov/toxins)
 "LW" = (
 /obj/effect/wallframe_spawn/reinforced/polarized{
@@ -14148,7 +14135,9 @@
 /obj/effect/floor_decal/industrial/warning{
 	dir = 8
 	},
-/turf/simulated/floor/reinforced,
+/turf/simulated/floor/reinforced{
+	map_airless = 1
+	},
 /area/shuttle/petrov/control)
 "Mt" = (
 /obj/structure/handrail{
@@ -14199,12 +14188,8 @@
 /turf/simulated/floor/plating,
 /area/maintenance/fifthdeck/aftstarboard)
 "Mz" = (
-/obj/structure/stasis_cage,
+/obj/machinery/stasis_cage,
 /obj/effect/floor_decal/industrial/outline/yellow,
-/obj/machinery/camera/network/petrov{
-	c_tag = "Petrov - Equipment";
-	dir = 4
-	},
 /turf/simulated/floor/tiled/white/monotile,
 /area/shuttle/petrov/equipment)
 "MB" = (
@@ -14556,6 +14541,9 @@
 	tag_south = 3;
 	tag_west = 1
 	},
+/obj/machinery/camera/network/research{
+	c_tag = "Petrov - Anomalies Aft"
+	},
 /turf/simulated/floor/tiled/white/monotile,
 /area/shuttle/petrov/isolation)
 "NY" = (
@@ -14635,7 +14623,9 @@
 /obj/structure/disposalpipe/trunk{
 	dir = 8
 	},
-/turf/simulated/floor/reinforced/airless,
+/turf/simulated/floor/reinforced{
+	map_airless = 1
+	},
 /area/shuttle/petrov/toxins)
 "Oi" = (
 /obj/machinery/atmospherics/binary/pump,
@@ -14818,7 +14808,9 @@
 /obj/effect/floor_decal/industrial/warning{
 	dir = 1
 	},
-/turf/simulated/floor/reinforced/airless,
+/turf/simulated/floor/reinforced{
+	map_airless = 1
+	},
 /area/shuttle/petrov/analysis)
 "Pm" = (
 /obj/structure/cable/cyan{
@@ -14865,10 +14857,6 @@
 /obj/structure/cable/cyan{
 	d2 = 4;
 	icon_state = "0-4"
-	},
-/obj/machinery/camera/network/petrov{
-	c_tag = "Petrov - Anomaly Fore";
-	dir = 4
 	},
 /turf/simulated/floor/tiled/white/monotile,
 /area/shuttle/petrov/isolation)
@@ -14926,7 +14914,9 @@
 /obj/machinery/atmospherics/unary/vent_pump/on{
 	dir = 8
 	},
-/turf/simulated/floor/reinforced/airless,
+/turf/simulated/floor/reinforced{
+	map_airless = 1
+	},
 /area/shuttle/petrov/toxins)
 "PK" = (
 /obj/machinery/atmospherics/pipe/simple/hidden/supply{
@@ -15056,10 +15046,6 @@
 	name = "Biohazard Shutter Control";
 	pixel_x = -5;
 	pixel_y = -3
-	},
-/obj/machinery/camera/network/petrov{
-	c_tag = "Petrov - Security";
-	dir = 4
 	},
 /obj/machinery/light{
 	dir = 8
@@ -15338,7 +15324,9 @@
 /area/maintenance/fifthdeck/fore)
 "Rn" = (
 /obj/effect/floor_decal/industrial/warning,
-/turf/simulated/floor/reinforced/airless,
+/turf/simulated/floor/reinforced{
+	map_airless = 1
+	},
 /area/shuttle/petrov/rnd)
 "Rp" = (
 /obj/machinery/atmospherics/pipe/simple/visible{
@@ -15483,10 +15471,6 @@
 /obj/item/anobattery{
 	pixel_x = 6;
 	pixel_y = 6
-	},
-/obj/machinery/camera/network/petrov{
-	c_tag = "Petrov - Analysis";
-	dir = 4
 	},
 /obj/structure/cable/cyan{
 	d2 = 4;
@@ -15948,7 +15932,7 @@
 /area/shuttle/petrov/analysis)
 "TL" = (
 /obj/machinery/camera/network/fifth_deck{
-	c_tag = "Fifth Deck Hallway - Ladders";
+	c_tag = "Fifth Deck - Ladders";
 	dir = 1
 	},
 /obj/effect/floor_decal/corner/purple{
@@ -16083,10 +16067,12 @@
 	pump_direction = 0
 	},
 /obj/machinery/atmospherics/pipe/simple/heat_exchanging/junction,
-/turf/simulated/floor/reinforced/airless,
+/turf/simulated/floor/reinforced{
+	map_airless = 1
+	},
 /area/shuttle/petrov/toxins)
 "Ur" = (
-/obj/machinery/vending/assist,
+/obj/machinery/vending/generic,
 /obj/machinery/atmospherics/unary/vent_pump/on{
 	dir = 8
 	},
@@ -16418,10 +16404,6 @@
 /obj/structure/noticeboard{
 	pixel_y = 32
 	},
-/obj/machinery/camera/network/petrov{
-	c_tag = "Petrov - Chief Science Officer";
-	dir = 4
-	},
 /obj/machinery/light{
 	dir = 8
 	},
@@ -16430,6 +16412,10 @@
 "VN" = (
 /obj/structure/closet/hydrant{
 	pixel_x = -32
+	},
+/obj/machinery/camera/network/fifth_deck{
+	c_tag = "Hangar - Midships Port";
+	dir = 1
 	},
 /turf/simulated/floor/tiled/monotile,
 /area/quartermaster/hangar)
@@ -16454,7 +16440,9 @@
 /obj/effect/floor_decal/industrial/warning{
 	dir = 4
 	},
-/turf/simulated/floor/reinforced/airless,
+/turf/simulated/floor/reinforced{
+	map_airless = 1
+	},
 /area/shuttle/petrov/isolation)
 "VT" = (
 /turf/simulated/floor/lino,
@@ -16710,7 +16698,7 @@
 /turf/simulated/floor/plating,
 /area/maintenance/fifthdeck/fore)
 "Xi" = (
-/turf/simulated/floor/reinforced/airless,
+/turf/simulated/floor/reinforced,
 /area/space)
 "Xk" = (
 /obj/machinery/atmospherics/pipe/simple/hidden/supply,
@@ -17006,7 +16994,9 @@
 /obj/effect/floor_decal/industrial/warning{
 	dir = 1
 	},
-/turf/simulated/floor/reinforced/airless,
+/turf/simulated/floor/reinforced{
+	map_airless = 1
+	},
 /area/shuttle/petrov/eva)
 "Ys" = (
 /obj/machinery/door/airlock/research{
@@ -17169,10 +17159,6 @@
 	dir = 4
 	},
 /obj/effect/floor_decal/industrial/outline/yellow,
-/obj/machinery/camera/network/petrov{
-	c_tag = "Petrov - Entry";
-	dir = 4
-	},
 /obj/machinery/atmospherics/unary/vent_pump/on,
 /obj/machinery/embedded_controller/radio/airlock/docking_port{
 	dir = 4;
@@ -32940,12 +32926,12 @@ ev
 aX
 aX
 aX
-oM
+aX
 kU
 aX
 aX
 aX
-aX
+oM
 lQ
 lM
 jZ
@@ -34132,7 +34118,7 @@ EK
 tV
 lz
 lY
-ir
+UH
 ih
 ee
 aA
@@ -34343,9 +34329,9 @@ by
 bg
 ag
 cw
-cw
-dj
 AW
+dj
+cw
 cw
 cw
 ez
@@ -34359,7 +34345,7 @@ np
 np
 yp
 fS
-oO
+aX
 gO
 gO
 gO
@@ -36582,7 +36568,7 @@ Ho
 Ho
 Ho
 hT
-oO
+aX
 aJ
 CX
 sk
@@ -37188,7 +37174,7 @@ bi
 bi
 bi
 fS
-aX
+Kf
 aJ
 mU
 wj
@@ -37390,7 +37376,7 @@ bi
 bi
 bi
 fS
-aX
+Kf
 aJ
 mU
 vO
@@ -39614,7 +39600,7 @@ hR
 iG
 mD
 jl
-gP
+jl
 Em
 uh
 pt
@@ -44446,7 +44432,7 @@ RZ
 xr
 bb
 bb
-BM
+gP
 Wn
 Yk
 Yk

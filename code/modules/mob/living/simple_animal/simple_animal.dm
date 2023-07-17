@@ -4,6 +4,7 @@
 	health = 20
 	maxHealth = 20
 	universal_speak = FALSE
+	pronouns = null
 
 	mob_bump_flag = SIMPLE_ANIMAL
 	mob_swap_flags = MONKEY|SLIME|SIMPLE_ANIMAL
@@ -81,7 +82,7 @@
 	var/obj/item/card/id/myid// An ID card if they have one to give them access to stuff.
 
 	//Movement things.
-	var/movement_cooldown = 5			// Lower is faster.
+	var/movement_cooldown = 3			// Lower is faster.
 	var/movement_sound = null			// If set, will play this sound when it moves on its own will.
 	var/turn_sound = null				// If set, plays the sound when the mob's dir changes in most cases.
 	var/movement_shake_radius = 0		// If set, moving will shake the camera of all living mobs within this radius slightly.
@@ -156,6 +157,8 @@
 	. = ..()
 	if(LAZYLEN(natural_armor))
 		set_extension(src, armor_type, natural_armor)
+	if(!icon_living)
+		icon_living = initial(icon_state)
 
 /mob/living/simple_animal/Destroy()
 	if(istype(natural_weapon))
@@ -214,7 +217,7 @@
 
 /mob/living/simple_animal/say(message)
 	var/verb = "says"
-	if(speak_emote.len)
+	if(length(speak_emote))
 		verb = pick(speak_emote)
 
 	message = sanitize(message)
@@ -231,7 +234,7 @@
 // Harvest an animal's delicious byproducts
 /mob/living/simple_animal/proc/harvest(mob/user, skill_level)
 	var/actual_meat_amount = round(max(1,(meat_amount / 2) + skill_level / 2))
-	user.visible_message("<span class='danger'>\The [user] chops up \the [src]!</span>")
+	user.visible_message(SPAN_DANGER("\The [user] chops up \the [src]!"))
 	if(meat_type && actual_meat_amount > 0 && (stat == DEAD))
 		for(var/i=0;i<actual_meat_amount;i++)
 			var/obj/item/meat = new meat_type(get_turf(src))
@@ -361,3 +364,10 @@
 	else
 		visible_message(SPAN_NOTICE("\The [user] is interrupted."))
 		set_AI_busy(FALSE)
+
+/mob/living/simple_animal/rejuvenate()
+	..()
+	icon_state = icon_living
+	update_icon()
+	bleed_ticks = 0
+	ai_holder?.handle_stance_tactical()

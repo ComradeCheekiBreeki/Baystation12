@@ -34,6 +34,9 @@
 	var/opened = null
 	var/open_sound = null
 
+	///This is to prevent open sound and use sound playing on the same click if you're opening a closed box.
+	var/open_sound_played = FALSE
+
 /obj/item/storage/Destroy()
 	QDEL_NULL(storage_ui)
 	. = ..()
@@ -64,14 +67,14 @@
 					usr.put_in_l_hand(src)
 
 /obj/item/storage/AltClick(mob/usr)
-
 	if(!canremove)
-		return
+		return FALSE
 
 	if ((ishuman(usr) || isrobot(usr) || issmall(usr)) && !usr.incapacitated() && Adjacent(usr))
 		src.add_fingerprint(usr)
 		src.open(usr)
 		return TRUE
+	return FALSE
 
 /obj/item/storage/proc/return_inv()
 
@@ -98,17 +101,19 @@
 /obj/item/storage/proc/open(mob/user as mob)
 	if (virtual)
 		return
-	if(!opened)
+	if(!opened && src.open_sound)
 		playsound(src.loc, src.open_sound, 50, 0, -5)
-		opened = 1
+		open_sound_played = TRUE
+		to_chat(user, "You open \the [src]")
 		queue_icon_update()
-	if (src.use_sound)
+	if (src.use_sound && !open_sound_played)
 		playsound(src.loc, src.use_sound, 50, 0, -5)
 	if (isrobot(user) && user.hud_used)
 		var/mob/living/silicon/robot/robot = user
 		if(robot.shown_robot_modules) //The robot's inventory is open, need to close it first.
 			robot.hud_used.toggle_show_robot_modules()
-
+	open_sound_played = FALSE
+	opened = TRUE //Regular boxes don't open and close; need opened set True to once. Fancy boxes do; code handled in _fancy.dm
 	prepare_ui()
 	storage_ui.on_open(user)
 	storage_ui.show_to(user)
@@ -140,9 +145,9 @@
 
 	if(src.loc == W)
 		return 0 //Means the item is already in the storage item
-	if(storage_slots != null && contents.len >= storage_slots)
+	if(storage_slots != null && length(contents) >= storage_slots)
 		if(!stop_messages)
-			to_chat(user, "<span class='notice'>\The [src] is full, make some space.</span>")
+			to_chat(user, SPAN_NOTICE("\The [src] is full, make some space."))
 		return 0 //Storage item is full
 
 	if(W.anchored)
@@ -151,12 +156,12 @@
 	if(length(can_hold))
 		if(!is_type_in_list(W, can_hold))
 			if(!stop_messages && ! istype(W, /obj/item/hand_labeler))
-				to_chat(user, "<span class='notice'>\The [src] cannot hold \the [W].</span>")
+				to_chat(user, SPAN_NOTICE("\The [src] cannot hold \the [W]."))
 			return 0
 		var/max_instances = can_hold[W.type]
 		if(max_instances && instances_of_type_in_list(W, contents) >= max_instances)
 			if(!stop_messages && !istype(W, /obj/item/hand_labeler))
-				to_chat(user, "<span class='notice'>\The [src] has no more space specifically for \the [W].</span>")
+				to_chat(user, SPAN_NOTICE("\The [src] has no more space specifically for \the [W]."))
 			return 0
 
 	//Bypassing storage procedures when not using help intent for labeler/forensic tools.
@@ -171,26 +176,26 @@
 			stop_messages = 1
 			return 0
 
-	if(cant_hold.len && is_type_in_list(W, cant_hold))
+	if(length(cant_hold) && is_type_in_list(W, cant_hold))
 		if(!stop_messages)
-			to_chat(user, "<span class='notice'>\The [src] cannot hold \the [W].</span>")
+			to_chat(user, SPAN_NOTICE("\The [src] cannot hold \the [W]."))
 		return 0
 
 	if (max_w_class != null && W.w_class > max_w_class)
 		if(!stop_messages)
-			to_chat(user, "<span class='notice'>\The [W] is too big for this [src.name].</span>")
+			to_chat(user, SPAN_NOTICE("\The [W] is too big for this [src.name]."))
 		return 0
 
 	var/total_storage_space = W.get_storage_cost()
 	if(total_storage_space == ITEM_SIZE_NO_CONTAINER)
 		if(!stop_messages)
-			to_chat(user, "<span class='notice'>\The [W] cannot be placed in [src].</span>")
+			to_chat(user, SPAN_NOTICE("\The [W] cannot be placed in [src]."))
 		return 0
 
 	total_storage_space += storage_space_used() //Adds up the combined w_classes which will be in the storage item if the item is added to it.
 	if(total_storage_space > max_storage_space)
 		if(!stop_messages)
-			to_chat(user, "<span class='notice'>\The [src] is too full, make some space.</span>")
+			to_chat(user, SPAN_NOTICE("\The [src] is too full, make some space."))
 		return 0
 
 	return 1
@@ -213,11 +218,11 @@
 		if(!prevent_warning)
 			for(var/mob/M in viewers(usr, null))
 				if (M == usr)
-					to_chat(usr, "<span class='notice'>You put \the [W] into [src].</span>")
+					to_chat(usr, SPAN_NOTICE("You put \the [W] into [src]."))
 				else if (M in range(1, src)) //If someone is standing close enough, they can tell what it is... TODO replace with distance check
-					M.show_message("<span class='notice'>\The [usr] puts [W] into [src].</span>", VISIBLE_MESSAGE)
+					M.show_message(SPAN_NOTICE("\The [usr] puts [W] into [src]."), VISIBLE_MESSAGE)
 				else if (W && W.w_class >= ITEM_SIZE_NORMAL) //Otherwise they can only see large or normal items from a distance...
-					M.show_message("<span class='notice'>\The [usr] puts [W] into [src].</span>", VISIBLE_MESSAGE)
+					M.show_message(SPAN_NOTICE("\The [usr] puts [W] into [src]."), VISIBLE_MESSAGE)
 
 		if(!NoUpdate)
 			update_ui_after_item_insertion()
@@ -322,13 +327,13 @@
 		success = 1
 		handle_item_insertion(I, 1, 1) // First 1 is no messages, second 1 is no ui updates
 	if(success && !failure)
-		to_chat(user, "<span class='notice'>You put everything into \the [src].</span>")
+		to_chat(user, SPAN_NOTICE("You put everything into \the [src]."))
 		update_ui_after_item_insertion()
 	else if(success)
-		to_chat(user, "<span class='notice'>You put some things into \the [src].</span>")
+		to_chat(user, SPAN_NOTICE("You put some things into \the [src]."))
 		update_ui_after_item_insertion()
 	else
-		to_chat(user, "<span class='notice'>You fail to pick anything up with \the [src].</span>")
+		to_chat(user, SPAN_NOTICE("You fail to pick anything up with \the [src]."))
 
 /obj/item/storage/verb/toggle_gathering_mode()
 	set name = "Switch Gathering Method"
@@ -341,18 +346,24 @@
 		if(0)
 			to_chat(usr, "\The [src] now picks up one item at a time.")
 
+
+/obj/item/storage/proc/DoQuickEmpty()
+	var/turf/into = get_turf(src)
+	if (!into)
+		return
+	for(var/atom/movable/movable in contents)
+		remove_from_storage(movable, into, TRUE)
+	finish_bulk_removal()
+
+
 /obj/item/storage/verb/quick_empty()
 	set name = "Empty Contents"
 	set category = "Object"
-
 	if((!ishuman(usr) && (src.loc != usr)) || usr.stat || usr.restrained())
 		return
-
-	var/turf/T = get_turf(src)
 	hide_from(usr)
-	for(var/obj/item/I in contents)
-		remove_from_storage(I, T, 1)
-	finish_bulk_removal()
+	DoQuickEmpty()
+
 
 /obj/item/storage/verb/dump_contents()
 	set name = "Dump Contents"
@@ -362,14 +373,14 @@
 		return
 
 	if (usr.IsHolding(src) && usr.HasFreeHand())
-		if (contents.len == 0)
+		if (length(contents) == 0)
 			to_chat(usr, SPAN_WARNING("\The [src] is already empty."))
 			return
 
 		var/turf/T = get_turf(src)
 		hide_from(usr)
 		usr.visible_message(SPAN_NOTICE("\The [usr] starts dumping out the contents of \the [src]."), SPAN_NOTICE("You begin dumping out the contents of \the [src]."))
-		if (do_after(usr, max(3 SECONDS, 1 SECONDS * contents.len), src, DO_PUBLIC_UNIQUE))
+		if (do_after(usr, max(3 SECONDS, 1 SECONDS * length(contents)), src, DO_PUBLIC_UNIQUE))
 			for(var/obj/item/I in contents)
 				remove_from_storage(I, T, 1)
 			finish_bulk_removal()
@@ -448,7 +459,7 @@
 			return 1
 
 /obj/item/storage/proc/make_exact_fit()
-	storage_slots = contents.len
+	storage_slots = length(contents)
 
 	can_hold.Cut()
 	max_w_class = 0
@@ -458,8 +469,16 @@
 		max_w_class = max(I.w_class, max_w_class)
 		max_storage_space += I.get_storage_cost()
 
-//Returns the storage depth of an atom. This is the number of storage items the atom is contained in before reaching toplevel (the area).
-//Returns -1 if the atom was not found on container.
+/**
+ * Determines the storage depth of an atom. This is the number of storage items (`/obj/item/storage`) the atom is
+ * contained in before reaching `container`.
+ *
+ * **Parameters**:
+ * - `container` - The top level container to stop at. If this is never encountered during the loop, the proc will
+ * return `-1`.
+ *
+ * Returns integer or `-1` if the atom was not found in the container.
+ */
 /atom/proc/storage_depth(atom/container)
 	var/depth = 0
 	var/atom/cur_atom = src
@@ -476,8 +495,12 @@
 
 	return depth
 
-//Like storage depth, but returns the depth to the nearest turf
-//Returns -1 if no top level turf (a loc was null somewhere, or a non-turf atom's loc was an area somehow).
+/**
+ * Determines the storage depth of an atom. This is the number of storage items (`/obj/item/storage`) the atom is
+ * contained in before reaching the turf.
+ *
+ * Returns integer or `-1` if the atom was not found in a turf.
+ */
 /atom/proc/storage_depth_turf()
 	var/depth = 0
 	var/atom/cur_atom = src

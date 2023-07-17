@@ -21,14 +21,14 @@
 /obj/item/syringe_cartridge/attackby(obj/item/I, mob/user)
 	if(istype(I, /obj/item/reagent_containers/syringe) && user.unEquip(I, src))
 		syringe = I
-		to_chat(user, "<span class='notice'>You carefully insert [syringe] into [src].</span>")
+		to_chat(user, SPAN_NOTICE("You carefully insert [syringe] into [src]."))
 		sharp = TRUE
 		name = "syringe dart"
 		update_icon()
 
 /obj/item/syringe_cartridge/attack_self(mob/user)
 	if(syringe)
-		to_chat(user, "<span class='notice'>You remove [syringe] from [src].</span>")
+		to_chat(user, SPAN_NOTICE("You remove [syringe] from [src]."))
 		user.put_in_hands(syringe)
 		syringe = null
 		sharp = initial(sharp)
@@ -95,41 +95,50 @@
 
 /obj/item/gun/launcher/syringe/attack_self(mob/living/user as mob)
 	if(next)
-		user.visible_message("[user] unlatches and carefully relaxes the bolt on [src].", "<span class='warning'>You unlatch and carefully relax the bolt on [src], unloading the spring.</span>")
+		user.visible_message("[user] unlatches and carefully relaxes the bolt on [src].", SPAN_WARNING("You unlatch and carefully relax the bolt on [src], unloading the spring."))
 		next = null
-	else if(darts.len)
+	else if(length(darts))
 		playsound(src.loc, 'sound/weapons/flipblade.ogg', 50, 1)
-		user.visible_message("[user] draws back the bolt on [src], clicking it into place.", "<span class='warning'>You draw back the bolt on the [src], loading the spring!</span>")
+		user.visible_message("[user] draws back the bolt on [src], clicking it into place.", SPAN_WARNING("You draw back the bolt on the [src], loading the spring!"))
 		next = darts[1]
 	add_fingerprint(user)
 
 /obj/item/gun/launcher/syringe/attack_hand(mob/living/user as mob)
 	if(user.get_inactive_hand() == src)
-		if(!darts.len)
-			to_chat(user, "<span class='warning'>[src] is empty.</span>")
+		if(!length(darts))
+			to_chat(user, SPAN_WARNING("[src] is empty."))
 			return
 		if(next)
-			to_chat(user, "<span class='warning'>[src]'s cover is locked shut.</span>")
+			to_chat(user, SPAN_WARNING("[src]'s cover is locked shut."))
 			return
 		var/obj/item/syringe_cartridge/C = darts[1]
 		darts -= C
 		user.put_in_hands(C)
-		user.visible_message("[user] removes \a [C] from [src].", "<span class='notice'>You remove \a [C] from [src].</span>")
+		user.visible_message("[user] removes \a [C] from [src].", SPAN_NOTICE("You remove \a [C] from [src]."))
 	else
 		..()
 
-/obj/item/gun/launcher/syringe/attackby(obj/item/A as obj, mob/user as mob)
-	if(istype(A, /obj/item/syringe_cartridge))
-		var/obj/item/syringe_cartridge/C = A
-		if(darts.len >= max_darts)
-			to_chat(user, "<span class='warning'>[src] is full!</span>")
-			return
-		if(!user.unEquip(C, src))
-			return
-		darts += C //add to the end
-		user.visible_message("[user] inserts \a [C] into [src].", "<span class='notice'>You insert \a [C] into [src].</span>")
-	else
-		..()
+
+/obj/item/gun/launcher/syringe/use_tool(obj/item/tool, mob/user, list/click_params)
+	// Syringe Cartridge - Load ammo
+	if (istype(tool, /obj/item/syringe_cartridge))
+		if (length(darts) >= max_darts)
+			USE_FEEDBACK_FAILURE("\The [src] is full.")
+			return TRUE
+		if (!user.unEquip(tool, src))
+			FEEDBACK_UNEQUIP_FAILURE(user, tool)
+			return TRUE
+		darts += tool
+		user.visible_message(
+			SPAN_NOTICE("\The [user] loads \a [src] with \a [tool]."),
+			SPAN_NOTICE("You load \the [src] with \the [tool].")
+		)
+		if (max_darts > 1)
+			to_chat(user, SPAN_INFO("\The [src] now has [length(darts)]/[max_darts] dart\s loaded."))
+		return TRUE
+
+	return ..()
+
 
 /obj/item/gun/launcher/syringe/rapid
 	name = "syringe gun revolver"

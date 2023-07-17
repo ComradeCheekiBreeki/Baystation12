@@ -70,7 +70,7 @@ meteor_act
 	. = list()
 	var/list/protective_gear = list(head, wear_mask, wear_suit, w_uniform, gloves, shoes)
 	for(var/obj/item/clothing/gear in protective_gear)
-		if(gear.accessories.len)
+		if(length(gear.accessories))
 			for(var/obj/item/clothing/accessory/bling in gear.accessories)
 				if(bling.body_parts_covered & def_zone.body_part)
 					var/armor = get_extension(bling, /datum/extension/armor)
@@ -146,7 +146,7 @@ meteor_act
 
 	var/obj/item/projectile/P = damage_source
 	if(istype(P) && !P.disrupts_psionics() && psi && P.starting && prob(psi.get_armour(get_armor_key(P.damage_type, P.damage_flags())) * 0.5) && psi.spend_power(round(damage/10)))
-		visible_message("<span class='danger'>\The [src] deflects [attack_text]!</span>")
+		visible_message(SPAN_DANGER("\The [src] deflects [attack_text]!"))
 		P.redirect(P.starting.x + rand(-2,2), P.starting.y + rand(-2,2), get_turf(src), src)
 		return PROJECTILE_FORCE_MISS
 
@@ -173,7 +173,7 @@ meteor_act
 	var/hit_zone = get_zone_with_miss_chance(target_zone, src, accuracy_penalty)
 
 	if(!hit_zone)
-		visible_message("<span class='danger'>\The [user] misses [src] with \the [I]!</span>")
+		visible_message(SPAN_DANGER("\The [user] misses [src] with \the [I]!"))
 		return null
 
 	if(check_shields(I.force, I, user, target_zone, "the [I.name]"))
@@ -181,7 +181,7 @@ meteor_act
 
 	var/obj/item/organ/external/affecting = get_organ(hit_zone)
 	if (!affecting || affecting.is_stump())
-		to_chat(user, "<span class='danger'>They are missing that limb!</span>")
+		to_chat(user, SPAN_DANGER("They are missing that limb!"))
 		return null
 
 	return hit_zone
@@ -194,7 +194,7 @@ meteor_act
 	var/weapon_mention
 	if(I.attack_message_name())
 		weapon_mention = " with [I.attack_message_name()]"
-	visible_message(SPAN_DANGER("\The [src] has been [I.attack_verb.len? pick(I.attack_verb) : "attacked"] in the [affecting.name][weapon_mention] by \the [user]!"))
+	visible_message(SPAN_DANGER("\The [src] has been [length(I.attack_verb)? pick(I.attack_verb) : "attacked"] in the [affecting.name][weapon_mention] by \the [user]!"))
 	return standard_weapon_hit_effects(I, user, effective_force, hit_zone)
 
 /mob/living/carbon/human/standard_weapon_hit_effects(obj/item/I, mob/living/user, effective_force, hit_zone)
@@ -227,7 +227,7 @@ meteor_act
 			if(!headcheck(hit_zone))
 				if(prob(unimpeded_force + 5))
 					apply_effect(3, EFFECT_WEAKEN, 100 * blocked)
-					visible_message("<span class='danger'>[src] has been knocked down!</span>")
+					visible_message(SPAN_DANGER("[src] has been knocked down!"))
 		//Apply blood
 		attack_bloody(I, user, effective_force, hit_zone)
 
@@ -294,7 +294,7 @@ meteor_act
 	//want the dislocation chance to be such that the limb is expected to dislocate after dealing a fraction of the damage needed to break the limb
 	var/dislocate_chance = effective_force/(dislocate_mult * organ.min_broken_damage * config.organ_health_multiplier) * (organ.damage * 1.75)
 	if(prob(dislocate_chance * blocked_mult(blocked)))
-		visible_message("<span class='danger'>[src]'s [organ.joint] [pick("gives way","caves in","crumbles","collapses")]!</span>")
+		visible_message(SPAN_CLASS("danger", "[src]'s [organ.joint] [pick("gives way","caves in","crumbles","collapses")]!"))
 		organ.dislocate(1)
 		return 1
 	return 0
@@ -302,12 +302,12 @@ meteor_act
 /mob/living/carbon/human/emag_act(remaining_charges, mob/user, emag_source)
 	var/obj/item/organ/external/affecting = get_organ(user.zone_sel.selecting)
 	if(!affecting || !BP_IS_ROBOTIC(affecting))
-		to_chat(user, "<span class='warning'>That limb isn't robotic.</span>")
+		to_chat(user, SPAN_WARNING("That limb isn't robotic."))
 		return -1
 	if(affecting.status & ORGAN_SABOTAGED)
-		to_chat(user, "<span class='warning'>[src]'s [affecting.name] is already sabotaged!</span>")
+		to_chat(user, SPAN_WARNING("[src]'s [affecting.name] is already sabotaged!"))
 		return -1
-	to_chat(user, "<span class='notice'>You sneakily slide [emag_source] into the dataport on [src]'s [affecting.name] and short out the safeties.</span>")
+	to_chat(user, SPAN_NOTICE("You sneakily slide [emag_source] into the dataport on [src]'s [affecting.name] and short out the safeties."))
 	affecting.status |= ORGAN_SABOTAGED
 	return 1
 
@@ -321,7 +321,7 @@ meteor_act
 			if(!incapacitated())
 				if(isturf(O.loc))
 					put_in_active_hand(O)
-					visible_message("<span class='warning'>[src] catches [O]!</span>")
+					visible_message(SPAN_WARNING("[src] catches [O]!"))
 					throw_mode_off()
 					return
 
@@ -346,18 +346,18 @@ meteor_act
 				return
 
 		if(!zone)
-			visible_message("<span class='notice'>\The [O] misses [src] narrowly!</span>")
+			visible_message(SPAN_NOTICE("\The [O] misses [src] narrowly!"))
 			return
 
 		var/obj/item/organ/external/affecting = get_organ(zone)
 		if (!affecting)
-			visible_message("<span class='notice'>\The [O] misses [src] narrowly!</span>")
+			visible_message(SPAN_NOTICE("\The [O] misses [src] narrowly!"))
 			return
 
 		var/hit_area = affecting.name
 		var/datum/wound/created_wound
 
-		src.visible_message("<span class='warning'>\The [src] has been hit in the [hit_area] by \the [O].</span>")
+		src.visible_message(SPAN_WARNING("\The [src] has been hit in the [hit_area] by \the [O]."))
 		created_wound = apply_damage(throw_damage, dtype, zone, O.damage_flags(), O, O.armor_penetration)
 
 		if(TT.thrower)
@@ -383,31 +383,8 @@ meteor_act
 					affecting.embed(I, supplied_wound = created_wound)
 					I.has_embedded()
 
-		// Begin BS12 momentum-transfer code.
-		var/mass = 1.5
-		if(istype(O, /obj/item))
-			var/obj/item/I = O
-			mass = I.w_class/THROWNOBJ_KNOCKBACK_DIVISOR
-		var/momentum = TT.speed*mass
+		process_momentum(AM, TT)
 
-		if(momentum >= THROWNOBJ_KNOCKBACK_SPEED)
-			var/dir = TT.init_dir
-
-			visible_message("<span class='warning'>\The [src] staggers under the impact!</span>","<span class='warning'>You stagger under the impact!</span>")
-
-			if(!src.isinspace())
-				src.throw_at(get_edge_target_turf(src,dir),1,momentum - THROWNOBJ_KNOCKBACK_SPEED)
-
-			if(!O || !src) return
-
-			if(O.loc == src && O.sharp && !(mob_flags & MOB_FLAG_UNPINNABLE)) //Projectile is embedded and suitable for pinning.
-				var/turf/T = near_wall(dir,2)
-
-				if(T)
-					src.forceMove(T)
-					visible_message("<span class='warning'>[src] is pinned to the wall by [O]!</span>","<span class='warning'>You are pinned to the wall by [O]!</span>")
-					src.anchored = TRUE
-					src.pinned += O
 	else
 		..()
 

@@ -10,7 +10,7 @@ var/global/list/image/ghost_sightless_images = list() //this is a list of images
 	blinded = 0
 	anchored = TRUE	//  don't get pushed around
 	universal_speak = TRUE
-
+	pronouns = PRONOUNS_THEY_THEM
 	mob_flags = MOB_FLAG_HOLY_BAD
 	movement_handlers = list(/datum/movement_handler/mob/multiz_connected, /datum/movement_handler/mob/incorporeal)
 
@@ -32,12 +32,13 @@ var/global/list/image/ghost_sightless_images = list() //this is a list of images
 	var/obj/item/device/multitool/ghost_multitool
 	var/list/hud_images // A list of hud images
 
-/mob/observer/ghost/New(mob/body)
+/mob/observer/ghost/Initialize(mapload)
 	see_in_dark = 100
 	verbs += /mob/proc/toggle_antag_pool
 
 	var/turf/T
-	if(ismob(body))
+	if(ismob(loc))
+		var/mob/body = loc
 		T = get_turf(body)               //Where is the body located?
 		attack_logs_ = body.attack_logs_ //preserve our attack logs by copying them to our ghost
 
@@ -72,7 +73,7 @@ var/global/list/image/ghost_sightless_images = list() //this is a list of images
 
 	GLOB.ghost_mobs += src
 
-	..()
+	. = ..()
 
 /mob/observer/ghost/Destroy()
 	GLOB.ghost_mobs -= src
@@ -116,7 +117,7 @@ Works together with spawning an observer, noted above.
 		for(var/mob/living/target in oview(src, 14))
 			if(target.mind && target.mind.special_role)
 				target_list += target
-		if(target_list.len)
+		if(length(target_list))
 			assess_targets(target_list, src)
 	if(medHUD)
 		process_medHUD(src)
@@ -205,10 +206,10 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 	set name = "Re-enter Corpse"
 	if(!client)	return
 	if(!(mind && mind.current && can_reenter_corpse))
-		to_chat(src, "<span class='warning'>You have no body.</span>")
+		to_chat(src, SPAN_WARNING("You have no body."))
 		return
 	if(mind.current.key && copytext(mind.current.key,1,2)!="@")	//makes sure we don't accidentally kick any clients
-		to_chat(src, "<span class='warning'>Another consciousness is in your body... it is resisting you.</span>")
+		to_chat(src, SPAN_WARNING("Another consciousness is in your body... it is resisting you."))
 		return
 	stop_following()
 	mind.current.key = key
@@ -226,10 +227,10 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 		return
 	if(medHUD)
 		medHUD = 0
-		to_chat(src, "<span class='notice'>Medical HUD Disabled</span>")
+		to_chat(src, SPAN_NOTICE("Medical HUD Disabled"))
 	else
 		medHUD = 1
-		to_chat(src, "<span class='notice'>Medical HUD Enabled</span>")
+		to_chat(src, SPAN_NOTICE("Medical HUD Enabled"))
 
 /mob/observer/ghost/verb/toggle_antagHUD()
 	set category = "Ghost"
@@ -269,8 +270,8 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 		return
 
 	var/list/area_turfs = get_area_turfs(thearea, shall_check_if_holy() ? list(/proc/is_not_holy_turf) : list())
-	if(!area_turfs.len)
-		to_chat(src, "<span class='warning'>This area has been entirely made into sacred grounds, you cannot enter it while you are in this plane of existence!</span>")
+	if(!length(area_turfs))
+		to_chat(src, SPAN_WARNING("This area has been entirely made into sacred grounds, you cannot enter it while you are in this plane of existence!"))
 		return
 
 	ghost_to_turf(pick(area_turfs))
@@ -284,7 +285,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 	if(T)
 		ghost_to_turf(T)
 	else
-		to_chat(src, "<span class='warning'>Invalid coordinates.</span>")
+		to_chat(src, SPAN_WARNING("Invalid coordinates."))
 /mob/observer/ghost/verb/follow(datum/follow_holder/fh in get_follow_targets())
 	set category = "Ghost"
 	set name = "Follow"
@@ -295,34 +296,34 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 
 /mob/observer/ghost/proc/ghost_to_turf(turf/target_turf)
 	if(check_is_holy_turf(target_turf))
-		to_chat(src, "<span class='warning'>The target location is holy grounds!</span>")
+		to_chat(src, SPAN_WARNING("The target location is holy grounds!"))
 		return
 	stop_following()
 	forceMove(target_turf)
 
 /mob/observer/ghost/start_following(atom/a)
 	..()
-	to_chat(src, "<span class='notice'>Now following \the [following].</span>")
+	to_chat(src, SPAN_NOTICE("Now following \the [following]."))
 
 /mob/observer/ghost/stop_following()
 	if(following)
-		to_chat(src, "<span class='notice'>No longer following \the [following]</span>")
+		to_chat(src, SPAN_NOTICE("No longer following \the [following]"))
 	..()
 
 /mob/observer/ghost/keep_following(atom/movable/am, old_loc, new_loc)
 	var/turf/T = get_turf(new_loc)
 	if(check_is_holy_turf(T))
-		to_chat(src, "<span class='warning'>You cannot follow something standing on holy grounds!</span>")
+		to_chat(src, SPAN_WARNING("You cannot follow something standing on holy grounds!"))
 		return
 	..()
 
 /mob/observer/ghost/StoreMemory()
 	set hidden = 1
-	to_chat(src, "<span class='warning'>You are dead! You have no mind to store memory!</span>")
+	to_chat(src, SPAN_WARNING("You are dead! You have no mind to store memory!"))
 
 /mob/observer/ghost/AddMemory()
 	set hidden = 1
-	to_chat(src, "<span class='warning'>You are dead! You have no mind to store memory!</span>")
+	to_chat(src, SPAN_WARNING("You are dead! You have no mind to store memory!"))
 /mob/observer/ghost/PostIncorporealMovement()
 	stop_following()
 
@@ -341,7 +342,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 	var/turf/t = get_turf(src)
 	if(t)
 		var/rads = SSradiation.get_rads_at_turf(t)
-		to_chat(src, "<span class='notice'>Radiation level: [rads ? rads : "0"] IU/s.</span>")
+		to_chat(src, SPAN_NOTICE("Radiation level: [rads ? rads : "0"] IU/s."))
 
 /mob/observer/ghost/verb/scan_target()
 	set name = "Scan Target"
@@ -351,14 +352,14 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 	if(ishuman(following))
 		to_chat(src, medical_scan_results(following, 1, SKILL_MAX))
 
-	else to_chat(src, "<span class='notice'>Not a scannable target.</span>")
+	else to_chat(src, SPAN_NOTICE("Not a scannable target."))
 
 /mob/observer/ghost/verb/become_mouse()
 	set name = "Become mouse"
 	set category = "Ghost"
 
 	if(config.disable_player_mice)
-		to_chat(src, "<span class='warning'>Spawning as a mouse is currently disabled.</span>")
+		to_chat(src, SPAN_WARNING("Spawning as a mouse is currently disabled."))
 		return
 
 	if(!MayRespawn(1, ANIMAL_SPAWN_DELAY))
@@ -366,7 +367,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 
 	var/turf/T = get_turf(src)
 	if(!T || (T.z in GLOB.using_map.admin_levels))
-		to_chat(src, "<span class='warning'>You may not spawn as a mouse on this Z-level.</span>")
+		to_chat(src, SPAN_WARNING("You may not spawn as a mouse on this Z-level."))
 		return
 
 	var/response = alert(src, "Are you -sure- you want to become a mouse?","Are you sure you want to squeek?","Squeek!","Nope!")
@@ -380,27 +381,30 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 	for(var/obj/machinery/atmospherics/unary/vent_pump/v in SSmachines.machinery)
 		if(!v.welded && v.z == T.z)
 			found_vents.Add(v)
-	if(found_vents.len)
+	if(length(found_vents))
 		vent_found = pick(found_vents)
 		host = new /mob/living/simple_animal/passive/mouse(vent_found.loc)
 	else
-		to_chat(src, "<span class='warning'>Unable to find any unwelded vents to spawn mice at.</span>")
+		to_chat(src, SPAN_WARNING("Unable to find any unwelded vents to spawn mice at."))
 	if(host)
 		if(config.uneducated_mice)
 			host.universal_understand = FALSE
 		announce_ghost_joinleave(src, 0, "They are now a mouse.")
 		host.ckey = src.ckey
 		host.status_flags |= NO_ANTAG
-		to_chat(host, "<span class='info'>You are now a mouse. Try to avoid interaction with players, and do not give hints away that you are more than a simple rodent.</span>")
+		to_chat(host, SPAN_INFO("You are now a mouse. Try to avoid interaction with players, and do not give hints away that you are more than a simple rodent."))
+
 /mob/observer/ghost/verb/view_manfiest()
 	set name = "Show Crew Manifest"
 	set category = "Ghost"
 
 	var/dat
 	dat += "<h4>Crew Manifest</h4>"
-	dat += html_crew_manifest()
+	dat += html_crew_manifest(OOC = TRUE)
 
-	show_browser(src, dat, "window=manifest;size=370x420;can_close=1")
+	var/datum/browser/popup = new(src, "Crew Manifest", "Crew Manifest", 370, 420, src)
+	popup.set_content(dat)
+	popup.open()
 
 //This is called when a ghost is drag clicked to something.
 /mob/observer/ghost/MouseDrop(atom/over)
@@ -421,7 +425,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 
 /mob/observer/ghost/proc/try_possession(mob/living/M)
 	if(!config.ghosts_can_possess_animals)
-		to_chat(src, "<span class='warning'>Ghosts are not permitted to possess animals.</span>")
+		to_chat(src, SPAN_WARNING("Ghosts are not permitted to possess animals."))
 		return 0
 	if(!M.can_be_possessed_by(src))
 		return 0
@@ -430,7 +434,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 /mob/observer/ghost/pointed(atom/A as mob|obj|turf in view())
 	if(!..())
 		return 0
-	usr.visible_message("<span class='deadsay'><b>[src]</b> points to [A]</span>")
+	usr.visible_message(SPAN_CLASS("deadsay", "<b>[src]</b> points to [A]"))
 	return 1
 
 /mob/observer/ghost/proc/show_hud_icon(icon_state, make_visible)
@@ -495,17 +499,17 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 		return 0
 	if(mind && mind.current && mind.current.stat != DEAD && can_reenter_corpse == CORPSE_CAN_REENTER)
 		if(feedback)
-			to_chat(src, "<span class='warning'>Your non-dead body prevents you from respawning.</span>")
+			to_chat(src, SPAN_WARNING("Your non-dead body prevents you from respawning."))
 		return 0
 	if(config.antag_hud_restricted && has_enabled_antagHUD == 1)
 		if(feedback)
-			to_chat(src, "<span class='warning'>antagHUD restrictions prevent you from respawning.</span>")
+			to_chat(src, SPAN_WARNING("antagHUD restrictions prevent you from respawning."))
 		return 0
 
 	var/timedifference = world.time - timeofdeath
 	if(!client.holder && respawn_time && timeofdeath && timedifference < respawn_time MINUTES)
 		var/timedifference_text = time2text(respawn_time MINUTES - timedifference,"mm:ss")
-		to_chat(src, "<span class='warning'>You must have been dead for [respawn_time] minute\s to respawn. You have [timedifference_text] left.</span>")
+		to_chat(src, SPAN_WARNING("You must have been dead for [respawn_time] minute\s to respawn. You have [timedifference_text] left."))
 		return 0
 
 	return 1

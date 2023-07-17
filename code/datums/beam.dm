@@ -47,8 +47,10 @@
 	visuals.icon_state = icon_state
 	Draw()
 	//Register for movement events
-	GLOB.moved_event.register(origin, src, .proc/redrawing)
-	GLOB.moved_event.register(target, src, .proc/redrawing)
+	if(istype(origin, /atom/movable))
+		GLOB.moved_event.register(origin, src, .proc/redrawing)
+	if(istype(target, /atom/movable))
+		GLOB.moved_event.register(target, src, .proc/redrawing)
 	GLOB.destroyed_event.register(origin, src, .proc/redrawing)
 	GLOB.destroyed_event.register(target, src, .proc/redrawing)
 
@@ -63,7 +65,7 @@
 /datum/beam/proc/redrawing(atom/movable/mover, atom/oldloc, new_loc)
 	if(!QDELETED(origin) && !QDELETED(target) && get_dist(origin,target)<max_distance && origin.z == target.z)
 		QDEL_NULL_LIST(elements)
-		INVOKE_ASYNC(src, .proc/Draw)
+		invoke_async(src, .proc/Draw)
 	else
 		qdel(src)
 
@@ -120,7 +122,7 @@
 		else
 			Pixel_y = round(cos(Angle)+32*cos(Angle)*(N+16)/32)
 
-		//Position the effect so the beam is one continous line
+		//Position the effect so the beam is one continuous line
 		var/a
 		if(abs(Pixel_x)>32)
 			a = Pixel_x > 0 ? round(Pixel_x/32) : Ceilm(Pixel_x/32, 1)
@@ -149,6 +151,12 @@
 /obj/effect/ebeam/singularity_act()
 	return
 
+//Equivalent to /obj/effect/ebeam, except it also adds an emissive layer
+/obj/effect/ebeam/emissive/on_update_icon()
+	. = ..()
+	var/mutable_appearance/emissive_overlay = emissive_appearance(icon, icon_state, src)
+	overlays += emissive_overlay
+
 /**
  * This is what you use to start a beam. Example: origin.Beam(target, args). **Store the return of this proc if you don't set maxdist or time, you need it to delete the beam.**
  *
@@ -163,5 +171,5 @@
  */
 /atom/proc/Beam(atom/BeamTarget,icon_state="b_beam",icon='icons/effects/beam.dmi',time=INFINITY,maxdistance=INFINITY,beam_type=/obj/effect/ebeam)
 	var/datum/beam/newbeam = new(src,BeamTarget,icon,icon_state,time,maxdistance,beam_type)
-	INVOKE_ASYNC(newbeam, /datum/beam/.proc/Start)
+	invoke_async(newbeam, /datum/beam/.proc/Start)
 	return newbeam

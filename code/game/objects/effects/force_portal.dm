@@ -26,7 +26,7 @@
 /obj/effect/force_portal/proc/boom()
 	set waitfor = 0
 	var/list/possible_turfs = getcircle(get_turf(src), 5)
-	while(contents && contents.len)
+	while(contents && length(contents))
 		var/target = pick(possible_turfs)
 		possible_turfs -= target
 		var/atom/movable/picked = pick(contents)
@@ -43,7 +43,7 @@
 
 /obj/effect/force_portal/onDropInto(atom/movable/AM)
 	boom_time -= 1 SECOND
-	src.visible_message("<span class='warning'>\The [src] sucks in \the [AM]!</span>")
+	src.visible_message(SPAN_WARNING("\The [src] sucks in \the [AM]!"))
 	if(!ismob(AM))
 		var/obj/O = AM
 		if(O.w_class <= ITEM_SIZE_SMALL)

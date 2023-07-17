@@ -13,7 +13,7 @@
 
 /obj/item/robot_module/medical/build_equipment()
 	. = ..()
-	equipment += new /obj/item/robot_rack/roller(src, 1)
+	equipment += new /obj/item/robot_rack/roller_bed(src, 1)
 
 /obj/item/robot_module/medical/surgeon
 	name = "surgeon robot module"
@@ -29,7 +29,7 @@
 		/obj/item/borg/sight/hud/med,
 		/obj/item/device/scanner/health,
 		/obj/item/reagent_containers/borghypo/surgeon,
-		/obj/item/scalpel/manager,
+		/obj/item/scalpel/ims,
 		/obj/item/hemostat,
 		/obj/item/retractor,
 		/obj/item/cautery,
@@ -44,18 +44,20 @@
 		/obj/item/crowbar,
 		/obj/item/stack/nanopaste,
 		/obj/item/stack/medical/advanced/bruise_pack,
-		/obj/item/reagent_containers/dropper
+		/obj/item/reagent_containers/dropper,
+		/obj/item/reagent_containers/spray/cleaner/drone,
+		/obj/item/reagent_containers/spray/sterilizine
 	)
 	synths = list(
 		/datum/matter_synth/medicine = 10000,
 	)
 	emag = /obj/item/reagent_containers/spray
 	skills = list(
-		SKILL_ANATOMY     = SKILL_PROF,
-		SKILL_MEDICAL     = SKILL_EXPERT,
-		SKILL_CHEMISTRY   = SKILL_ADEPT,
-		SKILL_BUREAUCRACY = SKILL_ADEPT,
-		SKILL_DEVICES     = SKILL_EXPERT
+		SKILL_ANATOMY     = SKILL_MASTER,
+		SKILL_MEDICAL     = SKILL_EXPERIENCED,
+		SKILL_CHEMISTRY   = SKILL_TRAINED,
+		SKILL_BUREAUCRACY = SKILL_TRAINED,
+		SKILL_DEVICES     = SKILL_EXPERIENCED
 	)
 
 /obj/item/robot_module/medical/surgeon/finalize_equipment()
@@ -116,7 +118,8 @@
 		/obj/item/inflatable_dispenser/robot,
 		/obj/item/stack/medical/advanced/ointment,
 		/obj/item/stack/medical/advanced/bruise_pack,
-		/obj/item/stack/medical/splint
+		/obj/item/stack/medical/splint,
+		/obj/item/reagent_containers/spray/cleaner/drone
 	)
 	synths = list(
 		/datum/matter_synth/medicine = 15000
@@ -124,10 +127,10 @@
 	emag = /obj/item/reagent_containers/spray
 	skills = list(
 		SKILL_ANATOMY     = SKILL_BASIC,
-		SKILL_MEDICAL     = SKILL_PROF,
-		SKILL_CHEMISTRY   = SKILL_ADEPT,
-		SKILL_BUREAUCRACY = SKILL_ADEPT,
-		SKILL_EVA         = SKILL_EXPERT
+		SKILL_MEDICAL     = SKILL_MASTER,
+		SKILL_CHEMISTRY   = SKILL_TRAINED,
+		SKILL_BUREAUCRACY = SKILL_TRAINED,
+		SKILL_EVA         = SKILL_EXPERIENCED
 	)
 
 /obj/item/robot_module/medical/crisis/finalize_equipment()

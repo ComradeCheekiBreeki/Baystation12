@@ -139,11 +139,11 @@
 /turf/simulated/wall/crystal/New(newloc)
 	..(newloc,MATERIAL_CRYSTAL)
 
+/turf/simulated/wall/voxshuttle
+	atom_flags = ATOM_FLAG_NO_TOOLS
+
 /turf/simulated/wall/voxshuttle/New(newloc)
 	..(newloc, MATERIAL_VOX)
-
-/turf/simulated/wall/voxshuttle/attackby()
-	return
 
 /turf/simulated/wall/growth/New(newloc)
 	..(newloc, MATERIAL_GROWTH)
@@ -176,7 +176,7 @@
 	..()
 
 /turf/simulated/wall/cult/can_join_with(turf/simulated/wall/W)
-	if(material && W.material && material.icon_base == W.material.icon_base)
+	if(material && W.material && material.wall_icon_base == W.material.wall_icon_base)
 		return 1
 	else if(istype(W, /turf/simulated/wall))
 		return 1

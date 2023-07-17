@@ -5,11 +5,11 @@ var/global/list/cached_space = list()
 
 /obj/effect/overmap/visitable/sector/temporary
 	name = "Deep Space"
-	invisibility = 101
-	known = FALSE
+	invisibility = INVISIBILITY_ABSTRACT
 
-/obj/effect/overmap/visitable/sector/temporary/New(nx, ny, nz)
-	map_z += nz
+/obj/effect/overmap/visitable/sector/temporary/Initialize(mapload, nx, ny, nz)
+	. = ..()
+	map_z = list(nz)
 	testing("Temporary sector at zlevel [nz] was created.")
 	register(nx, ny)
 
@@ -40,6 +40,7 @@ var/global/list/cached_space = list()
 	return 1
 
 /proc/get_deepspace(x,y)
+	RETURN_TYPE(/obj/effect/overmap/visitable/sector/temporary)
 	var/turf/map = locate(x,y,GLOB.using_map.overmap_z)
 	var/obj/effect/overmap/visitable/sector/temporary/res
 	for(var/obj/effect/overmap/visitable/sector/temporary/O in map)
@@ -47,13 +48,13 @@ var/global/list/cached_space = list()
 		break
 	if(istype(res))
 		return res
-	else if(cached_space.len)
-		res = cached_space[cached_space.len]
+	else if(length(cached_space))
+		res = cached_space[length(cached_space)]
 		cached_space -= res
 		res.register(x, y)
 		return res
 	else
-		return new /obj/effect/overmap/visitable/sector/temporary(x, y, ++world.maxz)
+		return new /obj/effect/overmap/visitable/sector/temporary(null, x, y, ++world.maxz)
 
 /atom/movable/proc/lost_in_space()
 	for(var/atom/movable/AM in contents)
@@ -65,7 +66,7 @@ var/global/list/cached_space = list()
 	return isnull(client)
 
 /mob/living/carbon/human/lost_in_space()
-	return isnull(client) && !last_ckey && stat == DEAD
+	return isnull(client) && (!last_ckey || stat == DEAD)
 
 /proc/overmap_spacetravel(turf/space/T, atom/movable/A)
 	if (!T || !A)
@@ -105,7 +106,7 @@ var/global/list/cached_space = list()
 	var/turf/map = locate(M.x,M.y,GLOB.using_map.overmap_z)
 	var/obj/effect/overmap/visitable/TM
 	for(var/obj/effect/overmap/visitable/O in map)
-		if(O != M && O.in_space && prob(50))
+		if(O != M && HAS_FLAGS(O.sector_flags, OVERMAP_SECTOR_IN_SPACE) && prob(50))
 			TM = O
 			break
 	if(!TM)

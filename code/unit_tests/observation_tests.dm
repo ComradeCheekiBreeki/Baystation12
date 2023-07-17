@@ -29,7 +29,7 @@
 
 /datum/unit_test/observation/proc/sanity_check_events(phase)
 	for(var/entry in GLOB.all_observable_events)
-		var/decl/observ/event = entry
+		var/singleton/observ/event = entry
 		if(null in event.global_listeners)
 			fail("[phase]: [event] - The global listeners list contains a null entry.")
 
@@ -63,7 +63,7 @@
 	return 0
 
 /datum/unit_test/observation/proc/receive_move(atom/movable/am, old_loc, new_loc)
-	received_moves[++received_moves.len] =  list(am, old_loc, new_loc)
+	received_moves[LIST_PRE_INC(received_moves)] =  list(am, old_loc, new_loc)
 
 /datum/unit_test/observation/proc/dump_received_moves()
 	for(var/entry in received_moves)
@@ -81,8 +81,8 @@
 	GLOB.moved_event.register_global(src, /datum/unit_test/observation/proc/receive_move)
 	O.forceMove(target)
 
-	if(received_moves.len != 1)
-		fail("Expected 1 raised moved event, were [received_moves.len].")
+	if(length(received_moves) != 1)
+		fail("Expected 1 raised moved event, were [length(received_moves)].")
 		dump_received_moves()
 		return 1
 
@@ -223,8 +223,8 @@
 	GLOB.moved_event.register(held_item, src, /datum/unit_test/observation/proc/receive_move)
 	holding_mob.drop_from_inventory(held_item)
 
-	if(received_moves.len != 1)
-		fail("Expected 1 raised moved event, were [received_moves.len].")
+	if(length(received_moves) != 1)
+		fail("Expected 1 raised moved event, were [length(received_moves)].")
 		dump_received_moves()
 		return 1
 

@@ -7,6 +7,7 @@
 	damage_flags = DAMAGE_FLAG_BULLET | DAMAGE_FLAG_SHARP
 	embed = TRUE
 	penetration_modifier = 1.0
+	space_knockback = 1
 	var/mob_passthrough_check = 0
 	var/is_pellet = FALSE
 
@@ -53,7 +54,7 @@
 	if(prob(chance))
 		if(A.opacity)
 			//display a message so that people on the other side aren't so confused
-			A.visible_message("<span class='warning'>\The [src] pierces through \the [A]!</span>")
+			A.visible_message(SPAN_WARNING("\The [src] pierces through \the [A]!"))
 		return 1
 
 	return 0
@@ -98,7 +99,8 @@
 		//whether the pellet actually hits the def_zone or a different zone should still be determined by the parent using get_zone_with_miss_chance().
 		var/old_zone = def_zone
 		def_zone = ran_zone(def_zone, spread)
-		if (..()) hits++
+		if (..())
+			hits++
 		def_zone = old_zone //restore the original zone the projectile was aimed at
 
 	pellets -= hits //each hit reduces the number of pellets left
@@ -142,12 +144,13 @@
 /obj/item/projectile/bullet/pistol/rubber //"rubber" bullets
 	name = "rubber bullet"
 	damage_flags = 0
-	damage = 5
-	agony = 30
+	damage = 15
+	agony = 15
 	embed = FALSE
 
 /obj/item/projectile/bullet/pistol/rubber/holdout
-	agony = 20
+	agony = 10
+	damage = 10
 
 //4mm. Tiny, very low damage, does not embed, but has very high penetration. Only to be used for the experimental SMG.
 /obj/item/projectile/bullet/flechette
@@ -168,9 +171,9 @@
 
 /obj/item/projectile/bullet/shotgun/beanbag		//because beanbags are not bullets
 	name = "beanbag"
-	damage = 25
+	damage = 20
 	damage_flags = 0
-	agony = 60
+	agony = 30
 	embed = FALSE
 	armor_penetration = 0
 	distance_falloff = 3
@@ -235,23 +238,25 @@
 /obj/item/projectile/bullet/gyro
 	name = "minirocket"
 	fire_sound = 'sound/effects/Explosion1.ogg'
-	var/gyro_devastation = -1
-	var/gyro_heavy_impact = 0
-	var/gyro_light_impact = 2
+	var/explosion_radius = 2
+	var/explosion_max_power = EX_ACT_LIGHT
 
 /obj/item/projectile/bullet/gyro/on_hit(atom/target, blocked = 0)
 	if(isturf(target))
-		explosion(target, gyro_devastation, gyro_heavy_impact, gyro_light_impact)
+		explosion(target, explosion_radius, explosion_max_power)
 	..()
 
 /obj/item/projectile/bullet/blank
-	invisibility = 101
+	invisibility = INVISIBILITY_ABSTRACT
 	damage = 1
 	embed = FALSE
 
 /* Practice */
 
 /obj/item/projectile/bullet/pistol/practice
+	damage = 5
+
+/obj/item/projectile/bullet/rifle/practice
 	damage = 5
 
 /obj/item/projectile/bullet/rifle/military/practice
@@ -263,7 +268,7 @@
 
 /obj/item/projectile/bullet/pistol/cap
 	name = "cap"
-	invisibility = 101
+	invisibility = INVISIBILITY_ABSTRACT
 	fire_sound = null
 	damage_type = DAMAGE_PAIN
 	damage_flags = 0

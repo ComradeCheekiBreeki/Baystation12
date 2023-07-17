@@ -33,7 +33,7 @@
 	if(!active_dummy)
 		if(istype(target,/obj/item) && !istype(target, /obj/item/disk/nuclear))
 			playsound(get_turf(src), 'sound/weapons/flash.ogg', 100, 1, -6)
-			to_chat(user, "<span class='notice'>Scanned [target].</span>")
+			to_chat(user, SPAN_NOTICE("Scanned [target]."))
 			saved_item = target.type
 			saved_icon = target.icon
 			saved_icon_state = target.icon_state
@@ -46,7 +46,7 @@
 		playsound(get_turf(src), 'sound/effects/pop.ogg', 100, 1, -6)
 		qdel(active_dummy)
 		active_dummy = null
-		to_chat(usr, "<span class='notice'>You deactivate the [src].</span>")
+		to_chat(usr, SPAN_NOTICE("You deactivate the [src]."))
 		var/obj/effect/overlay/T = new /obj/effect/overlay(get_turf(src))
 		T.icon = 'icons/effects/effects.dmi'
 		flick("emppulse",T)
@@ -58,7 +58,7 @@
 		var/obj/effect/dummy/chameleon/C = new /obj/effect/dummy/chameleon(usr.loc)
 		C.activate(O, usr, saved_icon, saved_icon_state, saved_overlays, src)
 		qdel(O)
-		to_chat(usr, "<span class='notice'>You activate the [src].</span>")
+		to_chat(usr, SPAN_NOTICE("You activate the [src]."))
 		var/obj/effect/overlay/T = new/obj/effect/overlay(get_turf(src))
 		T.icon = 'icons/effects/effects.dmi'
 		flick("emppulse",T)
@@ -103,30 +103,52 @@
 	master = C
 	master.active_dummy = src
 
-/obj/effect/dummy/chameleon/attackby()
-	for(var/mob/M in src)
-		to_chat(M, "<span class='warning'>Your chameleon-projector deactivates.</span>")
-	master.disrupt()
+
+/obj/effect/dummy/chameleon/use_tool(obj/item/tool, mob/user, list/click_params)
+	. = ..()
+	if (.)
+		return
+
+	// Interaction always handled - `post_use_item()` handles the reveal of hidden mobs.
+	user.visible_message(
+		SPAN_NOTICE("\The [user] taps \the [src] with \a [tool]."),
+		SPAN_NOTICE("You tap \the [src] with \the [tool].")
+	)
+	return TRUE
+
+
+/obj/effect/dummy/chameleon/post_use_item(obj/item/tool, mob/user, interaction_handled, use_call, click_params)
+	. = ..()
+	if (interaction_handled)
+		var/list/revealed = list()
+		for (var/hidden as anything in src)
+			to_chat(hidden, SPAN_WARNING("Your [master] deactivates."))
+			revealed += "\the [hidden]"
+		visible_message(
+			SPAN_WARNING("\The [src] flashes and [english_list(revealed)] appear[length(revealed) == 1 ? "s" : null]!")
+		)
+		master.disrupt()
+
 
 /obj/effect/dummy/chameleon/attack_hand()
 	for(var/mob/M in src)
-		to_chat(M, "<span class='warning'>Your chameleon-projector deactivates.</span>")
+		to_chat(M, SPAN_WARNING("Your chameleon-projector deactivates."))
 	master.disrupt()
 
 /obj/effect/dummy/chameleon/ex_act()
 	for(var/mob/M in src)
-		to_chat(M, "<span class='warning'>Your chameleon-projector deactivates.</span>")
+		to_chat(M, SPAN_WARNING("Your chameleon-projector deactivates."))
 	master.disrupt()
 
 /obj/effect/dummy/chameleon/bullet_act()
 	for(var/mob/M in src)
-		to_chat(M, "<span class='warning'>Your chameleon-projector deactivates.</span>")
+		to_chat(M, SPAN_WARNING("Your chameleon-projector deactivates."))
 	..()
 	master.disrupt()
 
 /obj/effect/dummy/chameleon/relaymove(mob/user, direction)
-	var/area/A = get_area(src)
-	if(!A || !A.has_gravity()) return //No magical space movement!
+	if(!has_gravity())
+		return //No magical space movement!
 
 	if(can_move)
 		can_move = 0

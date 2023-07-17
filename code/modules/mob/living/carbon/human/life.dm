@@ -257,13 +257,13 @@
 			if(!isSynthetic())
 				if(prob(5) && prob(100 * RADIATION_SPEED_COEFFICIENT))
 					radiation -= 5 * RADIATION_SPEED_COEFFICIENT
-					to_chat(src, "<span class='warning'>You feel weak.</span>")
+					to_chat(src, SPAN_WARNING("You feel weak."))
 					Weaken(3)
 					if(!lying)
 						emote("collapse")
 				if(prob(5) && prob(100 * RADIATION_SPEED_COEFFICIENT) && species.get_bodytype(src) == SPECIES_HUMAN) //apes go bald
 					if((head_hair_style != "Bald" || facial_hair_style != "Shaved" ))
-						to_chat(src, "<span class='warning'>Your hair falls out.</span>")
+						to_chat(src, SPAN_WARNING("Your hair falls out."))
 						head_hair_style = "Bald"
 						facial_hair_style = "Shaved"
 						update_hair()
@@ -275,19 +275,19 @@
 				if(prob(5))
 					take_overall_damage(0, 5 * RADIATION_SPEED_COEFFICIENT, used_weapon = "Radiation Burns")
 				if(prob(1))
-					to_chat(src, "<span class='warning'>You feel strange!</span>")
+					to_chat(src, SPAN_WARNING("You feel strange!"))
 					adjustCloneLoss(5 * RADIATION_SPEED_COEFFICIENT)
 					emote("gasp")
 		if(radiation > 150)
 			damage = 8
 			radiation -= 4 * RADIATION_SPEED_COEFFICIENT
 
-		damage = Floor(damage * species.get_radiation_mod(src))
+		damage = floor(damage * species.get_radiation_mod(src))
 		if(damage)
 			adjustToxLoss(damage * RADIATION_SPEED_COEFFICIENT)
 			immunity = max(0, immunity - damage * 15 * RADIATION_SPEED_COEFFICIENT)
 			updatehealth()
-			if(!isSynthetic() && organs.len)
+			if(!isSynthetic() && length(organs))
 				var/obj/item/organ/external/O = pick(organs)
 				if(istype(O)) O.add_autopsy_data("Radiation Poisoning", damage)
 
@@ -481,7 +481,7 @@
 		if(C)
 			if(C.max_heat_protection_temperature && C.max_heat_protection_temperature >= temperature)
 				. |= C.heat_protection
-			if(C.accessories.len)
+			if(length(C.accessories))
 				for(var/obj/item/clothing/accessory/A in C.accessories)
 					if(A.max_heat_protection_temperature && A.max_heat_protection_temperature >= temperature)
 						. |= A.heat_protection
@@ -494,7 +494,7 @@
 		if(C)
 			if(C.min_cold_protection_temperature && C.min_cold_protection_temperature <= temperature)
 				. |= C.cold_protection
-			if(C.accessories.len)
+			if(length(C.accessories))
 				for(var/obj/item/clothing/accessory/A in C.accessories)
 					if(A.min_cold_protection_temperature && A.min_cold_protection_temperature <= temperature)
 						. |= A.cold_protection
@@ -604,7 +604,7 @@
 			if(stat || status_flags & FAKEDEATH)
 				return
 			else
-				to_chat(src, "<span class='warning'>[species.halloss_message_self]</span>")
+				to_chat(src, SPAN_WARNING("[species.halloss_message_self]"))
 				src.visible_message("<B>[src]</B> [species.halloss_message]")
 			Paralyse(10)
 
@@ -615,7 +615,7 @@
 			adjustHalLoss(-3)
 			if(sleeping)
 				if (!dream_timer && client)
-					dream_timer = addtimer(CALLBACK(src, .proc/dream), 10 SECONDS, TIMER_STOPPABLE)
+					dream_timer = addtimer(new Callback(src, .proc/dream), 10 SECONDS, TIMER_STOPPABLE)
 				if (mind || ai_holder)
 					//Are they SSD? If so we'll keep them asleep but work off some of that sleep var in case of stoxin or similar.
 					if (client || ai_holder || sleeping > 3)
@@ -651,7 +651,7 @@
 				var/zzzchance = min(5, 5*drowsyness/30)
 				if((prob(zzzchance) || drowsyness >= 60))
 					if(stat == CONSCIOUS)
-						to_chat(src, "<span class='notice'>You are about to fall asleep...</span>")
+						to_chat(src, SPAN_NOTICE("You are about to fall asleep..."))
 					Sleeping(5)
 
 		// If you're dirty, your gloves will become dirty, too.
@@ -674,7 +674,7 @@
 		if(stasis_value > 1 && drowsyness < stasis_value * 4)
 			drowsyness += min(stasis_value, 3)
 			if(!stat && prob(1))
-				to_chat(src, "<span class='notice'>You feel slow and sluggish...</span>")
+				to_chat(src, SPAN_NOTICE("You feel slow and sluggish..."))
 
 	return 1
 
@@ -755,6 +755,16 @@
 						no_damage = 0
 					health_images += E.get_damage_hud_image()
 
+				// Apply wound overlays
+				for(var/obj/item/organ/external/O in organs)
+					if(O.is_stump() || O.damage_state == "00")
+						continue
+					var/icon/doll_wounds = new /icon(species.get_damage_overlays(src), O.damage_state)
+					doll_wounds.Blend(new /icon(species.get_damage_mask(src), O.icon_name), ICON_MULTIPLY)
+					doll_wounds.Blend((BP_IS_ROBOTIC(O) ? SYNTH_BLOOD_COLOUR : O.species.get_blood_colour(src)), ICON_MULTIPLY)
+					health_images += doll_wounds
+					health_images += image(species.bandages_icon, "[O.icon_name][O.bandage_level()]")
+
 				// Apply a fire overlay if we're burning.
 				if(on_fire)
 					health_images += image('icons/mob/screen1_health.dmi',"burning")
@@ -792,7 +802,7 @@
 		if(cells && isSynthetic())
 			var/obj/item/organ/internal/cell/C = internal_organs_by_name[BP_CELL]
 			if (istype(C))
-				var/chargeNum = clamp(Ceil(C.percent()/25), 0, 4)	//0-100 maps to 0-4, but give it a paranoid clamp just in case.
+				var/chargeNum = clamp(ceil(C.percent()/25), 0, 4)	//0-100 maps to 0-4, but give it a paranoid clamp just in case.
 				cells.icon_state = "charge[chargeNum]"
 			else
 				cells.icon_state = "charge-empty"
@@ -882,7 +892,7 @@
 	if(client && world.time >= client.next_ambience_time + 5 MINUTES)
 		A.play_ambience(src)
 	if(stat == UNCONSCIOUS && world.time - l_move_time < 5 && prob(10))
-		to_chat(src,"<span class='notice'>You feel like you're [pick("moving","flying","floating","falling","hovering")].</span>")
+		to_chat(src,SPAN_NOTICE("You feel like you're [pick("moving","flying","floating","falling","hovering")]."))
 
 /mob/living/carbon/human/proc/handle_changeling()
 	if(mind && mind.changeling)

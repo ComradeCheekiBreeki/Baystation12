@@ -3,6 +3,7 @@
 	desc = "What a horrible idea. Who funded this?"
 	icon = 'icons/obj/food_bugmeat.dmi'
 	icon_state = "box"
+	open_sound = 'sound/effects/storage/box.ogg'
 	storage_slots = 6
 	max_w_class = ITEM_SIZE_SMALL
 	w_class = ITEM_SIZE_NORMAL
@@ -71,21 +72,21 @@
 	nutriment_desc = list("rubbery meat" = 10)
 
 
-/datum/recipe/bugmeat_cutlet
-	items = list(
+/datum/microwave_recipe/bugmeat_cutlet
+	required_items = list(
 		/obj/item/reagent_containers/food/snacks/rawcutlet/bugmeat
 	)
-	result = /obj/item/reagent_containers/food/snacks/cutlet/bugmeat
+	result_path = /obj/item/reagent_containers/food/snacks/cutlet/bugmeat
 
 
-/datum/recipe/bugmeat_bacon
-	items = list(
+/datum/microwave_recipe/bugmeat_bacon
+	required_items = list(
 		/obj/item/reagent_containers/food/snacks/rawbacon/bugmeat
 	)
-	result = /obj/item/reagent_containers/food/snacks/bacon/bugmeat
+	result_path = /obj/item/reagent_containers/food/snacks/bacon/bugmeat
 
 
-/decl/hierarchy/supply_pack/galley/bugmeat
+/singleton/hierarchy/supply_pack/galley/bugmeat
 	name = "Perishables - Insect Protein"
 	contains = list(/obj/item/storage/fancy/bugmeat = 2)
 	containertype = /obj/item/storage/backpack/dufflebag
@@ -103,7 +104,7 @@
 	return list(
 		/obj/item/reagent_containers/food/drinks/milk = 2,
 		/obj/item/reagent_containers/food/drinks/soymilk = 2,
-		/obj/item/storage/fancy/egg_box = 1
+		/obj/item/storage/fancy/egg_box/full = 1
 	)
 
 

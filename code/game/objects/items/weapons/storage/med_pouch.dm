@@ -61,7 +61,7 @@ Single Use Emergency Pouches
 
 /obj/item/storage/med_pouch/open(mob/user)
 	if(!opened)
-		user.visible_message("<span class='notice'>\The [user] tears open [src], breaking the vacuum seal!</span>", "<span class='notice'>You tear open [src], breaking the vacuum seal!</span>")
+		user.visible_message(SPAN_NOTICE("\The [user] tears open [src], breaking the vacuum seal!"), SPAN_NOTICE("You tear open [src], breaking the vacuum seal!"))
 	. = ..()
 
 /obj/item/storage/med_pouch/trauma
@@ -214,5 +214,4 @@ Single Use Emergency Pouches
 
 /obj/item/reagent_containers/hypospray/autoinjector/pouch_auto/adrenaline
 	name = "emergency adrenaline autoinjector"
-	amount_per_transfer_from_this = 8
-	starts_with = list(/datum/reagent/adrenaline = 8)
+	starts_with = list(/datum/reagent/adrenaline = 5)

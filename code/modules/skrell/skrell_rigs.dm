@@ -221,7 +221,10 @@
 	selectable = TRUE
 
 /obj/item/rig_module/device/multitool/skrell/IsMultitool()
-	return TRUE
+	if(holder)
+		return TRUE
+	else
+		return FALSE
 
 /obj/item/rig_module/device/cable_coil/skrell
 	name = "skrellian cable extruder"
@@ -302,7 +305,7 @@
 
 /obj/item/clustertool/attack_self(mob/user)
 	var/new_index = _list_find(tool_modes, tool_mode) + 1
-	if(new_index > tool_modes.len)
+	if(new_index > length(tool_modes))
 		new_index = 1
 	tool_mode = tool_modes[new_index]
 	name = "[initial(name)] ([tool_mode])"
@@ -333,6 +336,6 @@
 
 /obj/item/device/multitool/skrell
 	name = "skrellian multitool"
-	name = "An extreme sophisticated microcomputer capable of interfacing with practically any system."
+	desc = "An extreme sophisticated microcomputer capable of interfacing with practically any system."
 	icon = 'icons/obj/tools.dmi'
 	icon_state = "skrell_multitool"

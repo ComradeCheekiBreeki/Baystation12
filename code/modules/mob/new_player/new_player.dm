@@ -1,6 +1,12 @@
-//This file was auto-corrected by findeclaration.exe on 25.5.2012 20:42:33
-
 /mob/new_player
+	universal_speak = TRUE
+	invisibility = INVISIBILITY_ABSTRACT
+	density = FALSE
+	stat = DEAD
+	movement_handlers = list()
+	anchored = TRUE	//  don't get pushed around
+	virtual_mob = null // Hear no evil, speak no evil
+
 	var/ready = 0
 	var/respawned_time = 0
 	var/spawning = 0//Referenced when you want to delete the new_player later on in the code.
@@ -8,21 +14,15 @@
 	var/totalPlayersReady = 0
 	var/datum/browser/panel
 	var/show_invalid_jobs = 0
-	universal_speak = TRUE
-
-	invisibility = 101
-
-	density = FALSE
-	stat = DEAD
-
-	movement_handlers = list()
-	anchored = TRUE	//  don't get pushed around
-
-	virtual_mob = null // Hear no evil, speak no evil
 
 
-/mob/new_player/New()
-	..()
+/mob/new_player/Destroy()
+	QDEL_NULL(panel)
+	return ..()
+
+
+/mob/new_player/Initialize(mapload)
+	. = ..()
 	verbs += /mob/proc/toggle_antag_pool
 
 
@@ -97,7 +97,7 @@
 								if (role in mode.antag_tags)
 									readied_antag_roles += role
 
-						var/antag_role_text = "[readied_antag_roles.len ? "Readied for ([english_list(readied_antag_roles)])" : ""]"
+						var/antag_role_text = "[length(readied_antag_roles) ? "Readied for ([english_list(readied_antag_roles)])" : ""]"
 						stat("[player.key]", (player.ready && (show_ready || can_see_hidden)?("(Playing[highjob]) [(can_see_hidden && !show_ready) ? "(Hidden)" : ""] [antag_role_text]"):(null)))
 				totalPlayers++
 				if(player.ready)totalPlayersReady++
@@ -129,7 +129,7 @@
 
 	if(href_list["observe"])
 		if(GAME_STATE < RUNLEVEL_LOBBY)
-			to_chat(src, "<span class='warning'>Please wait for server initialization to complete...</span>")
+			to_chat(src, SPAN_WARNING("Please wait for server initialization to complete..."))
 			return
 
 		if(!config.respawn_delay || client.holder || alert(src,"Are you sure you wish to observe? You will have to wait [config.respawn_delay] minute\s before being able to respawn!","Player Setup","Yes","No") == "Yes")
@@ -144,10 +144,10 @@
 			close_spawn_windows()
 			var/obj/O = locate("landmark*Observer-Start")
 			if(istype(O))
-				to_chat(src, "<span class='notice'>Now teleporting.</span>")
+				to_chat(src, SPAN_NOTICE("Now teleporting."))
 				observer.forceMove(O.loc)
 			else
-				to_chat(src, "<span class='danger'>Could not locate an observer spawn point. Use the Teleport verb to jump to the map.</span>")
+				to_chat(src, SPAN_DANGER("Could not locate an observer spawn point. Use the Teleport verb to jump to the map."))
 			observer.timeofdeath = world.time // Set the time of death so that the respawn timer works correctly.
 
 			var/should_announce = client.get_preference_value(/datum/client_preference/announce_ghost_join) == GLOB.PREF_YES
@@ -208,10 +208,10 @@
 	if(src != usr)
 		return 0
 	if(GAME_STATE != RUNLEVEL_GAME)
-		to_chat(usr, "<span class='warning'>The round is either not ready, or has already finished...</span>")
+		to_chat(usr, SPAN_WARNING("The round is either not ready, or has already finished..."))
 		return 0
 	if(!config.enter_allowed)
-		to_chat(usr, "<span class='notice'>There is an administrative lock on entering the game!</span>")
+		to_chat(usr, SPAN_NOTICE("There is an administrative lock on entering the game!"))
 		return 0
 
 	if(!job || !job.is_available(client))
@@ -296,12 +296,12 @@
 	header += "Round Duration: [roundduration2text()]<br>"
 
 	if(evacuation_controller.has_evacuated())
-		header += "<font color='red'><b>\The [station_name()] has been evacuated.</b></font><br>"
+		header += "[SPAN_COLOR("red", "<b>\The [station_name()] has been evacuated.</b>")]<br>"
 	else if(evacuation_controller.is_evacuating())
 		if(evacuation_controller.emergency_evacuation) // Emergency shuttle is past the point of no recall
-			header += "<font color='red'>\The [station_name()] is currently undergoing evacuation procedures.</font><br>"
+			header += "[SPAN_COLOR("red", "\The [station_name()] is currently undergoing evacuation procedures.")]<br>"
 		else                                           // Crew transfer initiated
-			header += "<font color='red'>\The [station_name()] is currently undergoing crew transfer procedures.</font><br>"
+			header += "[SPAN_COLOR("red", "\The [station_name()] is currently undergoing crew transfer procedures.")]<br>"
 
 	var/list/dat = list()
 	dat += "Choose from the following open/valid positions:<br>"
@@ -451,9 +451,10 @@
 
 	return chosen_species.name
 
-/mob/new_player/get_gender()
-	if(!client || !client.prefs) ..()
-	return client.prefs.gender
+/mob/new_player/choose_from_pronouns()
+	if (!client?.prefs)
+		return ..()
+	return client.prefs.pronouns
 
 /mob/new_player/is_ready()
 	return ready && ..()
@@ -474,7 +475,7 @@
 	return
 
 /mob/new_player/say(message)
-	sanitize_and_communicate(/decl/communication_channel/ooc, client, message)
+	sanitize_and_communicate(/singleton/communication_channel/ooc, client, message)
 
 /mob/new_player/verb/next_lobby_track()
 	set name = "Play Different Lobby Track"
@@ -482,6 +483,6 @@
 
 	if(get_preference_value(/datum/client_preference/play_lobby_music) == GLOB.PREF_NO)
 		return
-	var/decl/audio/track/track = GLOB.using_map.get_lobby_track(GLOB.using_map.lobby_track.type)
+	var/singleton/audio/track/track = GLOB.using_map.get_lobby_track(GLOB.using_map.lobby_track.type)
 	sound_to(src, track.get_sound())
 	to_chat(src, track.get_info())

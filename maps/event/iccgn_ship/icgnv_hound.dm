@@ -10,9 +10,9 @@
 /obj/effect/overmap/visitable/sector/icgnv_hound_space
 	name = "Sensor Anomaly"
 	desc = "Sensors readings are confused and inaccurate on this grid sector."
-	in_space = TRUE
 	icon_state = "event"
 	hide_from_reports = TRUE
+	sensor_visibility = 10
 
 /obj/effect/overmap/visitable/ship/landable/icgnv_hound
 	name = "ICGNV Hound"
@@ -23,7 +23,7 @@
 	fore_dir = NORTH
 	vessel_size = SHIP_SIZE_SMALL
 	vessel_mass = 1000
-	known = FALSE
+
 	initial_generic_waypoints = list(
 		"nav_icgnv_hound_1",
 		"nav_icgnv_hound_2",

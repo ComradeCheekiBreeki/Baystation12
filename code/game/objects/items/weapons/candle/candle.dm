@@ -39,19 +39,19 @@
 
 /obj/item/flame/candle/attackby(obj/item/W as obj, mob/user as mob)
 	..()
-	if(isflamesource(W) || is_hot(W))
+	if (isFlameOrHeatSource(W))
 		light(user)
 
 /obj/item/flame/candle/resolve_attackby(atom/A, mob/user)
 	. = ..()
-	if(istype(A, /obj/item/flame/candle) && is_hot(src))
+	if (istype(A, /obj/item/flame/candle) && IsHeatSource())
 		var/obj/item/flame/candle/other_candle = A
 		other_candle.light()
 
 /obj/item/flame/candle/proc/light(mob/user)
 	if(!lit)
 		lit = 1
-		visible_message("<span class='notice'>\The [user] lights the [name].</span>")
+		visible_message(SPAN_NOTICE("\The [user] lights the [name]."))
 		set_light(candle_max_bright, candle_inner_range, candle_outer_range, candle_falloff)
 		START_PROCESSING(SSobj, src)
 

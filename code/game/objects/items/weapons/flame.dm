@@ -19,27 +19,17 @@
 		if(submerged(depth))
 			extinguish(no_message = TRUE)
 
-/proc/isflamesource(atom/A)
-	if(!istype(A))
-		return FALSE
-	if(isWelder(A))
-		var/obj/item/weldingtool/WT = A
-		return (WT.isOn())
-	else if(istype(A, /obj/item/flame))
-		var/obj/item/flame/F = A
-		return (F.lit)
-	else if(istype(A, /obj/item/clothing/mask/smokable) && !istype(A, /obj/item/clothing/mask/smokable/pipe))
-		var/obj/item/clothing/mask/smokable/S = A
-		return (S.lit)
-	else if(istype(A, /obj/item/device/assembly/igniter))
-		return TRUE
-	return FALSE
+
+/obj/item/flame/IsFlameSource()
+	return lit
+
 
 ///////////
 //MATCHES//
 ///////////
 /obj/item/flame/match
 	name = "match"
+	pluralname = "matche"
 	desc = "A simple match stick, used for lighting fine smokables."
 	icon = 'icons/obj/cigarettes.dmi'
 	icon_state = "match_unlit"

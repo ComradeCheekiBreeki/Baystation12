@@ -12,7 +12,7 @@
 /area/map_template/sfv_arbiter)
 "aq" = (
 /obj/effect/paint/iccgn,
-/turf/simulated/wall/titanium,
+/turf/simulated/wall/r_titanium,
 /area/map_template/sfv_arbiter)
 "au" = (
 /obj/structure/extinguisher_cabinet{
@@ -49,10 +49,10 @@
 /obj/item/defibrillator/loaded{
 	pixel_y = 7
 	},
-/obj/item/roller{
+/obj/item/roller_bed{
 	pixel_x = 6
 	},
-/obj/item/roller{
+/obj/item/roller_bed{
 	pixel_x = -8
 	},
 /turf/simulated/floor/tiled/white,
@@ -166,7 +166,7 @@
 "fu" = (
 /obj/structure/sign/warning/docking_area,
 /obj/effect/paint/iccgn,
-/turf/simulated/wall/titanium,
+/turf/simulated/wall/r_titanium,
 /area/map_template/sfv_arbiter)
 "fO" = (
 /obj/machinery/atmospherics/unary/vent_pump/on{
@@ -334,8 +334,8 @@
 /area/map_template/sfv_arbiter)
 "kU" = (
 /obj/machinery/atmospherics/unary/vent_pump/high_volume/external_air{
-	id_tag = "sfv_arbiter_shuttle_pump_out_internal";
-	dir = 4
+	dir = 4;
+	id_tag = "sfv_arbiter_shuttle_pump_out_internal"
 	},
 /obj/machinery/embedded_controller/radio/airlock/docking_port{
 	dir = 4;
@@ -351,7 +351,9 @@
 /area/map_template/sfv_arbiter)
 "ld" = (
 /obj/machinery/shipsensors,
-/turf/simulated/floor/plating,
+/turf/simulated/floor/plating{
+	map_airless = 1
+	},
 /area/map_template/sfv_arbiter)
 "ll" = (
 /obj/effect/floor_decal/industrial/outline/yellow,
@@ -400,7 +402,7 @@
 /turf/simulated/floor/plating,
 /area/map_template/sfv_arbiter)
 "lE" = (
-/turf/simulated/wall/titanium,
+/turf/simulated/wall/r_titanium,
 /area/map_template/sfv_arbiter)
 "lO" = (
 /obj/machinery/portable_atmospherics/canister/oxygen{
@@ -544,7 +546,9 @@
 	icon_state = "map_vent_in";
 	pump_direction = 0
 	},
-/turf/simulated/floor/airless,
+/turf/simulated/floor/plating{
+	map_airless = 1
+	},
 /area/map_template/sfv_arbiter)
 "qy" = (
 /obj/machinery/atmospherics/pipe/manifold/hidden/supply,
@@ -589,23 +593,24 @@
 /obj/structure/catwalk,
 /obj/machinery/atmospherics/pipe/simple/hidden/scrubbers,
 /obj/effect/floor_decal/industrial/warning,
+/obj/machinery/radio_beacon,
 /turf/simulated/floor/plating,
 /area/map_template/sfv_arbiter)
 "sN" = (
 /obj/effect/floor_decal/corner/b_green/mono,
 /obj/structure/table/rack,
 /obj/machinery/door/window/eastleft{
-	req_access = list("ACCESS_SYNDICATE");
-	autoset_access = 0
+	autoset_access = 0;
+	req_access = list("ACCESS_SYNDICATE")
 	},
 /obj/item/rig/ert/fleet,
 /turf/simulated/floor/tiled/dark/monotile,
 /area/map_template/sfv_arbiter)
 "sS" = (
 /obj/machinery/airlock_sensor{
-	pixel_y = 24;
-	id_tag = s;
-	frequency = 1380
+	frequency = 1380;
+	id_tag = "sfv_arbiter_shuttle_exterior_sensor";
+	pixel_y = 24
 	},
 /turf/template_noop,
 /area/template_noop)
@@ -680,11 +685,13 @@
 /area/map_template/sfv_arbiter)
 "uY" = (
 /obj/machinery/atmospherics/unary/vent_pump/on{
+	dir = 1;
 	icon_state = "map_vent_in";
-	pump_direction = 0;
-	dir = 1
+	pump_direction = 0
 	},
-/turf/simulated/floor/airless,
+/turf/simulated/floor/plating{
+	map_airless = 1
+	},
 /area/map_template/sfv_arbiter)
 "vc" = (
 /obj/machinery/atmospherics/pipe/manifold/hidden{
@@ -706,8 +713,8 @@
 /obj/effect/floor_decal/corner/b_green/mono,
 /obj/structure/table/rack,
 /obj/machinery/door/window/eastleft{
-	req_access = list("ACCESS_SYNDICATE");
-	autoset_access = 0
+	autoset_access = 0;
+	req_access = list("ACCESS_SYNDICATE")
 	},
 /obj/item/rig/ert/fleet,
 /turf/simulated/floor/tiled/dark,
@@ -886,8 +893,8 @@
 /obj/effect/floor_decal/corner/b_green/mono,
 /obj/structure/table/rack,
 /obj/machinery/door/window/eastleft{
-	req_access = list("ACCESS_SYNDICATE");
-	autoset_access = 0
+	autoset_access = 0;
+	req_access = list("ACCESS_SYNDICATE")
 	},
 /obj/item/rig/ert/fleet,
 /turf/simulated/floor/tiled/dark,
@@ -1115,9 +1122,9 @@
 	dir = 1
 	},
 /obj/machinery/airlock_sensor{
-	pixel_y = 24;
+	frequency = 1380;
 	id_tag = "sfv_arbiter_shuttle_sensor";
-	frequency = 1380
+	pixel_y = 24
 	},
 /turf/simulated/floor/tiled/techfloor,
 /area/map_template/sfv_arbiter)
@@ -1340,7 +1347,7 @@
 "Kt" = (
 /obj/effect/paint/black,
 /obj/structure/sign/warning/secure_area/armory,
-/turf/simulated/wall/titanium,
+/turf/simulated/wall/r_titanium,
 /area/map_template/sfv_arbiter)
 "Kz" = (
 /obj/structure/catwalk,
@@ -1352,11 +1359,11 @@
 	dir = 4
 	},
 /obj/machinery/power/debug_items/infinite_generator,
-/obj/structure/window/phoronreinforced,
-/obj/structure/window/phoronreinforced{
+/obj/structure/window/boron_reinforced,
+/obj/structure/window/boron_reinforced{
 	dir = 8
 	},
-/obj/structure/window/phoronreinforced{
+/obj/structure/window/boron_reinforced{
 	dir = 1
 	},
 /turf/simulated/floor/plating,
@@ -1408,7 +1415,7 @@
 /area/map_template/sfv_arbiter)
 "Lr" = (
 /obj/effect/paint/red,
-/obj/machinery/atmospherics/pipe/simple/hidden/scrubbers{
+/obj/machinery/atmospherics/pipe/simple/hidden{
 	dir = 9
 	},
 /turf/simulated/wall/r_titanium,
@@ -1697,7 +1704,7 @@
 /area/map_template/sfv_arbiter)
 "Oo" = (
 /obj/effect/paint/red,
-/obj/machinery/atmospherics/pipe/simple/hidden/scrubbers{
+/obj/machinery/atmospherics/pipe/simple/hidden/universal{
 	dir = 4
 	},
 /turf/simulated/wall/r_titanium,
@@ -1727,7 +1734,9 @@
 /obj/machinery/porta_turret{
 	req_access = list("ACCESS_SYNDICATE")
 	},
-/turf/simulated/floor/plating,
+/turf/simulated/floor/plating{
+	map_airless = 1
+	},
 /area/map_template/sfv_arbiter)
 "Pj" = (
 /turf/simulated/floor/tiled/dark,
@@ -1790,7 +1799,7 @@
 /area/map_template/sfv_arbiter)
 "Qh" = (
 /obj/effect/paint/red,
-/obj/machinery/atmospherics/pipe/simple/hidden/scrubbers{
+/obj/machinery/atmospherics/pipe/simple/hidden{
 	dir = 10
 	},
 /turf/simulated/wall/r_titanium,
@@ -1904,8 +1913,8 @@
 /area/map_template/sfv_arbiter)
 "RA" = (
 /obj/machinery/atmospherics/unary/vent_pump/high_volume/external_air{
-	id_tag = "sfv_arbiter_shuttle_pump_out_internal";
-	dir = 4
+	dir = 4;
+	id_tag = "sfv_arbiter_shuttle_pump_out_internal"
 	},
 /turf/simulated/floor/tiled/techfloor,
 /area/map_template/sfv_arbiter)
@@ -2020,6 +2029,10 @@
 	},
 /turf/simulated/floor/tiled/dark,
 /area/map_template/sfv_arbiter)
+"Te" = (
+/obj/effect/paint/black,
+/turf/simulated/wall/r_titanium,
+/area/map_template/sfv_arbiter)
 "Tw" = (
 /obj/machinery/door/airlock/external{
 	frequency = 1380;
@@ -2068,7 +2081,7 @@
 /turf/simulated/floor/tiled/dark,
 /area/map_template/sfv_arbiter)
 "Uv" = (
-/obj/structure/iv_drip,
+/obj/structure/iv_stand,
 /obj/structure/closet/secure_closet/medical_wall{
 	name = "IV Equipment Cabinet";
 	pixel_x = 0;
@@ -2078,10 +2091,10 @@
 /obj/item/reagent_containers/ivbag/nanoblood,
 /obj/item/reagent_containers/ivbag,
 /obj/effect/floor_decal/corner/white/mono,
-/obj/item/reagent_containers/ivbag/blood/OPlus,
-/obj/item/reagent_containers/ivbag/blood/OPlus,
-/obj/item/reagent_containers/ivbag/blood/OPlus,
-/obj/item/reagent_containers/ivbag/blood/OPlus,
+/obj/item/reagent_containers/ivbag/blood/human/opos,
+/obj/item/reagent_containers/ivbag/blood/human/opos,
+/obj/item/reagent_containers/ivbag/blood/human/opos,
+/obj/item/reagent_containers/ivbag/blood/human/opos,
 /turf/simulated/floor/tiled/white/monotile,
 /area/map_template/sfv_arbiter)
 "UF" = (
@@ -2211,7 +2224,9 @@
 /obj/machinery/ion_engine{
 	dir = 8
 	},
-/turf/simulated/floor/reinforced/airless,
+/turf/simulated/floor/reinforced{
+	map_airless = 1
+	},
 /area/map_template/sfv_arbiter)
 "VT" = (
 /obj/effect/floor_decal/corner/grey{
@@ -2476,7 +2491,7 @@
 	pixel_x = 7;
 	pixel_y = -4
 	},
-/turf/simulated/floor/tiled/white/airless,
+/turf/simulated/floor/tiled/white,
 /area/map_template/sfv_arbiter)
 "YN" = (
 /obj/effect/floor_decal/corner/grey/mono,
@@ -2512,8 +2527,8 @@
 	icon_state = "1-2"
 	},
 /obj/effect/floor_decal/industrial/warning/corner{
-	icon_state = "warningcorner";
-	dir = 2
+	dir = 2;
+	icon_state = "warningcorner"
 	},
 /obj/machinery/atmospherics/pipe/simple/hidden{
 	dir = 6
@@ -2538,7 +2553,7 @@
 /obj/item/flame/lighter/zippo/gunmetal{
 	pixel_x = 5
 	},
-/obj/item/storage/fancy/cigarettes,
+/obj/item/storage/fancy/smokable/transstellar,
 /turf/simulated/floor/tiled/dark/monotile,
 /area/map_template/sfv_arbiter)
 "Zj" = (
@@ -2586,7 +2601,7 @@
 "Zu" = (
 /obj/effect/paint/black,
 /obj/effect/paint/iccgn,
-/turf/simulated/wall/titanium,
+/turf/simulated/wall/r_titanium,
 /area/map_template/sfv_arbiter)
 "Zv" = (
 /obj/effect/floor_decal/corner/yellow{
@@ -2913,7 +2928,7 @@ TA
 Oe
 QT
 lu
-WV
+Te
 aq
 aq
 aq
@@ -2989,7 +3004,7 @@ dd
 UO
 Cc
 Jz
-WV
+Te
 Iv
 YA
 ZK
@@ -3008,8 +3023,8 @@ Mx
 Ov
 WV
 WV
-WV
-WV
+Te
+Te
 YA
 ZK
 Ac
@@ -3028,7 +3043,7 @@ HQ
 IH
 Nw
 VW
-WV
+Te
 YA
 ZK
 pd
@@ -3047,7 +3062,7 @@ lA
 aR
 cv
 oP
-WV
+Te
 yf
 df
 Ny
@@ -3066,7 +3081,7 @@ Kz
 iD
 QG
 hz
-WV
+Te
 xX
 ZK
 eQ

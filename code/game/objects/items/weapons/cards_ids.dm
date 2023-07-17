@@ -142,7 +142,7 @@
 
 /obj/item/card/emag_broken/examine(mob/user, distance)
 	. = ..()
-	if(distance <= 0 && (user.skill_check(SKILL_DEVICES, SKILL_ADEPT) || player_is_antag(user.mind)))
+	if(distance <= 0 && (user.skill_check(SKILL_DEVICES, SKILL_TRAINED) || player_is_antag(user.mind)))
 		to_chat(user, SPAN_WARNING("You can tell the components are completely fried; whatever use it may have had before is gone."))
 
 /obj/item/card/emag_broken/get_antag_info()
@@ -170,7 +170,7 @@ var/global/const/NO_EMAG_ACT = -50
 		log_and_message_admins("emagged \an [A].")
 
 	if(uses<1)
-		user.visible_message("<span class='warning'>\The [src] fizzles and sparks - it seems it's been used once too often, and is now spent.</span>")
+		user.visible_message(SPAN_WARNING("\The [src] fizzles and sparks - it seems it's been used once too often, and is now spent."))
 		var/obj/item/card/emag_broken/junk = new(user.loc)
 		junk.add_fingerprint(user)
 		qdel(src)
@@ -293,18 +293,18 @@ var/global/const/NO_EMAG_ACT = -50
 	id_card.formal_name_suffix = initial(id_card.formal_name_suffix)
 	if(client && client.prefs)
 		for(var/culturetag in client.prefs.cultural_info)
-			var/decl/cultural_info/culture = SSculture.get_culture(client.prefs.cultural_info[culturetag])
+			var/singleton/cultural_info/culture = SSculture.get_culture(client.prefs.cultural_info[culturetag])
 			if(culture)
 				id_card.formal_name_prefix = "[culture.get_formal_name_prefix()][id_card.formal_name_prefix]"
 				id_card.formal_name_suffix = "[id_card.formal_name_suffix][culture.get_formal_name_suffix()]"
 
 	id_card.registered_name = real_name
 
-	var/gender_term = "Unset"
-	var/datum/gender/G = gender_datums[get_sex()]
-	if(G)
-		gender_term = gender2text(G.formal_term)
-	id_card.sex = gender2text(gender_term)
+	var/pronouns = "Unset"
+	var/datum/pronouns/P = choose_from_pronouns()
+	if(P)
+		pronouns = P.formal_term
+	id_card.sex = pronouns
 	id_card.set_id_photo(src)
 
 	if(dna)
@@ -319,11 +319,16 @@ var/global/const/NO_EMAG_ACT = -50
 		id_card.military_branch = char_branch
 	if(GLOB.using_map.flags & MAP_HAS_RANK)
 		id_card.military_rank = char_rank
+		if (char_rank)
+			var/singleton/rank_category/category = char_rank.rank_category()
+			if(category)
+				for(var/add_access in category.add_accesses)
+					id_card.access.Add(add_access)
 
 /obj/item/card/id/proc/dat()
 	var/list/dat = list("<table><tr><td>")
 	dat += text("Name: []</A><BR>", "[formal_name_prefix][registered_name][formal_name_suffix]")
-	dat += text("Sex: []</A><BR>\n", sex)
+	dat += text("Pronouns: []</A><BR>\n", sex)
 	dat += text("Age: []</A><BR>\n", age)
 
 	if(GLOB.using_map.flags & MAP_HAS_BRANCH)
@@ -364,11 +369,11 @@ var/global/const/NO_EMAG_ACT = -50
 	to_chat(usr, "The fingerprint hash on the card is [fingerprint_hash].")
 	return
 
-/decl/vv_set_handler/id_card_military_branch
+/singleton/vv_set_handler/id_card_military_branch
 	handled_type = /obj/item/card/id
 	handled_vars = list("military_branch")
 
-/decl/vv_set_handler/id_card_military_branch/handle_set_var(obj/item/card/id/id, variable, var_value, client)
+/singleton/vv_set_handler/id_card_military_branch/handle_set_var(obj/item/card/id/id, variable, var_value, client)
 	if(!var_value)
 		id.military_branch = null
 		id.military_rank = null
@@ -390,11 +395,11 @@ var/global/const/NO_EMAG_ACT = -50
 
 	to_chat(client, SPAN_WARNING("Input, must be an existing branch - [var_value] is invalid"))
 
-/decl/vv_set_handler/id_card_military_rank
+/singleton/vv_set_handler/id_card_military_rank
 	handled_type = /obj/item/card/id
 	handled_vars = list("military_rank")
 
-/decl/vv_set_handler/id_card_military_rank/handle_set_var(obj/item/card/id/id, variable, var_value, client)
+/singleton/vv_set_handler/id_card_military_rank/handle_set_var(obj/item/card/id/id, variable, var_value, client)
 	if(!var_value)
 		id.military_rank = null
 		return

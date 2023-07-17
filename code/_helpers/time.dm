@@ -86,7 +86,7 @@
 	// Seconds
 	if (round)
 		seconds = round(seconds)
-	if (seconds > 0 || !result.len) // Empty result should just say 0 seconds
+	if (seconds > 0 || !length(result)) // Empty result should just say 0 seconds
 		result += "[seconds] second\s"
 
 	return jointext(result, ", ")
@@ -187,7 +187,7 @@ var/global/round_start_time = 0
 	do
 		delta = delay * max(0.01 * max(world.tick_usage, world.cpu) * max(Master.sleep_delta, 1), 1) // Scale up delay under load; sleeps have entry overhead from proc duplication
 		sleep(world.tick_lag * delta)
-		total += Ceil(delta)
+		total += ceil(delta)
 		delay *= 2
 	while (world.tick_usage > min(Master.tick_limit_to_run, Master.current_ticklimit))
 	return total
@@ -203,6 +203,7 @@ var/global/round_start_time = 0
 	return weekdays.Find(time2text(world.timeofday, "DDD"))
 
 /proc/current_month_and_day()
+	RETURN_TYPE(/list)
 	var/time_string = time2text(world.realtime, "MM-DD")
 	var/time_list = splittext(time_string, "-")
 	return list(text2num(time_list[1]), text2num(time_list[2]))

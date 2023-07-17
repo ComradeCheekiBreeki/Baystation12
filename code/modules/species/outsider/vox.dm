@@ -58,7 +58,7 @@
 	blood_color = "#2299fc"
 	flesh_color = "#808d11"
 
-	maneuvers = list(/decl/maneuver/leap/grab)
+	maneuvers = list(/singleton/maneuver/leap/grab)
 	standing_jump_range = 5
 
 	override_limb_types = list(
@@ -111,18 +111,18 @@
 	exertion_reagent_scale = 5
 	exertion_reagent_path = /datum/reagent/lactate
 	exertion_emotes_biological = list(
-		/decl/emote/exertion/biological,
-		/decl/emote/exertion/biological/breath,
-		/decl/emote/exertion/biological/pant
+		/singleton/emote/exertion/biological,
+		/singleton/emote/exertion/biological/breath,
+		/singleton/emote/exertion/biological/pant
 	)
 	exertion_emotes_synthetic = list(
-		/decl/emote/exertion/synthetic,
-		/decl/emote/exertion/synthetic/creak
+		/singleton/emote/exertion/synthetic,
+		/singleton/emote/exertion/synthetic/creak
 	)
 
 	ingest_amount = 20
 
-	traits = list(/decl/trait/general/nonpermeable_skin = TRAIT_LEVEL_EXISTS)
+	traits = list(/singleton/trait/general/nonpermeable_skin = TRAIT_LEVEL_EXISTS)
 
 /datum/species/vox/equip_survival_gear(mob/living/carbon/human/H)
 	H.equip_to_slot_or_del(new /obj/item/clothing/mask/gas/vox(H), slot_wear_mask)
@@ -137,8 +137,8 @@
 		H.set_internals(H.back)
 
 /datum/species/vox/disfigure_msg(mob/living/carbon/human/H)
-	var/datum/gender/T = gender_datums[H.get_gender()]
-	return "<span class='danger'>[T.His] beak-segments are cracked and chipped! [T.He] [T.is] not even recognizable.</span>\n"
+	var/datum/pronouns/P = H.choose_from_pronouns()
+	return "[SPAN_DANGER("[P.His] beak-segments are cracked and chipped! [P.He] [P.is] not even recognizable.")]\n"
 
 /datum/species/vox/skills_from_age(age)
 	. = 8
@@ -168,7 +168,7 @@
 	OnCreated(vox, user)
 	data = sanitizeSafe(input(vox, "Enter Name:", "Enter Name", "") as text, MAX_NAME_LEN)
 	if (!length(data))
-		var/decl/cultural_info/culture = SSculture.get_culture(CULTURE_VOX_RAIDER)
+		var/singleton/cultural_info/culture = SSculture.get_culture(CULTURE_VOX_RAIDER)
 		data = culture.get_random_name()
 	vox.real_name = data
 	vox.SetName(data)

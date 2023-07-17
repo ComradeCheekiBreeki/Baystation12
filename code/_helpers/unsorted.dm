@@ -3,6 +3,7 @@
  */
 
 /proc/subtypesof(datum/thing)
+	RETURN_TYPE(/list)
 	if (ispath(thing))
 		return typesof(thing) - thing
 	if (istype(thing))
@@ -64,6 +65,7 @@
 
 //Returns location. Returns null if no location was found.
 /proc/get_teleport_loc(turf/location,mob/target,distance = 1, density = FALSE, errorx = 0, errory = 0, eoffsetx = 0, eoffsety = 0)
+	RETURN_TYPE(/turf)
 /*
 Location where the teleport begins, target that will teleport, distance to go, density checking 0/1(yes/no).
 Random error in tile placement x, error in tile placement y, and block offset.
@@ -143,7 +145,7 @@ Turf and target are seperate in case you want to teleport some distance from a t
 				if(T.x>world.maxx || T.x<1)	continue//Don't want them to teleport off the map.
 				if(T.y>world.maxy || T.y<1)	continue
 				destination_list += T
-			if(destination_list.len)
+			if(length(destination_list))
 				destination = pick(destination_list)
 			else	return
 
@@ -198,6 +200,7 @@ Turf and target are seperate in case you want to teleport some distance from a t
 	return x!=0?x/abs(x):0
 
 /proc/getline(atom/M,atom/N)//Ultra-Fast Bresenham Line-Drawing Algorithm
+	RETURN_TYPE(/list)
 	var/px=M.x		//starting x
 	var/py=M.y
 	var/line[] = list(locate(px,py,M.z))
@@ -230,6 +233,7 @@ Turf and target are seperate in case you want to teleport some distance from a t
 
 #define LOCATE_COORDS(X, Y, Z) locate(clamp(X, 1, world.maxx), clamp(Y, 1, world.maxy), Z)
 /proc/getcircle(turf/center, radius) //Uses a fast Bresenham rasterization algorithm to return the turfs in a thin circle.
+	RETURN_TYPE(/list)
 	if(!radius) return list(center)
 
 	var/x = 0
@@ -320,6 +324,7 @@ Turf and target are seperate in case you want to teleport some distance from a t
 
 //When an AI is activated, it can choose from a list of non-slaved borgs to have as a slave.
 /proc/freeborg(z)
+	RETURN_TYPE(/mob/living/silicon/robot)
 	var/list/zs = get_valid_silicon_zs(z)
 
 	var/select = null
@@ -330,12 +335,13 @@ Turf and target are seperate in case you want to teleport some distance from a t
 		var/name = "[A.real_name] ([A.modtype] [A.braintype])"
 		borgs[name] = A
 
-	if (borgs.len)
+	if (length(borgs))
 		select = input("Unshackled borg signals detected:", "Borg selection", null, null) as null|anything in borgs
 		return borgs[select]
 
 //When a borg is activated, it can choose which AI it wants to be slaved to
 /proc/active_ais(z)
+	RETURN_TYPE(/list)
 	var/list/zs = get_valid_silicon_zs(z)
 
 	. = list()
@@ -347,28 +353,32 @@ Turf and target are seperate in case you want to teleport some distance from a t
 
 //Find an active ai with the least borgs. VERBOSE PROCNAME HUH!
 /proc/select_active_ai_with_fewest_borgs(z)
+	RETURN_TYPE(/mob/living/silicon/ai)
 	var/mob/living/silicon/ai/selected
 	var/list/active = active_ais(z)
 	for(var/mob/living/silicon/ai/A in active)
-		if(!selected || (selected.connected_robots.len > A.connected_robots.len))
+		if(!selected || (length(selected.connected_robots) > length(A.connected_robots)))
 			selected = A
 
 	return selected
 
 /proc/select_active_ai(mob/user, z)
+	RETURN_TYPE(/mob/living/silicon/ai)
 	var/list/ais = active_ais(z)
-	if(ais.len)
+	if(length(ais))
 		if(user?.client)
 			. = input(user,"AI signals detected:", "AI selection") in ais
 		else
 			. = pick(ais)
 
 /proc/get_valid_silicon_zs(z)
+	RETURN_TYPE(/list)
 	if(z)
 		return GetConnectedZlevels(z)
 	return list() //We return an empty list, because we are apparently in nullspace
 
 /proc/get_sorted_mobs()
+	RETURN_TYPE(/list)
 	var/list/old_list = getmobs()
 	var/list/AI_list = list()
 	var/list/Dead_list = list()
@@ -398,7 +408,7 @@ Turf and target are seperate in case you want to teleport some distance from a t
 
 //Returns a list of all mobs with their name
 /proc/getmobs()
-
+	RETURN_TYPE(/list)
 	var/list/mobs = sortmobs()
 	var/list/names = list()
 	var/list/creatures = list()
@@ -423,10 +433,12 @@ Turf and target are seperate in case you want to teleport some distance from a t
 	return creatures
 
 /proc/get_follow_targets()
+	RETURN_TYPE(/list)
 	return follow_repository.get_follow_targets()
 
 //Orders mobs by type then by name
 /proc/sortmobs()
+	RETURN_TYPE(/list)
 	var/list/moblist = list()
 	var/list/sortmob = sortAtom(SSmobs.mob_list)
 	for(var/mob/observer/eye/M in sortmob)
@@ -467,7 +479,7 @@ Turf and target are seperate in case you want to teleport some distance from a t
 // returns the turf located at the map edge in the specified direction relative to A
 // used for mass driver
 /proc/get_edge_target_turf(atom/A, direction)
-
+	RETURN_TYPE(/turf)
 	var/turf/target = locate(A.x, A.y, A.z)
 	if(!A || !target)
 		return 0
@@ -491,7 +503,7 @@ Turf and target are seperate in case you want to teleport some distance from a t
 // note range is non-pythagorean
 // used for disposal system
 /proc/get_ranged_target_turf(atom/A, direction, range)
-
+	RETURN_TYPE(/turf)
 	var/x = A.x
 	var/y = A.y
 	if(direction & NORTH)
@@ -509,6 +521,7 @@ Turf and target are seperate in case you want to teleport some distance from a t
 // returns turf relative to A offset in dx and dy tiles
 // bound to map limits
 /proc/get_offset_target_turf(atom/A, dx, dy)
+	RETURN_TYPE(/turf)
 	var/x = min(world.maxx, max(1, A.x + dx))
 	var/y = min(world.maxy, max(1, A.y + dy))
 	return locate(x,y,A.z)
@@ -528,13 +541,21 @@ Turf and target are seperate in case you want to teleport some distance from a t
 /proc/GaussRandRound(sigma,roundto)
 	return round(GaussRand(sigma),roundto)
 
-//Will return the contents of an atom recursivly to a depth of 'searchDepth'
+/**
+ * Retrieves the contents of this atom and all atoms contained within, recursively.
+ *
+ * **Parameters**:
+ * - `searchDepth` (int) - The depth to recursively retrieve contents for.
+ *
+ * Returns a list of atoms.
+ */
 /atom/proc/GetAllContents(searchDepth = 5)
+	RETURN_TYPE(/list)
 	var/list/toReturn = list()
 
 	for(var/atom/part in contents)
 		toReturn += part
-		if(part.contents.len && searchDepth)
+		if(length(part.contents) && searchDepth)
 			toReturn += part.GetAllContents(searchDepth - 1)
 
 	return toReturn
@@ -567,6 +588,7 @@ Turf and target are seperate in case you want to teleport some distance from a t
 	return cant_pass
 
 /proc/get_step_towards2(atom/ref , atom/trg)
+	RETURN_TYPE(/turf)
 	var/base_dir = get_dir(ref, get_step_towards(ref,trg))
 	var/turf/temp = get_step_towards(ref,trg)
 
@@ -602,6 +624,7 @@ Turf and target are seperate in case you want to teleport some distance from a t
 //Takes: Area type as text string or as typepath OR an instance of the area.
 //Returns: A list of all areas of that type in the world.
 /proc/get_areas(areatype)
+	RETURN_TYPE(/list)
 	if(!areatype) return null
 	if(istext(areatype)) areatype = text2path(areatype)
 	if(isarea(areatype))
@@ -616,6 +639,7 @@ Turf and target are seperate in case you want to teleport some distance from a t
 //Takes: Area type as a typepath OR an instance of the area.
 //Returns: A list of all atoms	(objs, turfs, mobs) in areas of that type of that type in the world.
 /proc/get_area_all_atoms(areatype)
+	RETURN_TYPE(/list)
 	if(!areatype)
 		return null
 	if(isarea(areatype))
@@ -641,7 +665,7 @@ Turf and target are seperate in case you want to teleport some distance from a t
 
 	var/list/turfs_src = get_area_turfs("\ref[src]")
 
-	if(!turfs_src.len) return
+	if(!length(turfs_src)) return
 
 	//figure out a suitable origin - this assumes the shuttle areas are the exact same size and shape
 	//might be worth doing this with a shuttle core object instead of areas, in the future
@@ -652,30 +676,41 @@ Turf and target are seperate in case you want to teleport some distance from a t
 		var/translation = get_turf_translation(src_origin, trg_origin, turfs_src)
 		translate_turfs(translation, null)
 
-/proc/DuplicateObject(obj/original, perfectcopy = 0 , sameloc = 0)
-	if(!original)
-		return null
 
-	var/obj/O = null
-
-	if(sameloc)
-		O=new original.type(original.loc)
-	else
-		O=new original.type(locate(0,0,0))
-
-	if(perfectcopy)
-		if((O) && (original))
-			for(var/V in original.vars)
-				if(!(V in list("type","loc","locs","vars", "parent", "parent_type","verbs","ckey","key", "group", "ai_holder", "natural_weapon")))
-					O.vars[V] = original.vars[V]
-	return O
+GLOBAL_LIST_INIT(duplicate_object_disallowed_vars, list(
+	"type",
+	"loc",
+	"locs",
+	"vars",
+	"parent",
+	"parent_type",
+	"verbs",
+	"ckey",
+	"key",
+	"group",
+	"ai_holder",
+	"natural_weapon"
+))
 
 
+/proc/clone_atom(obj/original, copy_vars, atom/loc)
+	RETURN_TYPE(/obj)
+	if (!original)
+		return
+	if (loc && !isloc(loc))
+		loc = original.loc
+	var/obj/result = new original.type (loc)
+	if (!copy_vars || !result)
+		return result
+	var/list/vars = original.vars
+	for (var/name in vars)
+		if (name in GLOB.duplicate_object_disallowed_vars)
+			continue
+		if (!issaved(vars[name]))
+			continue
+		result.vars[name] = vars[name]
+	return result
 
-/datum/coords //Simple datum for storing coordinates.
-	var/x_pos = null
-	var/y_pos = null
-	var/z_pos = null
 
 /**
  * Attempts to move the contents, including turfs, of one area to another area.
@@ -687,130 +722,74 @@ Turf and target are seperate in case you want to teleport some distance from a t
  * Primarily used for holodecks.
  *
  * **Parameters**:
- * - `A` `/area`. The area to copy src's contents to.
- * - `platingRequired` Boolean, default `FALSE`. If set, contents will only be copied to destination tiles that are not the same type as `get_base_area_by_turf()` before calling `ChangeTurf()`.
+ * - `target` `/area`. The area to copy src's contents to.
+ * - `plating_required` Boolean, default `FALSE`. If set, contents will only be copied to destination tiles that are not the same type as `get_base_area_by_turf()` before calling `ChangeTurf()`.
  *
  * Returns List (`/atom`). A list containing all atoms that were created at the target area during the process.
  */
-/area/proc/copy_contents_to(area/A , platingRequired = 0 )
-	if(!A || !src) return 0
-
-	var/list/turfs_src = get_area_turfs(src.type)
-	var/list/turfs_trg = get_area_turfs(A.type)
-
+/area/proc/copy_contents_to(area/target, plating_required)
+	RETURN_TYPE(/list)
+	if (!target || !src)
+		return
+	var/list/turfs_src = get_area_turfs(type)
+	var/list/turfs_trg = get_area_turfs(target.type)
 	var/src_min_x = 0
 	var/src_min_y = 0
-	for (var/turf/T in turfs_src)
-		if(T.x < src_min_x || !src_min_x) src_min_x	= T.x
-		if(T.y < src_min_y || !src_min_y) src_min_y	= T.y
-
+	for (var/turf/turf in turfs_src)
+		if (turf.x < src_min_x || !src_min_x)
+			src_min_x = turf.x
+		if (turf.y < src_min_y || !src_min_y)
+			src_min_y = turf.y
 	var/trg_min_x = 0
 	var/trg_min_y = 0
-	for (var/turf/T in turfs_trg)
-		if(T.x < trg_min_x || !trg_min_x) trg_min_x	= T.x
-		if(T.y < trg_min_y || !trg_min_y) trg_min_y	= T.y
-
-	var/list/refined_src = new/list()
-	for(var/turf/T in turfs_src)
-		refined_src += T
-		refined_src[T] = new/datum/coords
-		var/datum/coords/C = refined_src[T]
-		C.x_pos = (T.x - src_min_x)
-		C.y_pos = (T.y - src_min_y)
-
-	var/list/refined_trg = new/list()
-	for(var/turf/T in turfs_trg)
-		refined_trg += T
-		refined_trg[T] = new/datum/coords
-		var/datum/coords/C = refined_trg[T]
-		C.x_pos = (T.x - trg_min_x)
-		C.y_pos = (T.y - trg_min_y)
-
-	var/list/toupdate = new/list()
-
-	var/copiedobjs = list()
-
-
+	for (var/turf/turf in turfs_trg)
+		if (turf.x < trg_min_x || !trg_min_x)
+			trg_min_x = turf.x
+		if (turf.y < trg_min_y || !trg_min_y)
+			trg_min_y = turf.y
+	var/list/refined_src = list()
+	for (var/turf/turf in turfs_src)
+		refined_src[turf] = new /datum/vector2 (turf.x - src_min_x, turf.y - src_min_y)
+	var/list/refined_trg = list()
+	for (var/turf/turf in turfs_trg)
+		refined_trg[turf] = new /datum/vector2 (turf.x - trg_min_x, turf.y - trg_min_y)
+	var/list/turfs_to_update = list()
+	var/list/copied_movables = list()
 	moving:
-		for (var/turf/T in refined_src)
-			var/datum/coords/C_src = refined_src[T]
-			for (var/turf/B in refined_trg)
-				var/datum/coords/C_trg = refined_trg[B]
-				if(C_src.x_pos == C_trg.x_pos && C_src.y_pos == C_trg.y_pos)
-
-					var/old_dir1 = T.dir
-					var/old_icon_state1 = T.icon_state
-					var/old_icon1 = T.icon
-					var/old_overlays = T.overlays.Copy()
-					var/old_underlays = T.underlays.Copy()
-
-					if(platingRequired)
-						if(istype(B, get_base_turf_by_area(B)))
+		for (var/turf/source_turf in refined_src)
+			var/datum/vector2/source_position = refined_src[source_turf]
+			for (var/turf/target_turf in refined_trg)
+				if (source_position ~= refined_trg[target_turf])
+					var/old_dir1 = source_turf.dir
+					var/old_icon_state1 = source_turf.icon_state
+					var/old_icon1 = source_turf.icon
+					var/old_overlays = source_turf.overlays.Copy()
+					var/old_underlays = source_turf.underlays.Copy()
+					if (plating_required)
+						if (istype(target_turf, get_base_turf_by_area(target_turf)))
 							continue moving
-
-					var/turf/X = B
-					X.ChangeTurf(T.type)
-					X.set_dir(old_dir1)
-					X.icon_state = old_icon_state1
-					X.icon = old_icon1 //Shuttle floors are in shuttle.dmi while the defaults are floors.dmi
-					X.overlays = old_overlays
-					X.underlays = old_underlays
-
-					var/list/objs = new/list()
-					var/list/newobjs = new/list()
-					var/list/mobs = new/list()
-					var/list/newmobs = new/list()
-
-					for(var/obj/O in T)
-
-						if(!istype(O,/obj) || !O.simulated)
+					var/turf/temp_target_turf = target_turf
+					temp_target_turf.ChangeTurf(source_turf.type)
+					temp_target_turf.set_dir(old_dir1)
+					temp_target_turf.icon_state = old_icon_state1
+					temp_target_turf.icon = old_icon1
+					temp_target_turf.overlays = old_overlays
+					temp_target_turf.underlays = old_underlays
+					for (var/obj/obj in source_turf)
+						if (!obj.simulated)
 							continue
-
-						objs += O
-
-
-					for(var/obj/O in objs)
-						newobjs += DuplicateObject(O , 1)
-
-
-					for(var/obj/O in newobjs)
-						O.forceMove(X)
-
-					for(var/mob/M in T)
-
-						if(!istype(M,/mob) || !M.simulated) continue // If we need to check for more mobs, I'll add a variable
-						mobs += M
-
-					for(var/mob/M in mobs)
-						newmobs += DuplicateObject(M , 1)
-
-					for(var/mob/M in newmobs)
-						M.forceMove(X)
-
-					copiedobjs += newobjs
-					copiedobjs += newmobs
-
-//					var/area/AR = X.loc
-
-//					if(AR.dynamic_lighting)
-//						X.opacity = !X.opacity
-//						X.sd_SetOpacity(!X.opacity)			//TODO: rewrite this code so it's not messed by lighting ~Carn
-
-					toupdate += X
-
-					refined_src -= T
-					refined_trg -= B
+						copied_movables += clone_atom(obj, TRUE, temp_target_turf)
+					for (var/mob/mob in source_turf)
+						if (!mob.simulated)
+							continue
+						copied_movables += clone_atom(mob, TRUE, temp_target_turf)
+					turfs_to_update += temp_target_turf
+					refined_src -= source_turf
+					refined_trg -= target_turf
 					continue moving
-
-
-
-
-	if(toupdate.len)
-		for(var/turf/simulated/T1 in toupdate)
-			SSair.mark_for_update(T1)
-
-	return copiedobjs
-
+	for (var/turf/simulated/simulated in turfs_to_update)
+		SSair.mark_for_update(simulated)
+	return copied_movables
 
 
 /proc/get_cardinal_dir(atom/A, atom/B)
@@ -823,6 +802,7 @@ Turf and target are seperate in case you want to teleport some distance from a t
 	return (rand(1,value)==value)
 
 /proc/view_or_range(distance = world.view , center = usr , type)
+	RETURN_TYPE(/list)
 	switch(type)
 		if("view")
 			. = view(distance,center)
@@ -831,6 +811,7 @@ Turf and target are seperate in case you want to teleport some distance from a t
 	return
 
 /proc/oview_or_orange(distance = world.view , center = usr , type)
+	RETURN_TYPE(/list)
 	switch(type)
 		if("view")
 			. = oview(distance,center)
@@ -839,6 +820,7 @@ Turf and target are seperate in case you want to teleport some distance from a t
 	return
 
 /proc/get_mob_with_client_list()
+	RETURN_TYPE(/list)
 	var/list/mobs = list()
 	for(var/mob/M in SSmobs.mob_list)
 		if (M.client)
@@ -869,6 +851,7 @@ Turf and target are seperate in case you want to teleport some distance from a t
 	return null
 
 /proc/get_turf_or_move(turf/location)
+	RETURN_TYPE(/turf)
 	return get_turf(location)
 
 
@@ -903,41 +886,6 @@ Turf and target are seperate in case you want to teleport some distance from a t
 /obj/item/crowbar/istool()
 	return TRUE
 
-
-/proc/is_hot(obj/item/W as obj)
-	switch(W.type)
-		if(/obj/item/weldingtool)
-			var/obj/item/weldingtool/WT = W
-			if(WT.isOn())
-				return 3800
-			else
-				return 0
-		if(/obj/item/flame/lighter)
-			if(W:lit)
-				return 1500
-			else
-				return 0
-		if(/obj/item/flame/match)
-			if(W:lit)
-				return 1000
-			else
-				return 0
-		if(/obj/item/clothing/mask/smokable/cigarette)
-			if(W:lit)
-				return 1000
-			else
-				return 0
-		if(/obj/item/gun/energy/plasmacutter)
-			return 3800
-		if(/obj/item/melee/energy)
-			return 3500
-		if(/obj/item/blob_tendril)
-			if (W.damtype == DAMAGE_BURN)
-				return 1000
-			else
-				return 0
-		else
-			return 0
 
 //Whether or not the given item counts as sharp in terms of dealing damage
 /proc/is_sharp(obj/O as obj)
@@ -985,6 +933,8 @@ Turf and target are seperate in case you want to teleport some distance from a t
 	if(locate(/obj/machinery/optable, T))
 		. = TRUE
 	if(locate(/obj/structure/bed, T))
+		. = TRUE
+	if(locate(/obj/structure/roller_bed, T))
 		. = TRUE
 	if(locate(/obj/structure/table, T))
 		. = TRUE
@@ -1089,6 +1039,7 @@ GLOBAL_DATUM_INIT(dview_mob, /mob/dview, new)
 
 //Version of view() which ignores darkness, because BYOND doesn't have it.
 /proc/dview(range = world.view, center, invis_flags = 0)
+	RETURN_TYPE(/list)
 	if(!center)
 		return
 
@@ -1098,7 +1049,7 @@ GLOBAL_DATUM_INIT(dview_mob, /mob/dview, new)
 	GLOB.dview_mob.loc = null
 
 /mob/dview
-	invisibility = 101
+	invisibility = INVISIBILITY_ABSTRACT
 	density = FALSE
 
 	anchored = TRUE
@@ -1108,13 +1059,18 @@ GLOBAL_DATUM_INIT(dview_mob, /mob/dview, new)
 
 	virtual_mob = null
 
-/mob/dview/Destroy(forced)
-	if(forced)
-		GLOB.dview_mob = new/mob/dview()
-		return ..()
-	crash_with("Prevented attempt to delete dview mob: [log_info_line(src)]")
-	return QDEL_HINT_LETMELIVE // Prevents destruction
+/mob/dview/Destroy()
+	SHOULD_CALL_PARENT(FALSE)
+	return QDEL_HINT_LETMELIVE
 
+/**
+ * Sets the atom's color and light values to those of `origin`.
+ *
+ * TODO: Update this to use `set_color()` and `get_color()`.
+ *
+ * **Parameters**:
+ * - `origin` - The atom to copy light and color values from.
+ */
 /atom/proc/get_light_and_color(atom/origin)
 	if(origin)
 		color = origin.color
@@ -1149,11 +1105,11 @@ GLOBAL_DATUM_INIT(dview_mob, /mob/dview, new)
 		if(findtext("[path]", desired_path))
 			matches += path
 
-	if(!matches.len)
+	if(!length(matches))
 		alert("No results found. Sorry.")
 		return
 
-	if(matches.len==1)
+	if(length(matches)==1)
 		return matches[1]
 	else
 		return (input("Select a type", "Select Type", matches[1]) as null|anything in matches)

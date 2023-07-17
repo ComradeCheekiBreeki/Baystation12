@@ -1,5 +1,3 @@
-#include "_map_include.dm"
-
 #include "mapsystem\map_preferences.dm"
 #include "mapsystem\map_ranks.dm"
 #include "mapsystem\maps.dm"
@@ -26,6 +24,7 @@ GLOBAL_DATUM_INIT(using_map, /datum/map, new using_map_DATUM)
 #include "away\away_sites.dm"
 #include "away_sites_testing\away_sites_testing_define.dm"
 #include "random_ruins\exoplanet_ruins\exoplanet_ruins.dm"
+#include "random_ruins\exoplanet_ruins\transshipment\transshipment.dm"
 #include "random_ruins\exoplanet_ruins\crashed_pod\crashed_pod.dm"
 #include "random_ruins\exoplanet_ruins\datacapsule\datacapsule.dm"
 #include "random_ruins\exoplanet_ruins\deserted_lab\deserted_lab.dm"
@@ -47,4 +46,5 @@ GLOBAL_DATUM_INIT(using_map, /datum/map, new using_map_DATUM)
 #include "random_ruins\exoplanet_ruins\spider_nest\spider_nest.dm"
 #include "random_ruins\exoplanet_ruins\tar_anomaly\tar_anomaly.dm"
 #include "random_ruins\exoplanet_ruins\trash_heap\trash_heap.dm"
+#include "random_ruins\exoplanet_ruins\crashed_probe\crashed_probe.dm"
 #include "random_ruins\space_ruins\space_ruins.dm"

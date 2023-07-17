@@ -7,6 +7,8 @@
 	animate_movement = 2
 	movable_flags = MOVABLE_FLAG_PROXMOVE
 
+	blocks_emissive = EMISSIVE_BLOCK_GENERIC
+
 	virtual_mob = /mob/observer/virtual/mob
 
 	movement_handlers = list(
@@ -57,7 +59,6 @@
 	var/obj/screen/gun/item/item_use_icon = null
 	var/obj/screen/gun/radio/radio_use_icon = null
 	var/obj/screen/gun/move/gun_move_icon = null
-	var/obj/screen/gun/run/gun_run_icon = null
 	var/obj/screen/gun/mode/gun_setting_icon = null
 
 	var/obj/screen/movable/ability_master/ability_master = null
@@ -117,11 +118,11 @@
 	var/shakecamera = 0
 	var/a_intent = I_HELP//Living
 
-	var/decl/move_intent/move_intent = /decl/move_intent/walk
-	var/list/move_intents = list(/decl/move_intent/walk)
+	var/singleton/move_intent/move_intent = /singleton/move_intent/walk
+	var/list/move_intents = list(/singleton/move_intent/walk)
 
-	var/decl/move_intent/default_walk_intent
-	var/decl/move_intent/default_run_intent
+	var/singleton/move_intent/default_walk_intent
+	var/singleton/move_intent/default_run_intent
 
 	var/obj/buckled = null//Living
 	var/obj/item/l_hand = null//Living
@@ -133,8 +134,6 @@
 	var/list/grabbed_by = list()
 
 	var/in_throw_mode = 0
-
-	var/inertia_dir = 0
 
 //	var/job = null//Living
 
@@ -151,6 +150,7 @@
 	var/voice_name = "unidentifiable voice"
 
 	var/faction = MOB_FACTION_NEUTRAL //Used for checking whether hostile simple animals will attack you, possibly more stuff later
+	var/last_faction = MOB_FACTION_NEUTRAL
 	var/blinded = null
 	var/ear_deaf = null		//Carbon
 
@@ -191,5 +191,6 @@
 
 	var/datum/skillset/skillset = /datum/skillset
 
+	var/pronouns = null
 
 	var/list/additional_vision_handlers = list() //Basically a list of atoms from which additional vision data is retrieved

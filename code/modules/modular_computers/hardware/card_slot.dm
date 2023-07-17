@@ -1,5 +1,5 @@
 /obj/item/stock_parts/computer/card_slot
-	name = "RFID card slot"
+	name = "\improper RFID card slot"
 	desc = "Slot that allows this computer to write data on RFID cards. Necessary for some programs to run properly."
 	power_usage = 10 //W
 	critical = FALSE
@@ -53,7 +53,7 @@
 	set src in view(1)
 
 	if(!CanPhysicallyInteract(usr))
-		to_chat(usr, "<span class='warning'>You can't reach it.</span>")
+		to_chat(usr, SPAN_WARNING("You can't reach it."))
 		return
 
 	var/obj/item/stock_parts/computer/card_slot/device = src
@@ -108,7 +108,7 @@
 	return TRUE
 
 /obj/item/stock_parts/computer/card_slot/broadcaster // read only
-	name = "RFID card broadcaster"
+	name = "\improper RFID card broadcaster"
 	desc = "Reads and broadcasts the RFID signal of an inserted card."
 	can_write = FALSE
 	can_broadcast = TRUE

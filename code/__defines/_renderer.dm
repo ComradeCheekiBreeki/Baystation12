@@ -166,6 +166,10 @@ GLOBAL_LIST_EMPTY(zmimic_renderers)
 	name = "Zrenderer [plane]"
 	. = ..()
 
+/atom/movable/renderer/shared/zmimic/Destroy()
+	GLOB.zmimic_renderers -= src
+	return ..()
+
 // Draws the game world; live mobs, items, turfs, etc.
 /atom/movable/renderer/game
 	name = "Game"
@@ -194,6 +198,15 @@ GLOBAL_LIST_EMPTY(zmimic_renderers)
 		 1,  1,  1,  1  // Mapping
 	)
 	mouse_opacity = MOUSE_OPACITY_UNCLICKABLE
+
+
+/atom/movable/renderer/lighting/Initialize()
+	. = ..()
+	filters += filter(
+		type = "alpha",
+		render_source = EMISSIVE_TARGET,
+		flags = MASK_INVERSE
+	)
 
 /// Draws visuals that should not be affected by darkness.
 /atom/movable/renderer/above_lighting
@@ -315,12 +328,29 @@ GLOBAL_LIST_EMPTY(zmimic_renderers)
 	filters += filter(type = "displace", render_source = "*warp", size = 5)
 	filters += filter(type = "displace", render_source = HEAT_COMPOSITE_TARGET, size = 2.5)
 
-/// Example of a warp filter for /renderer use
-/obj/effect/effect/warp
-	plane = WARP_EFFECT_PLANE
-	appearance_flags = PIXEL_SCALE
-	icon = 'icons/effects/352x352.dmi'
-	icon_state = "singularity_s11"
-	pixel_x = -176
-	pixel_y = -176
-	no_z_overlay = TRUE
+/*!
+ * This system works by exploiting BYONDs color matrix filter to use layers to handle emissive blockers.
+ *
+ * Emissive overlays are pasted with an atom color that converts them to be entirely some specific color.
+ * Emissive blockers are pasted with an atom color that converts them to be entirely some different color.
+ * Emissive overlays and emissive blockers are put onto the same plane.
+ * The layers for the emissive overlays and emissive blockers cause them to mask eachother similar to normal BYOND objects.
+ * A color matrix filter is applied to the emissive plane to mask out anything that isn't whatever the emissive color is.
+ * This is then used to alpha mask the lighting plane.
+ *
+ * This works best if emissive overlays applied only to objects that emit light,
+ * since luminosity=0 turfs may not be rendered.
+ */
+/atom/movable/renderer/emissive
+	name = "Emissive"
+	group = RENDER_GROUP_NONE
+	plane = EMISSIVE_PLANE
+	mouse_opacity = MOUSE_OPACITY_UNCLICKABLE
+	render_target_name = EMISSIVE_TARGET
+
+/atom/movable/renderer/emissive/Initialize()
+	. = ..()
+	filters += filter(
+		type = "color",
+		color = GLOB.em_mask_matrix
+	)

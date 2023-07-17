@@ -6,8 +6,8 @@
 	icon_living = "carrier"
 	icon_dead = "carrier_dead"
 
-	maxHealth = 100
-	health = 100
+	maxHealth = 60
+	health = 60
 
 	natural_weapon = /obj/item/natural_weapon/bite/spider/carrier
 
@@ -15,6 +15,8 @@
 	poison_type = /datum/reagent/chloralhydrate
 
 	movement_cooldown = 8
+
+	mob_size = MOB_LARGE
 
 	var/spiderling_count = 0
 	var/spiderling_type = /obj/effect/spider/spiderling
@@ -30,7 +32,7 @@
 
 /mob/living/simple_animal/hostile/giant_spider/carrier/death()
 	visible_message(SPAN_WARNING("\The [src]'s abdomen splits as it rolls over, spiderlings crawling from the wound."))
-	addtimer(CALLBACK(src, .proc/spawn_swarmlings), 1 SECOND)
+	addtimer(new Callback(src, .proc/spawn_swarmlings), 1 SECOND)
 	return ..()
 
 /mob/living/simple_animal/hostile/giant_spider/carrier/proc/spawn_swarmlings()

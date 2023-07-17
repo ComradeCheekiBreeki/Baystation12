@@ -166,6 +166,16 @@
 	shuttle_moved(destination, translation)
 	GLOB.shuttle_moved_event.raise_event(src, old_location, destination)
 	destination.shuttle_arrived(src)
+	// + BANDAID
+	// /obj/machinery/proc/area_changed and /proc/translate_turfs cause problems with power cost duplication.
+	var/list/area/retally_areas
+	if (isarea(shuttle_area))
+		retally_areas = list(shuttle_area)
+	else if (islist(shuttle_area))
+		retally_areas = shuttle_area
+	for (var/area/area as anything in retally_areas)
+		area.retally_power()
+	// - BANDAID
 	return TRUE
 
 //just moves the shuttle from A to B, if it can be moved
@@ -205,12 +215,12 @@
 				spawn(0)
 					if(istype(M, /mob/living/carbon))
 						if(M.buckled)
-							to_chat(M, "<span class='warning'>Sudden acceleration presses you into your chair!</span>")
+							to_chat(M, SPAN_WARNING("Sudden acceleration presses you into your chair!"))
 							shake_camera(M, 3, 1)
 						else
-							to_chat(M, "<span class='warning'>The floor lurches beneath you!</span>")
+							to_chat(M, SPAN_WARNING("The floor lurches beneath you!"))
 							shake_camera(M, 10, 1)
-							M.visible_message("<span class='warning'>[M.name] is tossed around by the sudden acceleration!</span>")
+							M.visible_message(SPAN_WARNING("[M.name] is tossed around by the sudden acceleration!"))
 							M.throw_at_random(FALSE, 4, 1)
 
 		for(var/obj/structure/cable/C in A)

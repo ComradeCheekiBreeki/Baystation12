@@ -11,7 +11,7 @@
 	accelerant_quality = 3
 
 /datum/reagent/acetone/affect_blood(mob/living/carbon/M, removed)
-	if (HAS_TRAIT(M, /decl/trait/general/serpentid_adapted))
+	if (HAS_TRAIT(M, /singleton/trait/general/serpentid_adapted))
 		return
 
 	M.adjustToxLoss(removed * 3)
@@ -26,11 +26,11 @@
 		if(volume < 5)
 			return
 		if(istype(O, /obj/item/book/tome))
-			to_chat(usr, "<span class='notice'>The solution does nothing. Whatever this is, it isn't normal ink.</span>")
+			to_chat(usr, SPAN_NOTICE("The solution does nothing. Whatever this is, it isn't normal ink."))
 			return
 		var/obj/item/book/affectedbook = O
 		affectedbook.dat = null
-		to_chat(usr, "<span class='notice'>The solution dissolves the ink on the book.</span>")
+		to_chat(usr, SPAN_NOTICE("The solution dissolves the ink on the book."))
 	return
 
 /datum/reagent/aluminium
@@ -77,8 +77,8 @@
 	if (METABOLIC_INERTNESS(M) > TRAIT_LEVEL_MINOR)
 		return
 	var/datum/reagents/ingested = M.get_ingested_reagents()
-	if (ingested && ingested.reagent_list.len > 1) // Need to have at least 2 reagents - cabon and something to remove
-		var/effect = 1 / (ingested.reagent_list.len - 1)
+	if (ingested && length(ingested.reagent_list) > 1) // Need to have at least 2 reagents - cabon and something to remove
+		var/effect = 1 / (length(ingested.reagent_list) - 1)
 		for(var/datum/reagent/R in ingested.reagent_list)
 			if(R == src)
 				continue
@@ -134,7 +134,7 @@
 /datum/reagent/ethanol/affect_ingest(mob/living/carbon/M, removed)
 	M.adjust_nutrition(nutriment_factor * removed)
 	M.adjust_hydration(hydration_factor * removed)
-	var/strength_mod = (M.GetTraitLevel(/decl/trait/malus/ethanol) * 2.5) || 1
+	var/strength_mod = (M.GetTraitLevel(/singleton/trait/malus/ethanol) * 2.5) || 1
 	if (IS_METABOLICALLY_INERT(M))
 		strength_mod = 0
 
@@ -182,11 +182,11 @@
 		if(volume < 5)
 			return
 		if(istype(O, /obj/item/book/tome))
-			to_chat(usr, "<span class='notice'>The solution does nothing. Whatever this is, it isn't normal ink.</span>")
+			to_chat(usr, SPAN_NOTICE("The solution does nothing. Whatever this is, it isn't normal ink."))
 			return
 		var/obj/item/book/affectedbook = O
 		affectedbook.dat = null
-		to_chat(usr, "<span class='notice'>The solution dissolves the ink on the book.</span>")
+		to_chat(usr, SPAN_NOTICE("The solution dissolves the ink on the book."))
 	return
 
 /datum/reagent/hydrazine
@@ -386,7 +386,7 @@
 		var/obj/effect/decal/cleanable/molten_item/I = new/obj/effect/decal/cleanable/molten_item(O.loc)
 		I.desc = "Looks like this was \an [O] some time ago."
 		for(var/mob/M in viewers(5, O))
-			to_chat(M, "<span class='warning'>\The [O] melts.</span>")
+			to_chat(M, SPAN_WARNING("\The [O] melts."))
 		qdel(O)
 		remove_self(meltdose) // 10 units of acid will not melt EVERYTHING on the tile
 

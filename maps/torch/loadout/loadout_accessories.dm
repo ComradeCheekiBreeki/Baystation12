@@ -100,7 +100,7 @@
 	path = /obj/item/clothing/accessory/solgov/specialty/pilot
 	flags = GEAR_HAS_NO_CUSTOMIZATION
 	allowed_skills = list(
-		SKILL_PILOT = SKILL_ADEPT
+		SKILL_PILOT = SKILL_TRAINED
 	)
 	allowed_branches = list(
 		/datum/mil_branch/fleet,
@@ -195,9 +195,6 @@
 	allowed_roles = list(
 		/datum/job/pathfinder,
 		/datum/job/explorer)
-
-/datum/gear/tactical/armor_deco
-	allowed_roles = ARMORED_ROLES
 
 /datum/gear/tactical/press_tag
 	display_name = "Press tag"

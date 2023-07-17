@@ -7,7 +7,7 @@
 	icon_state = "body_scannerconsole"
 	density = FALSE
 	anchored = TRUE
-	construct_state = /decl/machine_construction/default/panel_closed
+	construct_state = /singleton/machine_construction/default/panel_closed
 	uncreated_component_parts = null
 	stat_immune = 0
 
@@ -53,7 +53,7 @@
 		if (AreConnectedZLevels(D.z, z))
 			connected_displays += D
 			GLOB.destroyed_event.register(D, src, .proc/remove_display)
-	return !!connected_displays.len
+	return !!length(connected_displays)
 
 /obj/machinery/body_scanconsole/attack_hand(mob/user)
 	if(!connected || connected.inoperable())
@@ -129,7 +129,7 @@
 		return TOPIC_REFRESH
 
 	if(href_list["push"])
-		if(!connected_displays.len && !FindDisplays())
+		if(!length(connected_displays) && !FindDisplays())
 			to_chat(user, SPAN_WARNING("[icon2html(src, user)]Error: No configured displays detected."))
 			return TOPIC_REFRESH
 		for(var/obj/machinery/body_scan_display/D in connected_displays)
@@ -150,7 +150,7 @@
 		data["pushEnabled"] = FALSE
 		return TOPIC_REFRESH
 
-/obj/machinery/body_scanconsole/state_transition(decl/machine_construction/default/new_state)
+/obj/machinery/body_scanconsole/state_transition(singleton/machine_construction/default/new_state)
 	. = ..()
 	if(istype(new_state))
 		updateUsrDialog()

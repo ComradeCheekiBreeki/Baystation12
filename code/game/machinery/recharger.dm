@@ -8,6 +8,7 @@
 	anchored = TRUE
 	idle_power_usage = 4
 	active_power_usage = 30 KILOWATTS
+	obj_flags = OBJ_FLAG_CAN_TABLE
 	var/obj/item/charging = null
 	var/list/allowed_devices = list(/obj/item/gun/energy, /obj/item/gun/magnetic/railgun, /obj/item/melee/baton, /obj/item/cell, /obj/item/modular_computer, /obj/item/device/suit_sensor_jammer, /obj/item/stock_parts/computer/battery_module, /obj/item/shield_diffuser, /obj/item/clothing/mask/smokable/ecig, /obj/item/device/radio)
 	var/icon_state_charged = "recharger2"
@@ -22,16 +23,16 @@
 
 	if(allowed)
 		if(charging)
-			to_chat(user, "<span class='warning'>\A [charging] is already charging here.</span>")
+			to_chat(user, SPAN_WARNING("\A [charging] is already charging here."))
 			return
 		// Checks to make sure he's not in space doing it, and that the area got proper power.
 		if(!powered())
-			to_chat(user, "<span class='warning'>The [name] blinks red as you try to insert the item!</span>")
+			to_chat(user, SPAN_WARNING("The [name] blinks red as you try to insert the item!"))
 			return
 		if (istype(G, /obj/item/gun/energy))
 			var/obj/item/gun/energy/E = G
 			if(E.self_recharge)
-				to_chat(user, "<span class='notice'>You can't find a charging port on \the [E].</span>")
+				to_chat(user, SPAN_NOTICE("You can't find a charging port on \the [E]."))
 				return
 		if(!G.get_cell())
 			to_chat(user, "This device does not have a battery installed.")
@@ -43,7 +44,7 @@
 			update_icon()
 	else if(portable && isWrench(G))
 		if(charging)
-			to_chat(user, "<span class='warning'>Remove [charging] first!</span>")
+			to_chat(user, SPAN_WARNING("Remove [charging] first!"))
 			return
 		anchored = !anchored
 		to_chat(user, "You [anchored ? "attached" : "detached"] the recharger.")

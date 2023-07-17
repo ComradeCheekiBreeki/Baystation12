@@ -21,11 +21,11 @@
 	set src in view(1)
 
 	if(usr.incapacitated() || !istype(usr, /mob/living))
-		to_chat(usr, "<span class='warning'>You can't do that.</span>")
+		to_chat(usr, SPAN_WARNING("You can't do that."))
 		return
 
 	if(!Adjacent(usr))
-		to_chat(usr, "<span class='warning'>You can't reach it.</span>")
+		to_chat(usr, SPAN_WARNING("You can't reach it."))
 		return
 
 	if(enabled)
@@ -48,7 +48,7 @@
 		return
 
 	if(!Adjacent(usr))
-		to_chat(usr, "<span class='warning'>You can't reach it.</span>")
+		to_chat(usr, SPAN_WARNING("You can't reach it."))
 		return
 
 	proc_eject_usb(usr)
@@ -64,15 +64,15 @@
 /obj/item/modular_computer/proc/remove_pen(mob/user)
 
 	if(user.incapacitated() || !istype(user, /mob/living))
-		to_chat(user, "<span class='warning'>You can't do that.</span>")
+		to_chat(user, SPAN_WARNING("You can't do that."))
 		return
 
 	if(!Adjacent(user))
-		to_chat(user, "<span class='warning'>You can't reach it.</span>")
+		to_chat(user, SPAN_WARNING("You can't reach it."))
 		return
 
 	if(istype(stored_pen))
-		to_chat(user, "<span class='notice'>You remove [stored_pen] from [src].</span>")
+		to_chat(user, SPAN_NOTICE("You remove [stored_pen] from [src]."))
 		user.put_in_hands(stored_pen) // Silicons will drop it anyway.
 		stored_pen = null
 		update_verbs()
@@ -126,13 +126,13 @@
 
 	if(istype(W, /obj/item/pen) && stores_pen)
 		if(istype(stored_pen))
-			to_chat(user, "<span class='notice'>There is already a pen in [src].</span>")
+			to_chat(user, SPAN_NOTICE("There is already a pen in [src]."))
 			return
 		if(!user.unEquip(W, src))
 			return
 		stored_pen = W
 		update_verbs()
-		to_chat(user, "<span class='notice'>You insert [W] into [src].</span>")
+		to_chat(user, SPAN_NOTICE("You insert [W] into [src]."))
 		return
 	if(istype(W, /obj/item/paper))
 		var/obj/item/paper/paper = W
@@ -158,7 +158,7 @@
 			to_chat(user, "This component is too large for \the [src].")
 	if(isWrench(W))
 		var/list/components = get_all_components()
-		if(components.len)
+		if(length(components))
 			to_chat(user, "Remove all components from \the [src] before disassembling it.")
 			return
 		new /obj/item/stack/material/steel( get_turf(src.loc), steel_sheet_cost )
@@ -171,19 +171,20 @@
 			to_chat(user, "\The [W] is off.")
 			return
 
-		if(!damage)
+		if(!get_damage_value())
 			to_chat(user, "\The [src] does not require repairs.")
 			return
 
 		to_chat(user, "You begin repairing damage to \the [src]...")
-		if(WT.remove_fuel(round(damage/75)) && do_after(usr, damage/10, src, DO_REPAIR_CONSTRUCT))
-			damage = 0
+		var/damage = get_damage_value()
+		if(WT.remove_fuel(round(damage / 75)) && do_after(user, damage / 10, src, DO_REPAIR_CONSTRUCT))
+			revive_health()
 			to_chat(user, "You repair \the [src].")
 		return
 
 	if(isScrewdriver(W))
 		var/list/all_components = get_all_components()
-		if(!all_components.len)
+		if(!length(all_components))
 			to_chat(user, "This device doesn't have any components installed.")
 			return
 		var/list/component_names = list()
@@ -230,11 +231,12 @@
 
 /obj/item/modular_computer/CtrlAltClick(mob/user)
 	if(!CanPhysicallyInteract(user))
-		return 0
+		return FALSE
 	var/datum/extension/interactive/ntos/os = get_extension(src, /datum/extension/interactive/ntos)
 	if(os)
 		os.open_terminal(user)
-		return 1
+		return TRUE
+	return FALSE
 
 /obj/item/modular_computer/CouldUseTopic(mob/user)
 	..()

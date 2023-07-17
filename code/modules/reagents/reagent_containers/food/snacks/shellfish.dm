@@ -17,9 +17,9 @@
 	if (!item.sharp)
 		return ..()
 	to_chat(user, SPAN_NOTICE("You start to pry open \the [src]."))
-	if (!user.do_skilled(2 SECONDS, SKILL_COOKING, user))
+	if (!user.do_skilled((item.toolspeed * 2) SECONDS, SKILL_COOKING, user))
 		return TRUE
-	if (!prob(user.skill_fail_chance(SKILL_COOKING, 80, SKILL_ADEPT)))
+	if (!prob(user.skill_fail_chance(SKILL_COOKING, 80, SKILL_TRAINED)))
 		to_chat(user, SPAN_NOTICE("You carefully clean and open \the [src]."))
 		new snack_path (get_turf(src))
 		qdel(src)
@@ -85,7 +85,7 @@
 	filling_color = "#f6db93"
 	bitesize = 4
 	center_of_mass = "x=16;y=16"
-	trash = /obj/item/shell
+	sushi_overlay = "fish"
 
 
 /obj/item/reagent_containers/food/snacks/shellfish/clam
@@ -132,6 +132,7 @@
 	desc = "A tasty shrimp, ready to use. Eat too much and you'll get sick."
 	icon_state = "shrimp_meat"
 	filling_color = "#ffdfc5"
+	sushi_overlay = "shrimp"
 
 
 /obj/item/reagent_containers/food/snacks/shellfish/shrimp/Initialize()
@@ -145,6 +146,7 @@
 	icon_state = "crab_meat"
 	filling_color = "#e8d9c8"
 	bitesize = 3
+	sushi_overlay = "crab"
 
 
 /obj/item/reagent_containers/food/snacks/shellfish/crab/Initialize()

@@ -35,7 +35,7 @@
 
 	// Uninstall a robotic part.
 	if(isCrowbar(W))
-		if(!parts.len)
+		if(!length(parts))
 			to_chat(user, SPAN_WARNING("\The [src] has no parts to remove."))
 			return
 		var/removing = pick(parts)
@@ -113,11 +113,15 @@
 		O.set_invisibility(0)
 		O.custom_name = created_name
 		O.updatename("Default")
+		O.faction = user.faction
 		B.mind.transfer_to(O)
-		if(O.mind && O.mind.assigned_role)
-			O.job = O.mind.assigned_role
-		else
-			O.job = "Robot"
+		if(O.mind)
+			O.mind.faction = user.faction
+
+			if(O.mind.assigned_role)
+				O.job = O.mind.assigned_role
+			else
+				O.job = "Robot"
 
 		var/obj/item/robot_parts/chest/chest = parts[BP_CHEST]
 		if (chest && chest.cell)

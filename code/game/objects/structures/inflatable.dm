@@ -3,6 +3,7 @@
 	w_class = ITEM_SIZE_NORMAL
 	icon = 'icons/obj/inflatable.dmi'
 	health_max = 10
+	health_min_damage = 10
 	var/deploy_path = null
 
 /obj/item/inflatable/afterattack(atom/target, mob/user, proximity_flag, click_parameters)
@@ -26,7 +27,7 @@
 		SPAN_ITALIC("You can hear rushing air."),
 		range = 5
 	)
-	if (!do_after(user, 1 SECOND, target, DO_PUBLIC_PROGRESS))
+	if (!do_after(user, 1 SECOND, target, DO_PUBLIC_UNIQUE) || QDELETED(src))
 		return
 	obstruction = T.get_obstruction()
 	if (obstruction)
@@ -66,7 +67,7 @@
 	icon = 'icons/obj/inflatable.dmi'
 	icon_state = "wall"
 	atmos_canpass = CANPASS_DENSITY
-	health_max = 10
+	health_max = 20
 	damage_hitsound = 'sound/effects/Glasshit.ogg'
 
 	var/undeploy_path = null
@@ -128,7 +129,7 @@
 
 /obj/structure/inflatable/bullet_act(obj/item/projectile/Proj)
 	. = ..()
-	if (health_dead)
+	if (health_dead())
 		return PROJECTILE_CONTINUE
 
 /obj/structure/inflatable/ex_act(severity)
@@ -141,25 +142,37 @@
 	add_fingerprint(user)
 	return
 
-/obj/structure/inflatable/attackby(obj/item/W, mob/user)
-	if(!istype(W) || istype(W, /obj/item/inflatable_dispenser)) return
 
-	if (user.a_intent == I_HURT)
-		if (W.can_puncture() || W.force > 10)
-			..()
-		return
+/obj/structure/inflatable/use_weapon(obj/item/weapon, mob/user, list/click_params)
+	// Check if the weapon can puncture. TODO: Pass this through to `can_damage_health()`.
+	if (!weapon.can_puncture())
+		return FALSE
 
-	if(istype(W, /obj/item/tape_roll) && get_damage_value() >= 3)
-		if(taped)
-			to_chat(user, SPAN_NOTICE("\The [src] can't be patched any more with \the [W]!"))
+	return ..()
+
+
+/obj/structure/inflatable/use_tool(obj/item/tool, mob/user, list/click_params)
+	// Duct tape - Repair damage
+	if (istype(tool, /obj/item/tape_roll))
+		if (!health_damaged())
+			USE_FEEDBACK_FAILURE("\The [src] doesn't need repair.")
 			return TRUE
-		else
-			taped = TRUE
-			to_chat(user, SPAN_NOTICE("You patch some damage in \the [src] with \the [W]!"))
-			restore_health(3)
+		if (get_damage_value() < 3)
+			USE_FEEDBACK_FAILURE("\The [src] isn't damaged enough to tape it back together.")
 			return TRUE
+		if (taped)
+			USE_FEEDBACK_FAILURE("\The [src] has already been taped up. There's nothing more you can do for it with \the [tool].")
+			return TRUE
+		taped = TRUE
+		restore_health(3)
+		user.visible_message(
+			SPAN_NOTICE("\The [user] patches some of \the [src]'s damage with \a [tool]."),
+			SPAN_NOTICE("You patch some of \the [src]'s damage with \the [tool].")
+		)
+		return TRUE
 
-	..()
+	return ..()
+
 
 /obj/structure/inflatable/on_death()
 	deflate(TRUE)
@@ -195,14 +208,6 @@
 	verbs -= /obj/structure/inflatable/verb/hand_deflate
 	deflate()
 	return TRUE
-
-/obj/structure/inflatable/attack_generic(mob/user, damage, attack_verb)
-	attack_animation(user)
-	if (damage_health(damage))
-		user.visible_message("<span class='danger'>[user] [attack_verb] open the [src]!</span>")
-	else
-		user.visible_message("<span class='danger'>[user] [attack_verb] at [src]!</span>")
-	return 1
 
 /obj/structure/inflatable/CanFluidPass(coming_from)
 	return !density
@@ -274,9 +279,9 @@
 			return
 
 	isSwitchingStates = 1
+	set_density(TRUE)
 	flick("door_closing",src)
 	sleep(10)
-	set_density(1)
 	set_opacity(0)
 	state = 0
 	update_icon()
@@ -309,7 +314,7 @@
 	icon_state = "folded_wall_torn"
 
 /obj/item/inflatable/torn/attack_self(mob/user)
-	to_chat(user, "<span class='notice'>The inflatable wall is too torn to be inflated!</span>")
+	to_chat(user, SPAN_NOTICE("The inflatable wall is too torn to be inflated!"))
 	add_fingerprint(user)
 
 /obj/item/inflatable/door/torn
@@ -319,14 +324,14 @@
 	icon_state = "folded_door_torn"
 
 /obj/item/inflatable/door/torn/attack_self(mob/user)
-	to_chat(user, "<span class='notice'>The inflatable door is too torn to be inflated!</span>")
+	to_chat(user, SPAN_NOTICE("The inflatable door is too torn to be inflated!"))
 	add_fingerprint(user)
 
 /obj/item/storage/briefcase/inflatable
 	name = "inflatable barrier box"
 	desc = "Contains inflatable walls and doors."
 	icon_state = "inf_box"
-	item_state = "painted_secure"
+	item_state = "case"
 	w_class = ITEM_SIZE_LARGE
 	max_storage_space = DEFAULT_LARGEBOX_STORAGE
 	can_hold = list(/obj/item/inflatable)

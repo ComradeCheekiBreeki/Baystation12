@@ -55,7 +55,7 @@
 	origin_tech = list(TECH_MATERIAL = 2, TECH_BIO = 3, TECH_POWER = 3)
 	modifystate = "floramut"
 	self_recharge = 1
-	var/decl/plantgene/gene = null
+	var/singleton/plantgene/gene = null
 	combustion = 0
 
 	firemodes = list(
@@ -72,7 +72,7 @@
 /obj/item/gun/energy/floragun/afterattack(obj/target, mob/user, adjacent_flag)
 	//allow shooting into adjacent hydrotrays regardless of intent
 	if(adjacent_flag && istype(target,/obj/machinery/portable_atmospherics/hydroponics))
-		user.visible_message("<span class='danger'>\The [user] fires \the [src] into \the [target]!</span>")
+		user.visible_message(SPAN_DANGER("\The [user] fires \the [src] into \the [target]!"))
 		Fire(target,user)
 		return
 	..()
@@ -89,7 +89,7 @@
 
 	gene = SSplants.plant_gene_datums[genemask]
 
-	to_chat(usr, "<span class='info'>You set the [src]'s targeted genetic area to [genemask].</span>")
+	to_chat(usr, SPAN_INFO("You set the [src]'s targeted genetic area to [genemask]."))
 
 	return
 
@@ -142,7 +142,7 @@
 
 /obj/item/gun/energy/plasmacutter
 	name = "plasma cutter"
-	desc = "A mining tool capable of expelling concentrated plasma bursts. You could use it to cut limbs off of xenos! Or, you know, mine stuff."
+	desc = "An industrial tool that expels focused plasma bursts for deconstruction and mining."
 	charge_meter = 0
 	icon = 'icons/obj/guns/plasmacutter.dmi'
 	icon_state = "plasmacutter"
@@ -157,6 +157,10 @@
 	max_shots = 10
 	self_recharge = 1
 	var/datum/effect/effect/system/spark_spread/spark_system
+
+	// As an industrial tool the plasma cutter's safety training falls under construction.
+	gun_skill = SKILL_CONSTRUCTION
+	safety_skill = SKILL_TRAINED
 
 /obj/item/gun/energy/plasmacutter/mounted
 	name = "mounted plasma cutter"
@@ -178,12 +182,17 @@
 	if(!safety())
 		if(M)
 			M.welding_eyecheck()//Welding tool eye check
-			if(check_accidents(M, "[M] loses grip on [src] from its sudden recoil!",SKILL_CONSTRUCTION, 60, SKILL_ADEPT))
+			if(check_accidents(M, "[M] loses grip on \the [src] from its sudden recoil!",gun_skill, 60, safety_skill))
 				return 0
 		spark_system.start()
 		return 1
 	handle_click_empty(M)
 	return 0
+
+
+/obj/item/gun/energy/plasmacutter/IsHeatSource()
+	return 3800
+
 
 /obj/item/gun/energy/incendiary_laser
 	name = "dispersive blaster"

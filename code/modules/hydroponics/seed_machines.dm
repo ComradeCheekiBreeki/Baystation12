@@ -9,7 +9,7 @@
 	var/genesource = "unknown"
 
 /obj/item/disk/botany/attack_self(mob/user as mob)
-	if(genes.len)
+	if(length(genes))
 		var/choice = alert(user, "Are you sure you want to wipe the disk?", "Xenobotany Data", "No", "Yes")
 		if(src && user && genes && choice && choice == "Yes" && user.Adjacent(get_turf(src)))
 			to_chat(user, "You wipe the disk data.")
@@ -80,7 +80,7 @@
 
 	if(isScrewdriver(W))
 		open = !open
-		to_chat(user, "<span class='notice'>You [open ? "open" : "close"] the maintenance panel.</span>")
+		to_chat(user, SPAN_NOTICE("You [open ? "open" : "close"] the maintenance panel."))
 		return
 
 	if(open)
@@ -95,7 +95,7 @@
 		else
 			var/obj/item/disk/botany/B = W
 
-			if(B.genes && B.genes.len)
+			if(B.genes && length(B.genes))
 				if(!disk_needs_genes)
 					to_chat(user, "That disk already has gene data loaded.")
 					return
@@ -168,7 +168,7 @@
 		seed.dropInto(loc)
 
 		if(seed.seed.name == "new line" || isnull(SSplants.seeds[seed.seed.name]))
-			seed.seed.uid = SSplants.seeds.len + 1
+			seed.seed.uid = length(SSplants.seeds) + 1
 			seed.seed.name = "[seed.seed.uid]"
 			SSplants.seeds[seed.seed.name] = seed.seed
 
@@ -203,7 +203,7 @@
 		active = 1
 
 		if(seed && seed.seed)
-			if(prob(user.skill_fail_chance(SKILL_BOTANY, 100, SKILL_ADEPT)))
+			if(prob(user.skill_fail_chance(SKILL_BOTANY, 100, SKILL_TRAINED)))
 				failed_task = 1
 			else
 				genetics = seed.seed
@@ -231,8 +231,8 @@
 		loaded_disk.desc += " The label reads \'gene [SSplants.gene_tag_masks[href_list["get_gene"]]], sampled from [genetics.display_name]\'."
 		eject_disk = 1
 
-		degradation += rand(20,60) + user.skill_fail_chance(SKILL_BOTANY, 100, SKILL_ADEPT)
-		var/expertise = max(0, user.get_skill_value(SKILL_BOTANY) - SKILL_ADEPT)
+		degradation += rand(20,60) + user.skill_fail_chance(SKILL_BOTANY, 100, SKILL_TRAINED)
+		var/expertise = max(0, user.get_skill_value(SKILL_BOTANY) - SKILL_TRAINED)
 		degradation = max(0, degradation - 10*expertise)
 
 		if(degradation >= 100)
@@ -269,7 +269,7 @@
 	else
 		data["degradation"] = 0
 
-	if(loaded_disk && loaded_disk.genes.len)
+	if(loaded_disk && length(loaded_disk.genes))
 		data["disk"] = 1
 		data["sourceName"] = loaded_disk.genesource
 		data["locus"] = ""
@@ -318,7 +318,7 @@
 
 		for(var/datum/plantgene/gene in loaded_disk.genes)
 			seed.seed.apply_gene(gene)
-			var/expertise = max(user.get_skill_value(SKILL_BOTANY) - SKILL_ADEPT)
+			var/expertise = max(user.get_skill_value(SKILL_BOTANY) - SKILL_TRAINED)
 			seed.modified += rand(5,10) + min(-5, 30 * expertise)
 
 	usr.set_machine(src)

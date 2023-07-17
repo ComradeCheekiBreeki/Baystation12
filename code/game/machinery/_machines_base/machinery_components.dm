@@ -3,6 +3,7 @@
 GLOBAL_LIST_INIT(machine_path_to_circuit_type, cache_circuits_by_build_path())
 
 /proc/cache_circuits_by_build_path()
+	RETURN_TYPE(/list)
 	. = list()
 	for(var/board_path in subtypesof(/obj/item/stock_parts/circuitboard))
 		var/obj/item/stock_parts/circuitboard/board = board_path //fake type
@@ -50,7 +51,7 @@ GLOBAL_LIST_INIT(machine_path_to_circuit_type, cache_circuits_by_build_path())
 
 	var/list/processed_parts = list()
 	for(var/path in stock_part_presets)
-		var/decl/stock_part_preset/preset = decls_repository.get_decl(path)
+		var/singleton/stock_part_preset/preset = GET_SINGLETON(path)
 		var/number = stock_part_presets[path] || 1
 		for(var/obj/item/stock_parts/part in component_parts)
 			if(processed_parts[part])
@@ -62,18 +63,18 @@ GLOBAL_LIST_INIT(machine_path_to_circuit_type, cache_circuits_by_build_path())
 				if(number == 0)
 					break
 
-/// Returns the first valid preset decl for a given part, or `null`
+/// Returns the first valid preset singleton for a given part, or `null`
 /obj/machinery/proc/can_apply_preset_to(obj/item/stock_parts/part)
 	if(!stock_part_presets)
 		return
 	for(var/path in stock_part_presets)
-		var/decl/stock_part_preset/preset = decls_repository.get_decl(path)
+		var/singleton/stock_part_preset/preset = GET_SINGLETON(path)
 		if(istype(part, preset.expected_part_type))
 			return preset
 
 // Applies the first valid preset to the given part. Returns preset applied, or null.
 /obj/machinery/proc/apply_preset_to(obj/item/stock_parts/part)
-	var/decl/stock_part_preset/preset = can_apply_preset_to(part)
+	var/singleton/stock_part_preset/preset = can_apply_preset_to(part)
 	if(preset)
 		preset.apply(null, part)
 		return preset
@@ -108,7 +109,7 @@ GLOBAL_LIST_INIT(machine_path_to_circuit_type, cache_circuits_by_build_path())
  * Returns the result of `install_component()`, or `null` if the path does not exist in the list.
  */
 /obj/machinery/proc/force_init_component(path)
-	if(!uncreated_component_parts[path])
+	if(!LAZYACCESS(uncreated_component_parts, path))
 		return
 	uncreated_component_parts[path]-- //bookkeeping to make sure tally is correct.
 	if(!uncreated_component_parts[path])
@@ -303,7 +304,7 @@ Standard helpers for users interacting with machinery parts.
 	if(isstack(part))
 		var/obj/item/stack/stack = part
 		if (!stack.can_use(number))
-			to_chat(user, SPAN_WARNING("You need at least [number] [stack.plural_name] to install into \the [src]."))
+			USE_FEEDBACK_STACK_NOT_ENOUGH(stack, number, "to install into \the [src].")
 			return FALSE
 		install_component(stack.split(number, TRUE))
 	else

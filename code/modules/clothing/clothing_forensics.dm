@@ -16,7 +16,7 @@
 	for (var/obj/item/clothing/accessory/A as anything in accessories)
 		if ((A.clothing_flags & CLOTHING_HAS_FIBERS) && prob(50))
 			others += A.get_fibers()
-	return "material from \a [fiber_name || name][others.len ? " and [english_list(others)]" : ""]"
+	return "material from \a [fiber_name || name][length(others) ? " and [english_list(others)]" : ""]"
 
 
 /obj/item/clothing/gloves/get_fibers()
@@ -49,12 +49,6 @@
 /obj/item/clothing/suit/storage/jacket/solgov/fleet/fiber_name = "fleet jacket"
 /obj/item/clothing/suit/storage/solgov/service/fleet/fiber_name = "fleet service jacket"
 /obj/item/clothing/suit/storage/solgov/dress/fleet/fiber_name = "fleet dress jacket"
-
-/obj/item/clothing/under/solgov/utility/army/fiber_name = "army fatigues"
-/obj/item/clothing/under/solgov/service/army/fiber_name = "army service uniform"
-/obj/item/clothing/under/solgov/mildress/army/fiber_name = "army dress uniform"
-/obj/item/clothing/suit/storage/solgov/service/army/fiber_name = "army coat"
-/obj/item/clothing/suit/dress/solgov/army/fiber_name = "army dress jacket"
 
 
 // Removing the has_fibers flag from things that should not leave forensic traces. Probably not exhaustive.

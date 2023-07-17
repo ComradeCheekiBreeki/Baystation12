@@ -5,8 +5,8 @@
 	icon_state = "webslinger"
 	icon_living = "webslinger"
 	icon_dead = "webslinger_dead"
-	maxHealth = 90
-	health = 90
+	maxHealth = 50
+	health = 50
 
 	projectile_dispersion = 1
 	projectile_accuracy = -2
@@ -82,7 +82,7 @@
 		C.icon_state = pick("cocoon_large1","cocoon_large2","cocoon_large3")
 
 
-		user.visible_message(user,
+		user.visible_message(
 			SPAN_WARNING("\The [user] is cocooned by all the webbing!"),
 			SPAN_WARNING("You are cocooned by all the webbing!"),
 			)
@@ -114,15 +114,15 @@
 		Destroy()
 
 
-/obj/aura/web/bullet_act(obj/item/projectile/P, def_zone)
+/obj/aura/web/aura_check_bullet(obj/item/projectile/proj, def_zone)
 	. = ..()
-	if (istype(P, /obj/item/projectile/webball))
+	if (istype(proj, /obj/item/projectile/webball))
 		add_stack()
 
-/obj/aura/web/hitby(atom/movable/AM, datum/thrownthing/TT)
+/obj/aura/web/aura_check_thrown(atom/movable/thrown_atom, datum/thrownthing/thrown_datum)
 	. = ..()
-	if (isliving(AM))
-		remove_webbing(AM)
+	if (isliving(thrown_atom))
+		remove_webbing(thrown_atom)
 
 /obj/aura/web/proc/remove_webbing(mob/living/M)
 	if (!M)
@@ -184,9 +184,10 @@
 		var/tally = W.stacks * 2
 		return . + tally
 
-/mob/living/attackby(obj/item/I, mob/user)
-	for (var/obj/aura/web/W in auras)
-		W.remove_webbing(user)
-		return
+/mob/living/use_tool(obj/item/tool, mob/user, list/click_params)
+	if (length(auras))
+		for (var/obj/aura/web/web in auras)
+			web.remove_webbing(user)
+			return TRUE
 
 	return ..()

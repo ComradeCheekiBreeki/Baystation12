@@ -169,14 +169,14 @@
 
 /obj/item/contract/apprentice/skrell/attack_self(mob/user as mob)
 	if(!linked)
-		to_chat(user, "<span class='warning'>This contract requires a link to a spellbook.</span>")
+		to_chat(user, SPAN_WARNING("This contract requires a link to a spellbook."))
 		return
 	..()
 
 /obj/item/contract/apprentice/skrell/afterattack(atom/A, mob/user as mob, proximity)
 	if(!linked && istype(A,/obj/item/spellbook))
 		linked = A
-		to_chat(user, "<span class='notice'>You've linked \the [A] to \the [src]</span>")
+		to_chat(user, SPAN_NOTICE("You've linked \the [A] to \the [src]"))
 		return
 	..()
 
@@ -239,9 +239,11 @@
 /mob/observer/eye/wizard_eye
 	name_sufix = "Wizard Eye"
 
-/mob/observer/eye/wizard_eye/New() //we dont use the Ai one because it has AI specific procs imbedded in it.
-	..()
+
+/mob/observer/eye/wizard_eye/Initialize(mapload) //we dont use the Ai one because it has AI specific procs imbedded in it.
+	. = ..()
 	visualnet = cameranet
+
 
 /mob/living/proc/release_eye()
 	set name = "Release Vision"

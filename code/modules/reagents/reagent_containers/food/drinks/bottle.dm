@@ -47,7 +47,7 @@
 		return
 	var/static/list/chance_table = list(95, 95, 90, 85, 75, 60, 40, 15)
 	var/idx = max(distance + 1, 1)
-	if (idx > chance_table.len)
+	if (idx > length(chance_table))
 		return
 	return prob(chance_table[idx])
 
@@ -74,7 +74,7 @@
 	if (!rag && istype(W, /obj/item/reagent_containers/glass/rag))
 		insert_rag(W, user)
 		return
-	if (rag && isflamesource(W))
+	if (rag && W.IsFlameSource())
 		rag.attackby(W, user)
 		return
 	..()
@@ -715,6 +715,14 @@
 /obj/item/reagent_containers/food/drinks/bottle/small/beer/Initialize()
 	. = ..()
 	reagents.add_reagent(/datum/reagent/ethanol/beer, 30)
+
+
+/obj/item/reagent_containers/food/drinks/bottle/small/beer/fake
+
+
+/obj/item/reagent_containers/food/drinks/bottle/small/beer/fake/Initialize()
+	. = ..()
+	reagents.add_reagent(/datum/reagent/chloralhydrate/beer2, 50)
 
 
 /obj/item/reagent_containers/food/drinks/bottle/small/ale

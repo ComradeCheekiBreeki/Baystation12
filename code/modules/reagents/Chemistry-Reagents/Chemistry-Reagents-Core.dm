@@ -95,13 +95,13 @@
 	value = 0
 
 /datum/reagent/water/affect_blood(mob/living/carbon/M, removed)
-	var/malus_level = M.GetTraitLevel(/decl/trait/malus/water)
+	var/malus_level = M.GetTraitLevel(/singleton/trait/malus/water)
 	if (malus_level)
 		M.adjustToxLoss(malus_level * removed)
 
 /datum/reagent/water/affect_ingest(mob/living/carbon/M, removed)
 
-	var/malus_level = M.GetTraitLevel(/decl/trait/malus/water)
+	var/malus_level = M.GetTraitLevel(/singleton/trait/malus/water)
 	if (malus_level)
 		M.adjustToxLoss(malus_level * removed)
 	M.adjust_hydration(removed * 10)
@@ -116,16 +116,17 @@
 	var/hotspot = (locate(/obj/hotspot) in T)
 	if(hotspot && !istype(T, /turf/space))
 		var/datum/gas_mixture/lowertemp = T.remove_air(T:air:total_moles)
-		lowertemp.temperature = max(min(lowertemp.temperature-2000, lowertemp.temperature / 2), 0)
-		lowertemp.react()
-		T.assume_air(lowertemp)
+		if (lowertemp)
+			lowertemp.temperature = max(min(lowertemp.temperature-2000, lowertemp.temperature / 2), 0)
+			lowertemp.react()
+			T.assume_air(lowertemp)
 		qdel(hotspot)
 
 	if (environment && environment.temperature > min_temperature) // Abstracted as steam or something
 		var/removed_heat = clamp(volume * WATER_LATENT_HEAT, 0, -environment.get_thermal_energy_change(min_temperature))
 		environment.add_thermal_energy(-removed_heat)
 		if (prob(5) && environment && environment.temperature > T100C)
-			T.visible_message("<span class='warning'>The water sizzles as it lands on \the [T]!</span>")
+			T.visible_message(SPAN_WARNING("The water sizzles as it lands on \the [T]!"))
 
 	else if(volume >= 10)
 		var/turf/simulated/S = T
@@ -162,7 +163,7 @@
 			remove_self(amount)
 
 /datum/reagent/water/affect_touch(mob/living/carbon/M, removed)
-	var/trait_level = GET_TRAIT_LEVEL(M, /decl/trait/malus/water)
+	var/trait_level = GET_TRAIT_LEVEL(M, /singleton/trait/malus/water)
 	if (!trait_level)
 		return
 
@@ -174,7 +175,7 @@
 		if(S.Victim)
 			S.Feedstop()
 	if(M.chem_doses[type] == removed)
-		M.visible_message("<span class='warning'>[S]'s flesh sizzles where the water touches it!</span>", "<span class='danger'>Your flesh burns in the water!</span>")
+		M.visible_message(SPAN_WARNING("[S]'s flesh sizzles where the water touches it!"), SPAN_DANGER("Your flesh burns in the water!"))
 		M.confused = max(M.confused, 2)
 
 /datum/reagent/water/boiling
@@ -239,11 +240,11 @@
 	products.adjust_multi(GAS_NO, 0.1 * gas_moles, GAS_NO2, 0.1 * gas_moles, GAS_NITROGEN, 0.6 * gas_moles, GAS_HYDROGEN, 0.02 * gas_moles)
 	T.assume_air(products)
 	if(volume > 500)
-		explosion(T,1,2,4)
+		explosion(T, 7)
 	else if(volume > 100)
-		explosion(T,0,1,3)
+		explosion(T, 4, EX_ACT_HEAVY)
 	else if(volume > 50)
-		explosion(T,-1,1,2)
+		explosion(T, 3, EX_ACT_HEAVY)
 	remove_self(volume)
 
 /datum/reagent/coagulated_blood

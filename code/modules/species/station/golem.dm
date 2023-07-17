@@ -36,6 +36,7 @@
 
 	death_message = "becomes completely motionless..."
 	genders = list(NEUTER)
+	pronouns = list(PRONOUNS_IT_ITS)
 
 	force_cultural_info = list(
 		TAG_CULTURE =   CULTURE_CULTIST,
@@ -44,9 +45,9 @@
 	)
 
 	traits = list(
-		/decl/trait/boon/clear_mind = TRAIT_LEVEL_MAJOR,
-		/decl/trait/general/metabolically_inert = TRAIT_LEVEL_MAJOR,
-		/decl/trait/general/nonpermeable_skin = TRAIT_LEVEL_EXISTS
+		/singleton/trait/boon/clear_mind = TRAIT_LEVEL_MAJOR,
+		/singleton/trait/general/metabolically_inert = TRAIT_LEVEL_MAJOR,
+		/singleton/trait/general/nonpermeable_skin = TRAIT_LEVEL_EXISTS
 	)
 
 /datum/species/golem/handle_post_spawn(mob/living/carbon/human/H)

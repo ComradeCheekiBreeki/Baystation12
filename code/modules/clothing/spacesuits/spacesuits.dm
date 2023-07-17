@@ -3,7 +3,7 @@
 //      Meaning the the suit is defined directly after the corrisponding helmet. Just like below!
 
 /obj/item/clothing/head/helmet/space
-	name = "Space helmet"
+	name = "space helmet"
 	icon_state = "space"
 	desc = "A special helmet designed for work in a hazardous, low-pressure environment."
 	item_flags = ITEM_FLAG_THICKMATERIAL | ITEM_FLAG_AIRTIGHT
@@ -58,6 +58,7 @@
 
 	if(ispath(camera))
 		camera = new camera(src)
+		camera.set_stat_immunity(MACHINE_STAT_NOPOWER)
 		camera.set_status(0)
 		camera.is_helmet_cam = TRUE
 
@@ -65,9 +66,9 @@
 		camera.set_status(!camera.status)
 		if(camera.status)
 			camera.c_tag = FindNameFromID(usr)
-			to_chat(usr, "<span class='notice'>User scanned as [camera.c_tag]. Camera activated.</span>")
+			to_chat(usr, SPAN_NOTICE("User scanned as [camera.c_tag]. Camera activated."))
 		else
-			to_chat(usr, "<span class='notice'>Camera deactivated.</span>")
+			to_chat(usr, SPAN_NOTICE("Camera deactivated."))
 
 /obj/item/clothing/head/helmet/space/examine(mob/user, distance)
 	. = ..()
@@ -104,7 +105,7 @@
 	update_tint()
 
 /obj/item/clothing/suit/space
-	name = "Space suit"
+	name = "space suit"
 	desc = "A suit that protects against low pressure environments."
 	icon_state = "space"
 	item_icons = list(

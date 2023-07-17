@@ -123,9 +123,9 @@
 	data["spk_cut"] = (wires.IsIndexCut(WIRE_RECEIVE) || wires.IsIndexCut(WIRE_SIGNAL))
 
 	var/list/chanlist = list_channels(user)
-	if(islist(chanlist) && chanlist.len)
+	if(islist(chanlist) && length(chanlist))
 		data["chan_list"] = chanlist
-		data["chan_list_len"] = chanlist.len
+		data["chan_list_len"] = length(chanlist)
 
 	if(syndie)
 		data["useSyndMode"] = 1
@@ -273,7 +273,7 @@
 		if(cell && b_stat)
 			var/mob/user = usr
 			user.put_in_hands(cell)
-			to_chat(user, "<span class='notice'>You remove [cell] from \the [src].</span>")
+			to_chat(user, SPAN_NOTICE("You remove [cell] from \the [src]."))
 			cell = null
 		return TRUE
 
@@ -282,7 +282,7 @@
 
 /obj/item/device/radio/proc/autosay(message, from, channel) //BS12 EDIT
 	var/datum/radio_frequency/connection = null
-	if(channel && channels && channels.len > 0)
+	if(channel && channels && length(channels) > 0)
 		if (channel == "department")
 			channel = channels[1]
 		connection = secure_radio_connections[channel]
@@ -303,7 +303,7 @@
 		return radio_connection
 
 	// Otherwise, if a channel is specified, look for it.
-	if(channels && channels.len > 0)
+	if(channels && length(channels) > 0)
 		if (message_mode == "department") // Department radio shortcut
 			message_mode = channels[1]
 
@@ -590,27 +590,43 @@
 	. = ..()
 	if (distance <= 1 || loc == user)
 		if (b_stat)
-			to_chat(user, "<span class='notice'>\The [src] can be attached and modified!</span>")
+			to_chat(user, SPAN_NOTICE("\The [src] can be attached and modified!"))
 		else
-			to_chat(user, "<span class='notice'>\The [src] can not be modified or attached!</span>")
+			to_chat(user, SPAN_NOTICE("\The [src] can not be modified or attached!"))
 		if (power_usage && cell)
-			to_chat(user, "<span class='notice'>\The [src] charge meter reads [round(cell.percent(), 0.1)]%.</span>")
+			to_chat(user, SPAN_NOTICE("\The [src] charge meter reads [round(cell.percent(), 0.1)]%."))
 
-/obj/item/device/radio/attackby(obj/item/W as obj, mob/user as mob)
-	..()
-	user.set_machine(src)
-	if(isScrewdriver(W))
+
+/obj/item/device/radio/use_tool(obj/item/tool, mob/user, list/click_params)
+	// Screwdriver - Make attachable
+	if (isScrewdriver(tool))
 		b_stat = !b_stat
-		if (b_stat)
-			user.show_message("<span class='notice'>\The [src] can now be attached and modified!</span>")
-		else
-			user.show_message("<span class='notice'>\The [src] can no longer be modified or attached!</span>")
-		updateDialog()
-		return
-	if(!cell && power_usage && istype(W, /obj/item/cell/device) && user.unEquip(W, target = src))
-		to_chat(user, "<span class='notice'>You put [W] in \the [src].</span>")
-		cell = W
-		return
+		user.visible_message(
+			SPAN_NOTICE("\The [user] adjusts \a [src] with \a [tool]."),
+			SPAN_NOTICE("You adjust \the [src] with \the [tool]. It can [b_stat ? "now" : "no longer"] be attached or modified.")
+		)
+		return TRUE
+
+	// Device Cell - Install power cell
+	if (istype(tool, /obj/item/cell/device))
+		if (!power_usage)
+			USE_FEEDBACK_FAILURE("\The [src] doesn't need a power cell.")
+			return TRUE
+		if (cell)
+			USE_FEEDBACK_FAILURE("\The [src] already has \a [cell] installed.")
+			return TRUE
+		if (!user.unEquip(tool, src))
+			FEEDBACK_UNEQUIP_FAILURE(user, tool)
+			return TRUE
+		cell = tool
+		user.visible_message(
+			SPAN_NOTICE("\The [user] installs \a [tool] into \a [src]."),
+			SPAN_NOTICE("You install \the [tool] into \the [src].")
+		)
+		return TRUE
+
+	return ..()
+
 
 /obj/item/device/radio/emp_act(severity)
 	broadcasting = prob(50)
@@ -677,38 +693,45 @@
 		var/datum/robot_component/C = R.components["radio"]
 		R.cell_use_power(C.active_usage)
 
-/obj/item/device/radio/borg/attackby(obj/item/W as obj, mob/user as mob)
-//	..()
-	user.set_machine(src)
-	if (!( isScrewdriver(W) || (istype(W, /obj/item/device/encryptionkey/ ))))
-		return
 
-	if(isScrewdriver(W))
-		if(keyslot)
-			for(var/ch_name in channels)
-				radio_controller.remove_object(src, radiochannels[ch_name])
-				secure_radio_connections[ch_name] = null
-
-			if(keyslot)
-				keyslot.dropInto(user.loc)
-
-			recalculateChannels()
-			to_chat(user, "You pop out the encryption key in the radio!")
-
-		else
-			to_chat(user, "This radio doesn't have any encryption keys!")
-
-	if(istype(W, /obj/item/device/encryptionkey))
-		if(keyslot)
-			to_chat(user, "The radio can't hold another key!")
-			return
-
-		if(!keyslot)
-			if(!user.unEquip(W, src))
-				return
-			keyslot = W
-
+/obj/item/device/radio/borg/use_tool(obj/item/tool, mob/user, list/click_params)
+	// Encryption Key - Insert key
+	if (istype(tool, /obj/item/device/encryptionkey))
+		if (keyslot)
+			USE_FEEDBACK_FAILURE("\The [src] already has \a [keyslot] installed.")
+			return TRUE
+		if (!user.unEquip(tool, src))
+			FEEDBACK_UNEQUIP_FAILURE(user, tool)
+			return TRUE
+		keyslot = tool
 		recalculateChannels()
+		user.visible_message(
+			SPAN_NOTICE("\The [user] slots \a [tool] into \a [src]."),
+			SPAN_NOTICE("You slot \the [tool] into \the [src]."),
+			range = 2
+		)
+		return TRUE
+
+	// Screwdriver - Remove encryption key
+	if (isScrewdriver(tool))
+		if (!keyslot)
+			USE_FEEDBACK_FAILURE("\The [src] doesn't have an encryption key to remove.")
+			return TRUE
+		for (var/channel_name in channels)
+			radio_controller.remove_object(src, radiochannels[channel_name])
+			secure_radio_connections[channel_name] = null
+		user.put_in_hands(keyslot)
+		recalculateChannels()
+		user.visible_message(
+			SPAN_NOTICE("\The [user] pops \a [keyslot] out of \a [src] with \a [tool]."),
+			SPAN_NOTICE("You pop \the [keyslot] out of \the [src] with \the [tool]."),
+			range = 2
+		)
+		keyslot = null
+		return TRUE
+
+	return ..()
+
 
 /obj/item/device/radio/borg/recalculateChannels()
 	src.channels = list()
@@ -746,9 +769,9 @@
 		if(enable_subspace_transmission != subspace_transmission)
 			subspace_transmission = !subspace_transmission
 			if(subspace_transmission)
-				to_chat(usr, "<span class='notice'>Subspace Transmission is enabled</span>")
+				to_chat(usr, SPAN_NOTICE("Subspace Transmission is enabled"))
 			else
-				to_chat(usr, "<span class='notice'>Subspace Transmission is disabled</span>")
+				to_chat(usr, SPAN_NOTICE("Subspace Transmission is disabled"))
 
 			if(subspace_transmission == 0)//Simple as fuck, clears the channel list to prevent talking/listening over them if subspace transmission is disabled
 				channels = list()
@@ -761,10 +784,10 @@
 			shut_up = !shut_up
 			if(shut_up)
 				canhear_range = 0
-				to_chat(usr, "<span class='notice'>Loadspeaker disabled.</span>")
+				to_chat(usr, SPAN_NOTICE("Loadspeaker disabled."))
 			else
 				canhear_range = 3
-				to_chat(usr, "<span class='notice'>Loadspeaker enabled.</span>")
+				to_chat(usr, SPAN_NOTICE("Loadspeaker enabled."))
 		. = 1
 
 	if(.)
@@ -785,9 +808,9 @@
 	data["rawfreq"] = num2text(frequency)
 
 	var/list/chanlist = list_channels(user)
-	if(islist(chanlist) && chanlist.len)
+	if(islist(chanlist) && length(chanlist))
 		data["chan_list"] = chanlist
-		data["chan_list_len"] = chanlist.len
+		data["chan_list_len"] = length(chanlist)
 
 	if(syndie)
 		data["useSyndMode"] = 1
@@ -845,7 +868,7 @@
 	listening = 0
 
 /obj/item/device/radio/announcer
-	invisibility = 101
+	invisibility = INVISIBILITY_ABSTRACT
 	listening = 0
 	canhear_range = 0
 	anchored = TRUE
@@ -861,7 +884,7 @@
 
 /obj/item/device/radio/announcer/Initialize()
 	. = ..()
-	forceMove(locate(1,1,GLOB.using_map.contact_levels.len ? GLOB.using_map.contact_levels[1] : 1))
+	forceMove(locate(1,1,length(GLOB.using_map.contact_levels) ? GLOB.using_map.contact_levels[1] : 1))
 
 /obj/item/device/radio/announcer/subspace
 	subspace_transmission = 1

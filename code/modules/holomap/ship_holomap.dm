@@ -13,7 +13,7 @@
 
 	uncreated_component_parts = null
 
-	construct_state = /decl/machine_construction/default/panel_closed
+	construct_state = /singleton/machine_construction/default/panel_closed
 	base_type = /obj/machinery/ship_map
 
 	var/light_power_on = 1
@@ -137,7 +137,7 @@
 		if(watching_mob.client)
 			animate(holomap_datum.station_map, alpha = 0, time = 5, easing = LINEAR_EASING)
 			var/mob/M = watching_mob
-			addtimer(CALLBACK(src, .proc/clear_image, M, holomap_datum.station_map), 5, TIMER_CLIENT_TIME)//we give it time to fade out
+			addtimer(new Callback(src, .proc/clear_image, M, holomap_datum.station_map),  0.5 SECONDS)//we give it time to fade out
 		GLOB.moved_event.unregister(watching_mob, src)
 		GLOB.destroyed_event.unregister(watching_mob, src)
 	watching_mob = null
@@ -288,7 +288,7 @@
 	var/z = -1
 	var/displayed_level = 1 //Index of level to display
 
-/datum/station_holomap/Destroy(force)
+/datum/station_holomap/Destroy()
 	QDEL_NULL(station_map)
 	QDEL_NULL(cursor)
 	QDEL_NULL_LIST(legend)
@@ -296,7 +296,7 @@
 	QDEL_NULL_LIST(lbuttons)
 	QDEL_NULL_LIST(maptexts)
 	QDEL_NULL_LIST(z_levels)
-	. = ..()
+	return ..()
 
 /datum/station_holomap/proc/initialize_holomap(turf/T, isAI = null, mob/user = null, reinit = FALSE)
 	z = T.z
@@ -389,7 +389,7 @@
 
 
 /datum/station_holomap/proc/set_level(level)
-	if(level > z_levels.len)
+	if(level > length(z_levels))
 		return
 
 	displayed_level = level
@@ -416,7 +416,7 @@
 	if(displayed_level > 1)
 		station_map.vis_contents += lbuttons[1]
 
-	if(displayed_level < z_levels.len)
+	if(displayed_level < length(z_levels))
 		station_map.vis_contents += lbuttons[2]
 
 /datum/station_holomap/proc/legend_select(obj/screen/legend/L)

@@ -30,7 +30,7 @@
 	if (src.connected)
 		src.icon_state = "morgue0"
 	else
-		if (src.contents.len)
+		if (length(src.contents))
 			src.icon_state = "morgue2"
 		else
 			src.icon_state = "morgue1"
@@ -92,20 +92,30 @@
 		return attack_hand(user)
 	else return ..()
 
-/obj/structure/morgue/attackby(P as obj, mob/user as mob)
-	if (istype(P, /obj/item/pen))
-		var/t = input(user, "What would you like the label to be?", text("[]", src.name), null)  as text
-		if (user.get_active_hand() != P)
-			return
-		if ((!in_range(src, usr) && src.loc != user))
-			return
-		t = sanitizeSafe(t, MAX_NAME_LEN)
-		if (t)
-			src.SetName(text("Morgue- '[]'", t))
+
+/obj/structure/morgue/use_tool(obj/item/tool, mob/user, list/click_params)
+	// Pen - Add label
+	if (istype(tool, /obj/item/pen))
+		var/input = input(user, "What would you like the label to be? Leave null to clear label.", "\The [initial(name)] - Label") as null|text
+		input = sanitizeSafe(input, MAX_NAME_LEN)
+		if (!user.use_sanity_check(src, tool))
+			return TRUE
+		if (!input)
+			SetName(initial(name))
+			user.visible_message(
+				SPAN_NOTICE("\The [user] clears \the [src]'s label with \a [tool]."),
+				SPAN_NOTICE("You clear \the [src]'s label with \the [tool].")
+			)
 		else
-			src.SetName("Morgue")
-	src.add_fingerprint(user)
-	return
+			SetName("[initial(name)] - '[input]'")
+			user.visible_message(
+				SPAN_NOTICE("\The [user] labels \the [src] with \a [tool]."),
+				SPAN_NOTICE("You label \the [src] with \the [tool].")
+			)
+		return TRUE
+
+	return ..()
+
 
 /obj/structure/morgue/relaymove(mob/user as mob)
 	if (user.stat)
@@ -169,7 +179,7 @@
 	if (user != O)
 		for(var/mob/B in viewers(user, 3))
 			if ((B.client && !( B.blinded )))
-				to_chat(B, "<span class='warning'>\The [user] stuffs [O] into [src]!</span>")
+				to_chat(B, SPAN_WARNING("\The [user] stuffs [O] into [src]!"))
 	return
 
 
@@ -200,7 +210,7 @@
 		icon_state = "crema_active"
 	else if (src.connected)
 		src.icon_state = "crema0"
-	else if (src.contents.len)
+	else if (length(src.contents))
 		src.icon_state = "crema2"
 	else
 		src.icon_state = "crema1"
@@ -232,7 +242,7 @@
 
 /obj/structure/crematorium/attack_hand(mob/user)
 	if(cremating)
-		to_chat(usr, "<span class='warning'>It's locked.</span>")
+		to_chat(usr, SPAN_WARNING("It's locked."))
 		return
 	if(src.connected && (src.locked == FALSE))
 		for(var/atom/movable/A as mob|obj in src.connected.loc)
@@ -258,20 +268,30 @@
 	src.add_fingerprint(user)
 	update()
 
-/obj/structure/crematorium/attackby(P as obj, mob/user as mob)
-	if(istype(P, /obj/item/pen))
-		var/t = input(user, "What would you like the label to be?", text("[]", src.name), null)  as text
-		if(user.get_active_hand() != P)
-			return
-		if((!in_range(src, usr) > 1 && src.loc != user))
-			return
-		t = sanitizeSafe(t, MAX_NAME_LEN)
-		if(t)
-			src.SetName(text("Crematorium- '[]'", t))
+
+/obj/structure/crematorium/use_tool(obj/item/tool, mob/user, list/click_params)
+	// Pen - Add label
+	if (istype(tool, /obj/item/pen))
+		var/input = input(user, "What would you like the label to be? Leave null to clear label.", "\The [initial(name)] - Label") as null|text
+		input = sanitizeSafe(input, MAX_NAME_LEN)
+		if (!user.use_sanity_check(src, tool))
+			return TRUE
+		if (!input)
+			SetName(initial(name))
+			user.visible_message(
+				SPAN_NOTICE("\The [user] clears \the [src]'s label with \a [tool]."),
+				SPAN_NOTICE("You clear \the [src]'s label with \the [tool].")
+			)
 		else
-			src.SetName("Crematorium")
-	src.add_fingerprint(user)
-	return
+			SetName("[initial(name)] - '[input]'")
+			user.visible_message(
+				SPAN_NOTICE("\The [user] labels \the [src] with \a [tool]."),
+				SPAN_NOTICE("You label \the [src] with \the [tool].")
+			)
+		return TRUE
+
+	return ..()
+
 
 /obj/structure/crematorium/relaymove(mob/user as mob)
 	if (user.stat || locked)
@@ -293,15 +313,15 @@
 	if(cremating)
 		return //don't let you cremate something twice or w/e
 
-	if(contents.len <= 0)
-		src.audible_message("<span class='warning'>You hear a hollow crackle.</span>", 1)
+	if(length(contents) <= 0)
+		src.audible_message(SPAN_WARNING("You hear a hollow crackle."), 1)
 		return
 
 	else
 		if(length(search_contents_for(/obj/item/disk/nuclear)))
 			to_chat(loc, "The button's status indicator flashes yellow, indicating that something important is inside the crematorium, and must be removed.")
 			return
-		src.audible_message("<span class='warning'>You hear a roar as the [src] activates.</span>", 1)
+		src.audible_message(SPAN_WARNING("You hear a roar as the [src] activates."), 1)
 
 		cremating = 1
 		locked = 1
@@ -416,9 +436,7 @@
 		return
 	O.forceMove(src.loc)
 	if (user != O)
-		for(var/mob/B in viewers(user, 3))
-			if ((B.client && !( B.blinded )))
-				to_chat(B, text("<span class='warning'>[] stuffs [] into []!</span>", user, O, src))
+		user.visible_message(SPAN_WARNING("\The [user] stuffs \the [O] into \the [src]!"))
 
 /obj/machinery/button/crematorium
 	name = "crematorium igniter"

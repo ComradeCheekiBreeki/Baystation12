@@ -58,6 +58,7 @@
 			to_chat(user, SPAN_NOTICE("You secure the welder."))
 		else
 			to_chat(user, SPAN_NOTICE("The welder can now be attached and modified."))
+		playsound(src, 'sound/items/Screwdriver.ogg', 10, 1)
 		src.add_fingerprint(user)
 		return
 
@@ -84,6 +85,7 @@
 		user.visible_message("[user] slots \a [W] into \the [src].", "You slot \a [W] into \the [src].")
 		w_class = tank.size_in_use
 		force = tank.unlit_force
+		playsound(src, 'sound/items/cap_close.ogg', 10, 1)
 		update_icon()
 		return
 
@@ -98,6 +100,7 @@
 			tank = null
 			w_class = initial(w_class)
 			force = initial(force)
+			playsound(src, 'sound/items/cap_open.ogg', 10, 1)
 			update_icon()
 		else
 			to_chat(user, SPAN_DANGER("Turn off the welder first!"))
@@ -150,21 +153,34 @@
 /obj/item/weldingtool/proc/get_fuel()
 	return tank ? tank.reagents.get_reagent_amount(/datum/reagent/fuel) : 0
 
+
+/**
+ * Checks if the tool can be used for the given amount of fuel without actually using it.
+ *
+ * Returns boolean.
+ */
+/obj/item/weldingtool/proc/can_use(amount = 1, mob/user = null, interaction_message = "to complete this task.", silent = FALSE)
+	if (!isOn())
+		if (!silent && user)
+			to_chat(user, SPAN_WARNING("\The [src] must be turned on [interaction_message]"))
+		return FALSE
+	if (get_fuel() < amount)
+		if (!silent && user)
+			to_chat(user, SPAN_WARNING("You need at least [amount] unit\s of [welding_resource] [interaction_message]"))
+		return FALSE
+	return TRUE
+
+
 //Removes fuel from the welding tool. If a mob is passed, it will perform an eyecheck on the mob. This should probably be renamed to use()
 /obj/item/weldingtool/proc/remove_fuel(amount = 1, mob/M = null)
-	if(!welding)
+	if(!can_use(amount, M))
 		return 0
-	if(get_fuel() >= amount)
-		burn_fuel(amount)
-		if(M)
-			M.welding_eyecheck()//located in mob_helpers.dm
-			set_light(0.7, 2, 5, l_color = COLOR_LIGHT_CYAN)
-			addtimer(CALLBACK(src, /atom/proc/update_icon), 5)
-		return 1
-	else
-		if(M)
-			to_chat(M, SPAN_NOTICE("You need more [welding_resource] to complete this task."))
-		return 0
+	burn_fuel(amount)
+	if(M)
+		M.welding_eyecheck()//located in mob_helpers.dm
+		set_light(0.7, 2, 5, l_color = COLOR_LIGHT_CYAN)
+		addtimer(new Callback(src, /atom/proc/update_icon), 5)
+	return 1
 
 /obj/item/weldingtool/proc/burn_fuel(amount)
 	if(!tank)
@@ -240,6 +256,7 @@
 				src.force = tank.lit_force
 				src.damtype = DAMAGE_BURN
 			welding = 1
+			playsound(src, 'sound/items/welderactivate.ogg', 10, 1)
 			update_icon()
 			START_PROCESSING(SSobj, src)
 		else
@@ -259,6 +276,7 @@
 			src.force = tank.unlit_force
 		src.damtype = DAMAGE_BRUTE
 		src.welding = 0
+		playsound(src, 'sound/items/welderdeactivate.ogg', 10, 1)
 		update_icon()
 
 /obj/item/weldingtool/attack(mob/living/M, mob/living/user, target_zone)
@@ -282,6 +300,15 @@
 
 	else
 		return ..()
+
+
+/obj/item/weldingtool/IsFlameSource()
+	return isOn()
+
+
+/obj/item/weldingtool/IsHeatSource()
+	return isOn() ? 3800 : 0
+
 
 /obj/item/weldingtool/mini
 	tank = /obj/item/welder_tank/mini

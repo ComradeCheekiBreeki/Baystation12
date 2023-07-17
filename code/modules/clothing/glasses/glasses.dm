@@ -3,7 +3,7 @@
 	icon = 'icons/obj/clothing/obj_eyes.dmi'
 	sprite_sheets = list(
 		SPECIES_VOX = 'icons/mob/species/vox/onmob_eyes_vox.dmi',
-		SPECIES_UNATHI = 'icons/mob/species/unathi/generated/onmob_eyes_unathi.dmi'
+		SPECIES_UNATHI = 'icons/mob/species/unathi/onmob_eyes_unathi.dmi'
 		)
 	var/hud_type
 	var/prescription = FALSE
@@ -36,9 +36,7 @@
 
 /obj/item/clothing/glasses/proc/activate(mob/user)
 	if(toggleable && !active)
-		var/datum/extension/base_icon_state/BIS = get_extension(src, /datum/extension/base_icon_state)
 		active = TRUE
-		icon_state = BIS.base_icon_state
 		flash_protection = initial(flash_protection)
 		tint = initial(tint)
 		if(user)
@@ -51,13 +49,13 @@
 			else
 				to_chat(user, "You activate the optical matrix on \the [src].")
 
+		update_icon()
 		update_clothing_icon()
 		update_vision()
 
 /obj/item/clothing/glasses/proc/deactivate(mob/user, manual = TRUE)
 	if(toggleable && active)
 		active = FALSE
-		icon_state = off_state
 		if(user)
 			if(manual)
 				if(toggle_off_message)
@@ -71,6 +69,7 @@
 
 		flash_protection = FLASH_PROTECTION_NONE
 		tint = TINT_NONE
+		update_icon()
 		update_clothing_icon()
 		update_vision()
 
@@ -188,7 +187,7 @@
 
 /obj/item/clothing/glasses/material
 	name = "optical material scanner"
-	desc = "Very confusing glasses."
+	desc = "Very confusing goggles."
 	gender = NEUTER
 	icon_state = "material"
 	item_state = "glasses"
@@ -197,6 +196,12 @@
 	toggleable = TRUE
 	vision_flags = SEE_OBJS
 	electric = TRUE
+
+
+/obj/item/clothing/glasses/material/prescription
+	desc = "Very confusing goggles. This set has corrective lenses."
+	prescription = 5
+
 
 /obj/item/clothing/glasses/threedglasses
 	name = "3D glasses"

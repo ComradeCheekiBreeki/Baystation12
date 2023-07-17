@@ -73,3 +73,15 @@
 			P.back_icon = "card_back_tarot"
 			P.desc = "A tarot pip/minor arcana card."
 			cards += P
+
+/obj/item/deck/tarot/attack_self(mob/user as mob)
+	var/list/newcards = list()
+	while(length(cards))
+		var/datum/playingcard/P = pick(cards)
+		P.name = replacetext(P.name," reversed","")
+		if(prob(50))
+			P.name += " reversed"
+		newcards += P
+		cards -= P
+	cards = newcards
+	user.visible_message("\The [user] shuffles [src].")

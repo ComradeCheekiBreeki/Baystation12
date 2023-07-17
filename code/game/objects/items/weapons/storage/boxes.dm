@@ -51,7 +51,7 @@
 	if(..()) return
 
 	//try to fold it.
-	if ( contents.len )
+	if ( length(contents) )
 		return
 
 	if ( !ispath(src.foldable) )
@@ -66,7 +66,7 @@
 	if ( !found )	// User is too far away
 		return
 	// Now make the cardboard
-	to_chat(user, "<span class='notice'>You fold [src] flat.</span>")
+	to_chat(user, SPAN_NOTICE("You fold [src] flat."))
 	if(ispath(foldable, /obj/item/stack))
 		var/stack_amt = max(2**(w_class - 3), 1)
 		new src.foldable(get_turf(src), stack_amt)
@@ -114,12 +114,19 @@
 					/obj/item/reagent_containers/food/snacks/proteinbar = 1,
 					/obj/item/device/oxycandle = 1)
 
-/obj/item/storage/box/gloves
-	name = "box of sterile gloves"
-	desc = "Contains sterile gloves."
+/obj/item/storage/box/latexgloves
+	name = "box of sterile latex gloves"
+	desc = "Contains sterile latex gloves."
 	icon_state = "latex"
-	startswith = list(/obj/item/clothing/gloves/latex = 6,
-					/obj/item/clothing/gloves/latex/nitrile = 2)
+	startswith = list(/obj/item/clothing/gloves/latex = 14)
+
+
+/obj/item/storage/box/nitrilegloves
+	name = "box of sterile nitrile gloves"
+	desc = "Contains sterile nitrile gloves."
+	icon_state = "latex"
+	startswith = list(/obj/item/clothing/gloves/latex/nitrile = 14)
+
 
 /obj/item/storage/box/masks
 	name = "box of sterile masks"
@@ -196,6 +203,31 @@
 /obj/item/storage/box/ammo/sniperammo/apds
 	name = "box of sniper APDS shells"
 	startswith = list(/obj/item/ammo_casing/shell/apds = 3)
+
+/obj/item/storage/box/ammo/pistol
+	name = "box of pistol magazines - lethal"
+	startswith = list(/obj/item/ammo_magazine/pistol = 7)
+
+/obj/item/storage/box/ammo/pistol/rubber
+	name = "box of pistol magazines - rubber"
+	startswith = list(/obj/item/ammo_magazine/pistol/rubber = 7)
+
+/obj/item/storage/box/ammo/doublestack
+	name = "box of doublestack magazines - lethal"
+	startswith = list(/obj/item/ammo_magazine/pistol/double = 6)
+
+/obj/item/storage/box/ammo/doublestack/rubber
+	name = "box of doublestack magazines - rubber"
+	startswith = list(/obj/item/ammo_magazine/pistol/double/rubber = 6)
+
+/obj/item/storage/box/ammo/smg
+	name = "box of SMG magazines - lethal"
+	startswith = list(/obj/item/ammo_magazine/smg_top = 7)
+
+/obj/item/storage/box/ammo/smg/rubber
+	name = "box of SMG magazines - rubber"
+	startswith = list(/obj/item/ammo_magazine/smg_top/rubber = 7)
+
 /obj/item/storage/box/flashbangs
 	name = "box of flashbangs"
 	desc = "A box containing 7 antipersonnel flashbang grenades.<br> WARNING: These devices are extremely dangerous and can cause blindness or deafness from repeated use."
@@ -335,7 +367,7 @@
 
 /obj/item/storage/box/mousetraps
 	name = "box of Pest-B-Gon mousetraps"
-	desc = "<B><FONT color='red'>WARNING:</FONT></B> <I>Keep out of reach of children</I>."
+	desc = "<B><span style='color: red'>WARNING:</span></B> <I>Keep out of reach of children</I>."
 	icon_state = "mousetraps"
 	startswith = list(/obj/item/device/assembly/mousetrap = 6)
 
@@ -354,28 +386,6 @@
 	icon_state = "spbox"
 	can_hold = list(/obj/item/toy/snappop)
 	startswith = list(/obj/item/toy/snappop = 8)
-
-/obj/item/storage/box/matches
-	name = "matchbox"
-	desc = "A small box of 'Space-Proof' premium matches."
-	icon = 'icons/obj/cigarettes.dmi'
-	icon_state = "matchbox"
-	item_state = "zippo"
-	w_class = ITEM_SIZE_TINY
-	slot_flags = SLOT_BELT
-	can_hold = list(/obj/item/flame/match)
-	startswith = list(/obj/item/flame/match = 10)
-
-/obj/item/storage/box/matches/attackby(obj/item/flame/match/W as obj, mob/user as mob)
-	if(istype(W) && !W.lit && !W.burnt)
-		W.lit = 1
-		W.damtype = INJURY_TYPE_BURN
-		W.icon_state = "match_lit"
-		START_PROCESSING(SSobj, W)
-		playsound(src.loc, 'sound/items/match.ogg', 60, 1, -4)
-		user.visible_message("<span class='notice'>[user] strikes the match on the matchbox.</span>")
-	W.update_icon()
-	return
 
 /obj/item/storage/box/autoinjectors
 	name = "box of injectors"

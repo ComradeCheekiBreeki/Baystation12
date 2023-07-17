@@ -8,12 +8,12 @@
 // other states are independent.
 
 /obj/machinery/washing_machine
-	name = "Washing Machine"
+	name = "washing machine"
 	icon = 'icons/obj/machines/washing_machine.dmi'
 	icon_state = "wm_00"
 	density = TRUE
 	anchored = TRUE
-	construct_state = /decl/machine_construction/default/panel_closed
+	construct_state = /singleton/machine_construction/default/panel_closed
 	uncreated_component_parts = null
 	stat_immune = 0
 	var/state = 0
@@ -68,7 +68,7 @@
 
 	update_use_power(POWER_USE_ACTIVE)
 	update_icon()
-	addtimer(CALLBACK(src, /obj/machinery/washing_machine/proc/wash), 20 SECONDS)
+	addtimer(new Callback(src, /obj/machinery/washing_machine/proc/wash), 20 SECONDS)
 
 /obj/machinery/washing_machine/proc/wash()
 	for(var/atom/A in (contents - component_parts))
@@ -86,7 +86,7 @@
 				C.ironed_state = WRINKLES_WRINKLY
 				if(detergent)
 					C.change_smell(SMELL_CLEAN)
-					addtimer(CALLBACK(C, /obj/item/clothing/proc/change_smell), detergent.smell_clean_time, TIMER_UNIQUE | TIMER_OVERRIDE)
+					addtimer(new Callback(C, /obj/item/clothing/proc/change_smell), detergent.smell_clean_time, TIMER_UNIQUE | TIMER_OVERRIDE)
 	QDEL_NULL(detergent)
 
 	//Tanning!
@@ -152,14 +152,14 @@
 		return TRUE
 
 	else if (!(W.item_flags & ITEM_FLAG_WASHER_ALLOWED))
-		if (isScrewdriver(W) || isCrowbar(W) || isWrench(W))
+		if (isScrewdriver(W) || isCrowbar(W) || isWrench(W) || can_add_component(W))
 			return ..()
 
 		to_chat(user, SPAN_WARNING("\The [W] can't be washed in \the [src]!"))
 		return
 
 	else
-		if (contents.len < 5)
+		if (length(contents) < 5)
 			if (!(state & WASHER_STATE_CLOSED))
 				if (!user.unEquip(W, src))
 					return

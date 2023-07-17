@@ -41,7 +41,7 @@
 		if(!mat_colour)
 			mat_colour = material_def.icon_colour
 		stored_material[material_def.type] += taking_material
-		stacks_used = max(stacks_used, Ceil(taking_material/material_def.units_per_sheet))
+		stacks_used = max(stacks_used, ceil(taking_material/material_def.units_per_sheet))
 		if(storage_capacity[material_def.type] == stored_material[material_def.type])
 			. = SUBSTANCE_TAKEN_FULL
 		else if(. != SUBSTANCE_TAKEN_FULL)
@@ -52,7 +52,7 @@
 			adding_mat_overlay.color = mat_colour
 			material_overlays += adding_mat_overlay
 			update_icon()
-			addtimer(CALLBACK(src, /obj/machinery/fabricator/proc/remove_mat_overlay, adding_mat_overlay), 1 SECOND)
+			addtimer(new Callback(src, /obj/machinery/fabricator/proc/remove_mat_overlay, adding_mat_overlay), 1 SECOND)
 		if(istype(thing, /obj/item/stack))
 			var/obj/item/stack/S = thing
 			S.use(stacks_used)

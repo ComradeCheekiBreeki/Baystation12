@@ -94,7 +94,7 @@
 		for(var/obj/O in range(1,get_turf(H)))
 			if(O.simulated && O.Adjacent(H) && !is_type_in_list(O, no_touchie))
 				touchables += O
-		if(touchables.len)
+		if(length(touchables))
 			var/obj/touchy = pick(touchables)
 			touchy.attack_hand(H)
 
@@ -172,7 +172,7 @@
 	)
 
 	traits = list(
-		/decl/trait/boon/filtered_blood = TRAIT_LEVEL_EXISTS,
-		/decl/trait/boon/cast_iron_stomach = TRAIT_LEVEL_EXISTS,
-		/decl/trait/malus/sugar = TRAIT_LEVEL_MAJOR
+		/singleton/trait/boon/filtered_blood = TRAIT_LEVEL_EXISTS,
+		/singleton/trait/boon/cast_iron_stomach = TRAIT_LEVEL_EXISTS,
+		/singleton/trait/malus/sugar = TRAIT_LEVEL_MAJOR
 	)

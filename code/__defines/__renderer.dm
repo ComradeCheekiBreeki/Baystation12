@@ -12,9 +12,6 @@
 	EFFECTS_LAYER = 5000
 	TOPDOWN_LAYER = 10000
 	BACKGROUND_LAYER = 20000
-	EFFECTS_LAYER = 5000
-	TOPDOWN_LAYER = 10000
-	BACKGROUND_LAYER = 20000
 	------
 
 	FLOAT_PLANE = -32767
@@ -160,7 +157,13 @@
 	#define HUD_BASE_LAYER               2
 	#define HUD_ITEM_LAYER               3
 	#define HUD_ABOVE_ITEM_LAYER         4
+	#define HUD_ABOVE_HUD_LAYER          5
 
+/// This plane masks out lighting, to create an "emissive" effect for e.g glowing screens in otherwise dark areas.
+#define EMISSIVE_PLANE 10
+#define EMISSIVE_TARGET "*emissive"
+	/// The layer you should use when you -really- don't want an emissive overlay to be blocked.
+	#define EMISSIVE_LAYER_UNBLOCKABLE 9999
 
 //-------------------- Rendering ---------------------
 
@@ -187,6 +190,7 @@
 #define MOUSE_OPACITY_PRIORITY 2
 
 
+/// Integer (One of `*_PLANE`). The atom's rendering plane. See `code\__defines\__renderer.dm` for a list of valid planes. Also see the DM Reference for `plane var (atom)`.
 /atom/plane = DEFAULT_PLANE
 
 #define DEFAULT_APPEARANCE_FLAGS (PIXEL_SCALE)

@@ -33,10 +33,10 @@
 
 /obj/item/reagent_containers/food/condiment/attackby(obj/item/W as obj, mob/user as mob)
 	if(istype(W, /obj/item/pen) || istype(W, /obj/item/device/flashlight/pen))
-		var/tmp_label = sanitizeSafe(input(user, "Enter a label for [name]", "Label", label_text), MAX_NAME_LEN)
-		var/datum/extension/labels/L = get_or_create_extension(src, /datum/extension/labels)
-		L.AttachLabel(user, tmp_label)
-		return
+		var/label = sanitizeSafe(input(user, "Enter a label for [name]", "Label", label_text), MAX_NAME_LEN)
+		if (!label)
+			return
+		AddLabel(label, user)
 
 /obj/item/reagent_containers/food/condiment/attack_self(mob/user as mob)
 	return
@@ -56,15 +56,15 @@
 
 	if(istype(target, /obj/item/reagent_containers/food/snacks)) // These are not opencontainers but we can transfer to them
 		if(!reagents || !reagents.total_volume)
-			to_chat(user, "<span class='notice'>There is no condiment left in \the [src].</span>")
+			to_chat(user, SPAN_NOTICE("There is no condiment left in \the [src]."))
 			return
 
 		if(!target.reagents.get_free_space())
-			to_chat(user, "<span class='notice'>You can't add more condiment to \the [target].</span>")
+			to_chat(user, SPAN_NOTICE("You can't add more condiment to \the [target]."))
 			return
 
 		var/trans = reagents.trans_to_obj(target, amount_per_transfer_from_this)
-		to_chat(user, "<span class='notice'>You add [trans] units of the condiment to \the [target].</span>")
+		to_chat(user, SPAN_NOTICE("You add [trans] units of the condiment to \the [target]."))
 	else
 		..()
 
@@ -72,7 +72,7 @@
 	playsound(user.loc, 'sound/items/drink.ogg', rand(10, 50), 1)
 
 /obj/item/reagent_containers/food/condiment/self_feed_message(mob/user)
-	to_chat(user, "<span class='notice'>You swallow some of contents of \the [src].</span>")
+	to_chat(user, SPAN_NOTICE("You swallow some of contents of \the [src]."))
 
 /obj/item/reagent_containers/food/condiment/Initialize()
 	. = ..()
@@ -91,7 +91,7 @@
 		SetName(initial(name))
 		desc = initial(desc)
 		center_of_mass = initial(center_of_mass)
-		if(reagents.reagent_list.len > 0)
+		if(length(reagents.reagent_list) > 0)
 			icon_state = "mixedcondiments"
 		else
 			icon_state = "emptycondiment"

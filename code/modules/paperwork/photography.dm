@@ -36,7 +36,8 @@ var/global/photo_count = 0
 	var/image/tiny
 	var/photo_size = 3
 
-/obj/item/photo/New()
+/obj/item/photo/Initialize()
+	. = ..()
 	id = photo_count++
 
 /obj/item/photo/attack_self(mob/user as mob)
@@ -72,7 +73,7 @@ var/global/photo_count = 0
 		show(user)
 		to_chat(user, desc)
 	else
-		to_chat(user, "<span class='notice'>It is too far away.</span>")
+		to_chat(user, SPAN_NOTICE("It is too far away."))
 
 /obj/item/photo/proc/show(mob/user as mob)
 	send_rsc(user, img, "tmp_photo_[id].png")
@@ -171,7 +172,7 @@ var/global/photo_count = 0
 	var/nsize = input("Photo Size","Pick a size of resulting photo.") as null|anything in list(1,3,5,7)
 	if(nsize)
 		size = nsize
-		to_chat(usr, "<span class='notice'>Camera will now take [size]x[size] photos.</span>")
+		to_chat(usr, SPAN_NOTICE("Camera will now take [size]x[size] photos."))
 
 /obj/item/device/camera/attack(mob/living/carbon/human/M as mob, mob/user as mob)
 	return
@@ -182,16 +183,23 @@ var/global/photo_count = 0
 	to_chat(user, "You switch the camera [on ? "on" : "off"].")
 	return
 
-/obj/item/device/camera/attackby(obj/item/I as obj, mob/user as mob)
-	if(istype(I, /obj/item/device/camera_film))
-		if(pictures_left)
-			to_chat(user, "<span class='notice'>[src] still has some film in it!</span>")
-			return
-		to_chat(user, "<span class='notice'>You insert [I] into [src].</span>")
-		qdel(I)
+
+/obj/item/device/camera/use_tool(obj/item/tool, mob/user, list/click_params)
+	// Camera Film - Add film
+	if (istype(tool, /obj/item/device/camera_film))
+		if (pictures_left)
+			USE_FEEDBACK_FAILURE("\The [src] already has film in it.")
+			return TRUE
 		pictures_left = pictures_max
-		return
-	..()
+		user.visible_message(
+			SPAN_NOTICE("\The [user] adds \a [tool] to \a [src]."),
+			SPAN_NOTICE("You add \the [tool] to \the [src]."),
+			range = 2
+		)
+		qdel(tool)
+		return TRUE
+
+	return ..()
 
 
 /obj/item/device/camera/proc/get_mobs(turf/the_turf as turf)
@@ -200,7 +208,7 @@ var/global/photo_count = 0
 		if(A.invisibility) continue
 		var/holding = null
 		var/list/held_items = A.GetAllHeld()
-		if (held_items.len)
+		if (length(held_items))
 			holding = "They are holding [english_list(A.GetAllHeld())]"
 
 		if(!mob_detail)
@@ -216,7 +224,7 @@ var/global/photo_count = 0
 	playsound(loc, pick('sound/items/polaroid1.ogg', 'sound/items/polaroid2.ogg'), 75, 1, -3)
 
 	pictures_left--
-	to_chat(user, "<span class='notice'>[pictures_left] photos left.</span>")
+	to_chat(user, SPAN_NOTICE("[pictures_left] photos left."))
 
 	on = 0
 	update_icon()

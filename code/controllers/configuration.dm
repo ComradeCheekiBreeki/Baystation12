@@ -2,7 +2,7 @@
 	var/static/atom/movable/clickable_stat/statLine
 
 	/// server name (for world name / status)
-	var/static/server_name
+	var/static/server_name = "Space Station 13"
 
 	/// generate numeric suffix based on server port
 	var/static/server_suffix = FALSE
@@ -113,8 +113,6 @@
 
 	/// Gamemodes which end instantly will instead keep on going until the round ends by escape shuttle or nuke.
 	var/static/continous_rounds = FALSE
-
-	var/static/fps = 30
 
 	var/static/list/resource_urls
 
@@ -288,9 +286,6 @@
 	/// Do antags use account age restrictions? --requires database
 	var/static/use_age_restriction_for_antags = FALSE
 
-	/// Whether the server uses recursive or circular explosions.
-	var/static/use_recursive_explosions = FALSE
-
 	var/static/comms_password
 
 	var/static/ban_comms_password
@@ -318,6 +313,9 @@
 
 	var/static/admin_irc = ""
 
+	var/static/admin_discord = ""
+
+	var/static/excom_address = ""
 	var/static/announce_evac_to_irc = FALSE
 
 	var/static/expected_round_length = 3 HOURS
@@ -436,6 +434,8 @@
 
 	var/static/run_empty_levels = FALSE
 
+	var/static/deletion_starts_paused = FALSE
+
 
 /datum/configuration/New()
 	load_config()
@@ -454,7 +454,7 @@
 	for (var/line in lines)
 		if (!line)
 			continue
-		line = trim(line)
+		line = trimtext(line)
 		if (!line || line[1] == "#")
 			continue
 		result += line
@@ -494,8 +494,6 @@
 				use_age_restriction_for_jobs = TRUE
 			if ("use_age_restriction_for_antags")
 				use_age_restriction_for_antags = TRUE
-			if ("use_recursive_explosions")
-				use_recursive_explosions = TRUE
 			if ("log_ooc")
 				log_ooc = TRUE
 			if ("log_access")
@@ -584,7 +582,7 @@
 			if ("respawn_menu_delay")
 				respawn_menu_delay = text2num(value)
 				respawn_menu_delay = respawn_menu_delay > 0 ? respawn_menu_delay : 0
-			if ("servername")
+			if ("server_name")
 				server_name = value
 			if ("serversuffix")
 				server_suffix = TRUE
@@ -672,10 +670,6 @@
 				kick_inactive = text2num(value)
 			if ("use_irc_bot")
 				use_irc_bot = TRUE
-			if ("fps")
-				fps = round(text2num(value))
-				if (fps <= 0)
-					fps = initial(fps)
 			if ("allow_antag_hud")
 				antag_hud_allowed = TRUE
 			if ("antag_hud_restricted")
@@ -712,6 +706,10 @@
 				main_irc = value
 			if ("admin_irc")
 				admin_irc = value
+			if ("admin_discord")
+				admin_discord = value
+			if ("excom_address")
+				excom_address = value
 			if ("announce_evac_to_irc")
 				announce_evac_to_irc = TRUE
 			if ("allow_cult_ghostwriter")
@@ -760,7 +758,7 @@
 				starlight = value >= 0 ? value : 0
 			if ("ert_species")
 				ert_species = splittext(value, ";")
-				if (!ert_species.len)
+				if (!length(ert_species))
 					ert_species += SPECIES_HUMAN
 			if ("law_zero")
 				law_zero = value
@@ -844,7 +842,7 @@
 			if ("maximum_round_length")
 				maximum_round_length = text2num(value) MINUTES
 			if ("stat_delay")
-				stat_delay = Floor(text2num(value))
+				stat_delay = floor(text2num(value))
 			if ("warn_autoban_threshold")
 				warn_autoban_threshold = max(0, text2num(value))
 			if ("warn_autoban_duration")
@@ -853,6 +851,8 @@
 				run_empty_levels = TRUE
 			if ("warn_if_staff_same_ip")
 				warn_if_staff_same_ip = TRUE
+			if ("deletion_starts_paused")
+				deletion_starts_paused = TRUE
 			else
 				log_misc("Unknown setting in config/config.txt: '[name]'")
 

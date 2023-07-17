@@ -21,21 +21,32 @@
 /obj/item/gun/launcher/rocket/examine(mob/user, distance)
 	. = ..()
 	if(distance <= 2)
-		to_chat(user, "<span class='notice'>[rockets.len] / [max_rockets] rockets.</span>")
+		to_chat(user, SPAN_NOTICE("[length(rockets)] / [max_rockets] rockets."))
 
-/obj/item/gun/launcher/rocket/attackby(obj/item/I as obj, mob/user as mob)
-	if(istype(I, /obj/item/ammo_casing/rocket))
-		if(rockets.len < max_rockets)
-			if(!user.unEquip(I, src))
-				return
-			rockets += I
-			to_chat(user, "<span class='notice'>You put the rocket in [src].</span>")
-			to_chat(user, "<span class='notice'>[rockets.len] / [max_rockets] rockets.</span>")
-		else
-			to_chat(usr, "<span class='warning'>\The [src] cannot hold more rockets.</span>")
+
+/obj/item/gun/launcher/rocket/use_tool(obj/item/tool, mob/user, list/click_params)
+	// Rocket - Load ammo
+	if (istype(tool, /obj/item/ammo_casing/rocket))
+		if (length(rockets) >= max_rockets)
+			USE_FEEDBACK_FAILURE("\The [src] is full.")
+			return TRUE
+		if (!user.unEquip(tool, src))
+			FEEDBACK_UNEQUIP_FAILURE(user, tool)
+			return TRUE
+		rockets += tool
+		user.visible_message(
+			SPAN_NOTICE("\The [user] loads \a [src] with \a [tool]."),
+			SPAN_NOTICE("You load \the [src] with \the [tool].")
+		)
+		if (max_rockets > 1)
+			to_chat(user, SPAN_INFO("\The [src] now has [length(rockets)]/[max_rockets] rocket\s loaded."))
+		return TRUE
+
+	return ..()
+
 
 /obj/item/gun/launcher/rocket/consume_next_projectile()
-	if(rockets.len)
+	if(length(rockets))
 		var/obj/item/ammo_casing/rocket/I = rockets[1]
 		var/obj/item/missile/M = new (src)
 		M.primed = 1

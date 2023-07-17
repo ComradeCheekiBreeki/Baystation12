@@ -4,7 +4,7 @@
 /area/template_noop)
 "az" = (
 /obj/effect/paint/red,
-/turf/simulated/wall/titanium,
+/turf/simulated/wall/r_titanium,
 /area/map_template/icgnv_hound)
 "cc" = (
 /obj/effect/wallframe_spawn/reinforced/titanium,
@@ -31,7 +31,7 @@
 /area/map_template/icgnv_hound)
 "dq" = (
 /obj/structure/lattice,
-/obj/machinery/light/navigation,
+/obj/machinery/nav_light,
 /turf/space,
 /area/map_template/icgnv_hound)
 "fM" = (
@@ -129,11 +129,6 @@
 	},
 /turf/simulated/floor/tiled/techfloor,
 /area/map_template/icgnv_hound)
-"kd" = (
-/obj/structure/lattice,
-/obj/machinery/light/navigation/delay3,
-/turf/space,
-/area/map_template/icgnv_hound)
 "kg" = (
 /obj/effect/floor_decal/techfloor{
 	dir = 4
@@ -166,7 +161,9 @@
 /obj/machinery/porta_turret{
 	req_access = list("ACCESS_SYNDICATE")
 	},
-/turf/simulated/floor/plating,
+/turf/simulated/floor/plating{
+	map_airless = 1
+	},
 /area/map_template/icgnv_hound)
 "ll" = (
 /obj/machinery/atmospherics/unary/vent_pump/high_volume/external_air{
@@ -232,14 +229,18 @@
 /area/map_template/icgnv_hound)
 "mA" = (
 /obj/machinery/shipsensors,
-/turf/simulated/floor/plating,
+/turf/simulated/floor/plating{
+	map_airless = 1
+	},
 /area/map_template/icgnv_hound)
 "mK" = (
 /obj/machinery/atmospherics/unary/vent_pump/on{
 	icon_state = "map_vent_in";
 	pump_direction = 0
 	},
-/turf/simulated/floor/plating,
+/turf/simulated/floor/plating{
+	map_airless = 1
+	},
 /area/map_template/icgnv_hound)
 "mT" = (
 /obj/machinery/atmospherics/pipe/simple/hidden/scrubbers,
@@ -931,6 +932,8 @@
 /obj/structure/table/rack,
 /obj/item/device/radio/headset/iccgn,
 /obj/item/device/radio/headset/iccgn,
+/obj/item/storage/toolbox/syndicate,
+/obj/item/storage/toolbox/syndicate,
 /turf/simulated/floor/tiled/techfloor/grid,
 /area/map_template/icgnv_hound)
 "Po" = (
@@ -941,6 +944,10 @@
 	dir = 4
 	},
 /turf/simulated/floor/tiled/techfloor/grid,
+/area/map_template/icgnv_hound)
+"PQ" = (
+/obj/effect/paint/iccgn,
+/turf/simulated/wall/r_titanium,
 /area/map_template/icgnv_hound)
 "Rc" = (
 /obj/effect/floor_decal/techfloor{
@@ -959,7 +966,9 @@
 	density = 1;
 	dir = 1
 	},
-/turf/simulated/floor/reinforced/airless,
+/turf/simulated/floor/reinforced{
+	map_airless = 1
+	},
 /area/map_template/icgnv_hound)
 "RX" = (
 /obj/effect/floor_decal/techfloor{
@@ -1040,9 +1049,7 @@
 /obj/effect/floor_decal/techfloor{
 	dir = 10
 	},
-/obj/structure/table/rack,
-/obj/item/storage/toolbox/syndicate,
-/obj/item/storage/toolbox/syndicate,
+/obj/machinery/radio_beacon,
 /turf/simulated/floor/tiled/techfloor/grid,
 /area/map_template/icgnv_hound)
 "TO" = (
@@ -1169,7 +1176,7 @@
 	dir = 8
 	},
 /obj/effect/floor_decal/borderfloorblack/corner,
-/obj/structure/iv_drip,
+/obj/structure/iv_stand,
 /turf/simulated/floor/tiled/dark,
 /area/map_template/icgnv_hound)
 "XY" = (
@@ -1204,6 +1211,11 @@
 	},
 /obj/machinery/telecomms/allinone/iccgn,
 /turf/simulated/floor/tiled/techfloor/grid,
+/area/map_template/icgnv_hound)
+"Zx" = (
+/turf/simulated/floor/plating{
+	map_airless = 1
+	},
 /area/map_template/icgnv_hound)
 "ZS" = (
 /obj/machinery/atmospherics/unary/vent_pump/high_volume/external_air{
@@ -1248,15 +1260,15 @@ av
 av
 dq
 if
-fM
-fM
-fM
-fM
-fM
-fM
-fM
-fM
-fM
+PQ
+PQ
+PQ
+PQ
+PQ
+PQ
+PQ
+PQ
+PQ
 av
 av
 av
@@ -1279,9 +1291,9 @@ qF
 nT
 CX
 Hg
-fM
-fM
-fM
+PQ
+PQ
+PQ
 az
 az
 av
@@ -1294,9 +1306,9 @@ av
 av
 av
 av
-kd
+dq
 if
-fM
+PQ
 os
 rs
 wt
@@ -1319,8 +1331,8 @@ av
 av
 av
 av
-fM
-fM
+PQ
+PQ
 fM
 fM
 ol
@@ -1343,7 +1355,7 @@ av
 av
 av
 mA
-fM
+PQ
 rv
 wU
 DM
@@ -1383,13 +1395,13 @@ av
 (8,1,1) = {"
 av
 av
-fM
+PQ
 fX
 fX
-fM
-fM
-fM
-fM
+PQ
+PQ
+PQ
+PQ
 fM
 fM
 Ec
@@ -1405,8 +1417,8 @@ av
 "}
 (9,1,1) = {"
 av
-fM
-fM
+PQ
+PQ
 gP
 iv
 kg
@@ -1474,8 +1486,8 @@ av
 "}
 (12,1,1) = {"
 av
-fM
-fM
+PQ
+PQ
 hV
 ka
 lg
@@ -1498,13 +1510,13 @@ av
 (13,1,1) = {"
 av
 av
-fM
+PQ
 fX
 fX
-fM
-fM
-fM
-fM
+PQ
+PQ
+PQ
+PQ
 fM
 fM
 Ec
@@ -1549,8 +1561,8 @@ av
 av
 av
 av
-nT
-fM
+Zx
+PQ
 vw
 yo
 FQ
@@ -1572,13 +1584,13 @@ av
 av
 av
 av
-fM
-fM
-fM
+PQ
+PQ
+PQ
 yt
-fM
-fM
-fM
+PQ
+PQ
+PQ
 Tj
 XY
 az
@@ -1593,15 +1605,15 @@ av
 av
 av
 av
-kd
+dq
 if
-fM
+PQ
 pq
 vE
 zn
 Gt
 Mq
-fM
+PQ
 To
 YV
 az
@@ -1624,9 +1636,9 @@ wc
 Aq
 Gw
 MN
-fM
-fM
-fM
+PQ
+PQ
+PQ
 az
 az
 av
@@ -1639,15 +1651,15 @@ av
 av
 dq
 if
-fM
-fM
-fM
-fM
-fM
+PQ
+PQ
+PQ
+PQ
+PQ
 Jz
-fM
-fM
-fM
+PQ
+PQ
+PQ
 av
 av
 av

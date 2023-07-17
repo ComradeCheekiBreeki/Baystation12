@@ -47,13 +47,13 @@
 	exertion_reagent_scale = 5
 	exertion_reagent_path = /datum/reagent/lactate
 	exertion_emotes_biological = list(
-		/decl/emote/exertion/biological,
-		/decl/emote/exertion/biological/breath,
-		/decl/emote/exertion/biological/pant
+		/singleton/emote/exertion/biological,
+		/singleton/emote/exertion/biological/breath,
+		/singleton/emote/exertion/biological/pant
 	)
 	exertion_emotes_synthetic = list(
-		/decl/emote/exertion/synthetic,
-		/decl/emote/exertion/synthetic/creak
+		/singleton/emote/exertion/synthetic,
+		/singleton/emote/exertion/synthetic/creak
 	)
 
 /datum/species/human/get_bodytype(mob/living/carbon/human/H)
@@ -86,22 +86,22 @@
 			if(dam > maxdam && (maxdam == 0 || prob(50)) )
 				damaged_organ = E
 				maxdam = dam
-		var/datum/gender/T = gender_datums[H.get_gender()]
+		var/datum/pronouns/P = H.choose_from_pronouns()
 		if(damaged_organ)
 			if(damaged_organ.status & ORGAN_BLEEDING)
-				H.custom_emote("clutches [T.his] [damaged_organ.name], trying to stop the blood.")
+				H.custom_emote("clutches [P.his] [damaged_organ.name], trying to stop the blood.")
 			else if(damaged_organ.status & ORGAN_BROKEN)
-				H.custom_emote("holds [T.his] [damaged_organ.name] carefully.")
+				H.custom_emote("holds [P.his] [damaged_organ.name] carefully.")
 			else if(damaged_organ.burn_dam > damaged_organ.brute_dam && damaged_organ.organ_tag != BP_HEAD)
-				H.custom_emote("blows on [T.his] [damaged_organ.name] carefully.")
+				H.custom_emote("blows on [P.his] [damaged_organ.name] carefully.")
 			else
-				H.custom_emote("rubs [T.his] [damaged_organ.name] carefully.")
+				H.custom_emote("rubs [P.his] [damaged_organ.name] carefully.")
 
 		for(var/obj/item/organ/I in H.internal_organs)
 			if((I.status & ORGAN_DEAD) || BP_IS_ROBOTIC(I)) continue
 			if(I.damage > 2) if(prob(2))
 				var/obj/item/organ/external/parent = H.get_organ(I.parent_organ)
-				H.custom_emote("clutches [T.his] [parent.name]!")
+				H.custom_emote("clutches [P.his] [parent.name]!")
 
 /datum/species/human/get_ssd(mob/living/carbon/human/H)
 	if (H.ai_holder)
@@ -130,6 +130,7 @@
 	meat_type = /obj/item/reagent_containers/food/snacks/fish/octopus
 	bone_material = MATERIAL_BONE_CARTILAGE
 	genders = list(PLURAL)
+	pronouns = list(PRONOUNS_THEY_THEM)
 	hidden_from_codex = FALSE
 	min_age = 19
 	max_age = 90
@@ -239,23 +240,25 @@
 	exertion_reagent_scale = 5
 	exertion_reagent_path = /datum/reagent/lactate
 	exertion_emotes_biological = list(
-		/decl/emote/exertion/biological,
-		/decl/emote/exertion/biological/breath,
-		/decl/emote/exertion/biological/pant
+		/singleton/emote/exertion/biological,
+		/singleton/emote/exertion/biological/breath,
+		/singleton/emote/exertion/biological/pant
 	)
 	exertion_emotes_synthetic = list(
-		/decl/emote/exertion/synthetic,
-		/decl/emote/exertion/synthetic/creak
+		/singleton/emote/exertion/synthetic,
+		/singleton/emote/exertion/synthetic/creak
 	)
 
 	ingest_amount = 15
 
 	traits = list(
-		/decl/trait/boon/clear_mind = TRAIT_LEVEL_MINOR,
-		/decl/trait/malus/animal_protein = TRAIT_LEVEL_MAJOR,
-		/decl/trait/malus/ethanol = TRAIT_LEVEL_MODERATE,
-		/decl/trait/general/permeable_skin = TRAIT_LEVEL_MINOR
+		/singleton/trait/boon/clear_mind = TRAIT_LEVEL_MINOR,
+		/singleton/trait/malus/animal_protein = TRAIT_LEVEL_MAJOR,
+		/singleton/trait/malus/ethanol = TRAIT_LEVEL_MODERATE,
+		/singleton/trait/general/permeable_skin = TRAIT_LEVEL_MINOR
 	)
+
+	bodyfall_sound = 'sound/effects/bodyfall_skrell.ogg'
 
 /datum/species/skrell/get_sex(mob/living/carbon/human/H)
 	return istype(H) && (H.descriptors["headtail length"] == 1 ? MALE : FEMALE)
@@ -276,7 +279,7 @@
 	deform = 'icons/mob/human_races/species/diona/deformed_body.dmi'
 	preview_icon = 'icons/mob/human_races/species/diona/preview.dmi'
 	hidden_from_codex = FALSE
-	move_intents = list(/decl/move_intent/walk, /decl/move_intent/creep)
+	move_intents = list(/singleton/move_intent/walk, /singleton/move_intent/creep)
 	unarmed_types = list(/datum/unarmed_attack/stomp, /datum/unarmed_attack/kick, /datum/unarmed_attack/diona)
 	//primitive_form = "Nymph"
 	slowdown = 5
@@ -356,6 +359,7 @@
 	flesh_color = "#907e4a"
 
 	genders = list(PLURAL)
+	pronouns = list(PRONOUNS_IT_ITS)
 
 	available_cultural_info = list(
 		TAG_CULTURE =   list(CULTURE_DIONA),
@@ -365,9 +369,9 @@
 	)
 
 	traits = list(
-		/decl/trait/boon/clear_mind = TRAIT_LEVEL_MAJOR,
-		/decl/trait/general/metabolically_inert = TRAIT_LEVEL_MODERATE,
-		/decl/trait/general/nonpermeable_skin = TRAIT_LEVEL_EXISTS
+		/singleton/trait/boon/clear_mind = TRAIT_LEVEL_MAJOR,
+		/singleton/trait/general/metabolically_inert = TRAIT_LEVEL_MODERATE,
+		/singleton/trait/general/nonpermeable_skin = TRAIT_LEVEL_EXISTS
 	)
 
 /proc/spawn_diona_nymph(turf/target)
@@ -376,7 +380,7 @@
 	var/mob/living/carbon/alien/diona/nymph = new (target)
 	var/datum/ghosttrap/trap = get_ghost_trap("living plant")
 	trap.request_player(nymph, "A diona nymph has split from its gestalt.", 30 SECONDS)
-	addtimer(CALLBACK(nymph, /mob/living/carbon/alien/diona/proc/check_spawn_death), 30 SECONDS)
+	addtimer(new Callback(nymph, /mob/living/carbon/alien/diona/proc/check_spawn_death), 30 SECONDS)
 
 /mob/living/carbon/alien/diona/proc/check_spawn_death()
 	if (QDELETED(src))
@@ -386,7 +390,7 @@
 
 #define DIONA_LIMB_DEATH_COUNT 9
 /datum/species/diona/handle_death_check(mob/living/carbon/human/H)
-	var/lost_limb_count = has_limbs.len - H.organs.len
+	var/lost_limb_count = length(has_limbs) - length(H.organs)
 	if(lost_limb_count >= DIONA_LIMB_DEATH_COUNT)
 		return TRUE
 	for(var/thing in H.bad_external_organs)
@@ -419,7 +423,7 @@
 /datum/species/diona/handle_post_spawn(mob/living/carbon/human/H)
 	H.gender = NEUTER
 	. = ..()
-	addtimer(CALLBACK(src, .proc/fill_with_nymphs, H), 0)
+	addtimer(new Callback(src, .proc/fill_with_nymphs, H), 0)
 
 /datum/species/diona/proc/fill_with_nymphs(mob/living/carbon/human/H)
 
@@ -441,7 +445,7 @@
 
 		if(H.mind)
 			H.mind.transfer_to(S)
-		H.visible_message("<span class='danger'>\The [H] collapses into parts, revealing a solitary diona nymph at the core.</span>")
+		H.visible_message(SPAN_DANGER("\The [H] collapses into parts, revealing a solitary diona nymph at the core."))
 		return
 	else
 		split_into_nymphs(H, TRUE)

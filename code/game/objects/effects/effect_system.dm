@@ -69,7 +69,7 @@ would spawn and follow the beaker, even if it is carried or thrown.
 /datum/effect/effect/system/steam_spread/start()
 	var/i = 0
 	for(i=0, i<src.number, i++)
-		addtimer(CALLBACK(src, /datum/effect/effect/system/proc/spread, i), 0)
+		addtimer(new Callback(src, /datum/effect/effect/system/proc/spread, i), 0)
 
 /datum/effect/effect/system/steam_spread/spread(i)
 	set waitfor = 0
@@ -139,7 +139,7 @@ would spawn and follow the beaker, even if it is carried or thrown.
 /datum/effect/effect/system/spark_spread/start()
 	var/i = 0
 	for(i=0, i<src.number, i++)
-		addtimer(CALLBACK(src, /datum/effect/effect/system/proc/spread, i), 0)
+		addtimer(new Callback(src, /datum/effect/effect/system/proc/spread, i), 0)
 
 /datum/effect/effect/system/spark_spread/spread(i)
 	set waitfor = 0
@@ -157,6 +157,7 @@ would spawn and follow the beaker, even if it is carried or thrown.
 
 //and to shortcut all that
 /proc/sparks(n = 3, c = 0, loca)
+	RETURN_TYPE(/datum/effect/effect/system/spark_spread)
 	var/datum/effect/effect/system/spark_spread/S = new
 	S.set_up(n, c, loca)
 	S.start()
@@ -185,12 +186,18 @@ would spawn and follow the beaker, even if it is carried or thrown.
 
 /obj/effect/effect/smoke/Initialize()
 	. = ..()
-	addtimer(CALLBACK(src, .proc/fade_out), time_to_live)
+	addtimer(new Callback(src, .proc/fade_out), time_to_live)
 
 /obj/effect/effect/smoke/Crossed(mob/living/carbon/M as mob )
 	..()
-	if(istype(M))
+	if(can_affect(M))
 		affect(M)
+
+/obj/effect/effect/smoke/Move()
+	..()
+	for(var/mob/living/carbon/M in get_turf(src))
+		if (can_affect(M))
+			affect(M)
 
 /// Fades out the smoke smoothly using it's alpha variable.
 /obj/effect/effect/smoke/proc/fade_out(frames = 16)
@@ -202,11 +209,13 @@ would spawn and follow the beaker, even if it is carried or thrown.
 		sleep(world.tick_lag)
 	qdel(src)
 
-/obj/effect/effect/smoke/proc/affect(mob/living/carbon/M)
+/obj/effect/effect/smoke/proc/can_affect(mob/living/carbon/M)
 	if (!istype(M))
 		return 0
 	if (M.isSynthetic())
 		return 0
+	if (HAS_FLAGS(M.wear_mask?.item_flags, ITEM_FLAG_BLOCK_GAS_SMOKE_EFFECT))
+		return FALSE
 	if (M.internal != null)
 		if(M.wear_mask && (M.wear_mask.item_flags & ITEM_FLAG_AIRTIGHT))
 			return 0
@@ -216,6 +225,9 @@ would spawn and follow the beaker, even if it is carried or thrown.
 				return 0
 		return 0
 	return 1
+
+/obj/effect/effect/smoke/proc/affect(mob/living/carbon/M)
+	return
 
 /////////////////////////////////////////////
 // Illumination
@@ -253,19 +265,12 @@ would spawn and follow the beaker, even if it is carried or thrown.
 /obj/effect/effect/smoke/bad
 	time_to_live = 200
 
-/obj/effect/effect/smoke/bad/Move()
-	..()
-	for(var/mob/living/carbon/M in get_turf(src))
-		affect(M)
-
 /obj/effect/effect/smoke/bad/affect(mob/living/carbon/M)
-	if (!..())
-		return 0
 	M.adjustOxyLoss(1)
 	if (M.coughedtime != 1)
 		M.coughedtime = 1
 		M.emote("cough")
-		addtimer(CALLBACK(M, /mob/living/carbon/proc/clear_coughedtime), 2 SECONDS)
+		addtimer(new Callback(M, /mob/living/carbon/proc/clear_coughedtime), 2 SECONDS)
 
 /obj/effect/effect/smoke/bad/CanPass(atom/movable/mover, turf/target, height=0, air_group=0)
 	if(air_group || (height==0)) return 1
@@ -279,20 +284,12 @@ would spawn and follow the beaker, even if it is carried or thrown.
 
 /obj/effect/effect/smoke/sleepy
 
-/obj/effect/effect/smoke/sleepy/Move()
-	..()
-	for(var/mob/living/carbon/M in get_turf(src))
-		affect(M)
-
 /obj/effect/effect/smoke/sleepy/affect(mob/living/carbon/M as mob )
-	if (!..())
-		return 0
-
 	M:sleeping += 1
 	if (M.coughedtime != 1)
 		M.coughedtime = 1
 		M.emote("cough")
-		addtimer(CALLBACK(M, /mob/living/carbon/proc/clear_coughedtime), 2 SECONDS)
+		addtimer(new Callback(M, /mob/living/carbon/proc/clear_coughedtime), 2 SECONDS)
 /////////////////////////////////////////////
 // Mustard Gas
 /////////////////////////////////////////////
@@ -302,22 +299,21 @@ would spawn and follow the beaker, even if it is carried or thrown.
 	name = "mustard gas"
 	icon_state = "mustard"
 
-/obj/effect/effect/smoke/mustard/Move()
-	..()
-	for(var/mob/living/carbon/human/R in get_turf(src))
-		affect(R)
+/obj/effect/effect/smoke/mustard/can_affect(mob/living/carbon/M)
+	. = ..()
+	if (!.)
+		return
+	if (ishuman(M))
+		var/mob/living/carbon/human/H = M
+		if (H.wear_suit)
+			return FALSE
 
 /obj/effect/effect/smoke/mustard/affect(mob/living/carbon/human/R)
-	if (!..())
-		return 0
-	if (R.wear_suit != null)
-		return 0
-
 	R.burn_skin(0.75)
 	if (R.coughedtime != 1)
 		R.coughedtime = 1
 		R.emote("gasp")
-		addtimer(CALLBACK(R, /mob/living/carbon/proc/clear_coughedtime), 2 SECONDS)
+		addtimer(new Callback(R, /mob/living/carbon/proc/clear_coughedtime), 2 SECONDS)
 	R.updatehealth()
 	return
 
@@ -347,7 +343,7 @@ would spawn and follow the beaker, even if it is carried or thrown.
 	for(i=0, i<src.number, i++)
 		if(src.total_smoke > 20)
 			return
-		addtimer(CALLBACK(src, /datum/effect/effect/system/proc/spread, i), 0)
+		addtimer(new Callback(src, /datum/effect/effect/system/proc/spread, i), 0)
 
 /datum/effect/effect/system/smoke_spread/spread(i)
 	if(holder)
@@ -471,8 +467,6 @@ would spawn and follow the beaker, even if it is carried or thrown.
 
 /datum/effect/effect/system/reagents_explosion
 	var/amount 						// TNT equivalent
-	var/flashing = 0			// does explosion creates flash effect?
-	var/flashing_factor = 0		// factor of how powerful the flash effect relatively to the explosion
 
 /datum/effect/effect/system/reagents_explosion/set_up (amt, loc, flash = 0, flash_fact = 0)
 	amount = amt
@@ -480,9 +474,6 @@ would spawn and follow the beaker, even if it is carried or thrown.
 		location = loc
 	else
 		location = get_turf(loc)
-
-	flashing = flash
-	flashing_factor = flash_fact
 
 	return
 
@@ -493,17 +484,16 @@ would spawn and follow the beaker, even if it is carried or thrown.
 		s.start()
 
 		for(var/mob/M in viewers(5, location))
-			to_chat(M, "<span class='warning'>The solution violently explodes.</span>")
+			to_chat(M, SPAN_WARNING("The solution violently explodes."))
 		for(var/mob/M in viewers(1, location))
 			if (prob (50 * amount))
-				to_chat(M, "<span class='warning'>The explosion knocks you down.</span>")
+				to_chat(M, SPAN_WARNING("The explosion knocks you down."))
 				M.Weaken(rand(1,5))
 		return
 	else
 		var/devst = -1
 		var/heavy = -1
 		var/light = -1
-		var/flash = -1
 
 		// Clamp all values to fractions of config.max_explosion_range, following the same pattern as for tank transfer bombs
 		if (round(amount/12) > 0)
@@ -515,16 +505,17 @@ would spawn and follow the beaker, even if it is carried or thrown.
 		if (round(amount/3) > 0)
 			light = light + amount/3
 
-		if (flashing && flashing_factor)
-			flash = (amount/4) * flashing_factor
+		var/range = min(devst + heavy + light, BOMBCAP_RADIUS)
+
+		var/max_power
+		if (devst)
+			max_power = EX_ACT_DEVASTATING
+		else if (heavy)
+			max_power = EX_ACT_HEAVY
+		else
+			max_power = EX_ACT_LIGHT
 
 		for(var/mob/M in viewers(8, location))
-			to_chat(M, "<span class='warning'>The solution violently explodes.</span>")
+			to_chat(M, SPAN_WARNING("The solution violently explodes."))
 
-		explosion(
-			location,
-			round(min(devst, BOMBCAP_DVSTN_RADIUS)),
-			round(min(heavy, BOMBCAP_HEAVY_RADIUS)),
-			round(min(light, BOMBCAP_LIGHT_RADIUS)),
-			round(min(flash, BOMBCAP_FLASH_RADIUS))
-			)
+		explosion(location, range, max_power)

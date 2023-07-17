@@ -11,7 +11,7 @@
 /obj/item/gun/projectile/pistol/on_update_icon()
 	..()
 	if(empty_icon)
-		if(ammo_magazine && ammo_magazine.stored_ammo.len)
+		if(ammo_magazine && length(ammo_magazine.stored_ammo))
 			icon_state = initial(icon_state)
 		else
 			icon_state = "[initial(icon_state)]-e"
@@ -34,12 +34,15 @@
 	fire_delay = 6
 	origin_tech = list(TECH_COMBAT = 2, TECH_MATERIAL = 2)
 
+/obj/item/gun/projectile/pistol/sec/empty
+	starts_loaded = FALSE
+
 /obj/item/gun/projectile/pistol/sec/lethal
 	magazine_type = /obj/item/ammo_magazine/pistol
 
 /obj/item/gun/projectile/pistol/magnum_pistol
 	name = "magnum pistol"
-	desc = "The HelTek Magnus, a robust Terran handgun that uses high-caliber ammo."
+	desc = "The HelTek Magnus, a robust handgun that uses high-caliber ammo. Issued to Confederation Pioneers for holster sized defence."
 	icon = 'icons/obj/guns/magnum_pistol.dmi'
 	icon_state = "magnum"
 	item_state = "magnum"
@@ -59,7 +62,7 @@
 
 /obj/item/gun/projectile/pistol/throwback
 	name = "pistol"
-	desc = "A product of one of thousands of illegal workshops from around the galaxy. Often replicas of ancient Earth handguns, these guns are usually found in hands of frontier colonists and pirates."
+	desc = "A product of one of thousands of illegal workshops from around the galaxy. This one appears to be a clone of a 20th century design."
 	icon = 'icons/obj/guns/pistol_throwback.dmi'
 	icon_state = "pistol1"
 	magazine_type = /obj/item/ammo_magazine/pistol/throwback
@@ -77,7 +80,7 @@
 
 /obj/item/gun/projectile/pistol/throwback/on_update_icon()
 	..()
-	if(ammo_magazine && ammo_magazine.stored_ammo.len)
+	if(ammo_magazine && length(ammo_magazine.stored_ammo))
 		icon_state = base_icon
 	else
 		icon_state = "[base_icon]-e"
@@ -137,23 +140,32 @@
 			return
 	..()
 
-/obj/item/gun/projectile/pistol/holdout/attackby(obj/item/I, mob/user)
-	if(istype(I, /obj/item/silencer))
-		if (!user.IsHolding())
-			to_chat(user, SPAN_WARNING("You'll need \the [src] in your hands to do that."))
-			return
+
+/obj/item/gun/projectile/pistol/holdout/use_tool(obj/item/tool, mob/user, list/click_params)
+	// Silencer - Attach silencer
+	if (istype(tool, /obj/item/silencer))
 		if (silenced)
-			to_chat(user, SPAN_WARNING("\The [src] is already silenced."))
-			return
-		if(!user.unEquip(I, src))
-			return//put the silencer into the gun
-		to_chat(user, SPAN_NOTICE("You screw \the [I] onto \the [src]."))
+			if (silencer)
+				USE_FEEDBACK_FAILURE("\The [src] already has \a [silencer] attached.")
+			else
+				USE_FEEDBACK_FAILURE("\The [src] is already silenced.")
+			return TRUE
+		if (!user.unEquip(tool, src))
+			FEEDBACK_FAILURE(user, tool)
+			return TRUE
 		silenced = TRUE
-		silencer = I
+		silencer = tool
 		w_class = ITEM_SIZE_NORMAL
 		update_icon()
-		return
-	..()
+		user.visible_message(
+			SPAN_NOTICE("\The [user] screws \a [tool] onto \a [src]."),
+			SPAN_NOTICE("You screw \a [tool] onto \a [src]."),
+			range = 2
+		)
+		return TRUE
+
+	return ..()
+
 
 /obj/item/gun/projectile/pistol/holdout/on_update_icon()
 	..()
@@ -161,7 +173,7 @@
 		icon_state = "pistol-silencer"
 	else
 		icon_state = "pistol"
-	if(!(ammo_magazine && ammo_magazine.stored_ammo.len))
+	if(!(ammo_magazine && length(ammo_magazine.stored_ammo)))
 		icon_state = "[icon_state]-e"
 
 /obj/item/silencer
@@ -193,7 +205,7 @@
 			burst=1,
 			fire_delay=5,
 			move_delay=null,
-			one_hand_penalty=5,
+			one_hand_penalty=3,
 			burst_accuracy=null,
 			dispersion=null
 			),

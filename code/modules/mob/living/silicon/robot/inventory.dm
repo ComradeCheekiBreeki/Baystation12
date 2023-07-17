@@ -268,7 +268,7 @@
 	if(!(locate(O) in module.equipment) && O != src.module.emag)
 		return
 	if (IsHolding(O))
-		to_chat(src, "<span class='notice'>Already activated</span>")
+		to_chat(src, SPAN_NOTICE("Already activated"))
 		return
 	if (!HasFreeHand())
 		to_chat(src, SPAN_NOTICE("You need to disable a module first!"))
@@ -310,6 +310,7 @@
 		for (var/obj/item/gripper/gripper in module?.equipment)
 			if (gripper.wrapped == thing)
 				gripper.wrapped = null
+				gripper.update_icon()
 
 //Robots don't use inventory slots, so we need to override this.
 /mob/living/silicon/robot/canUnEquip(obj/item/I)

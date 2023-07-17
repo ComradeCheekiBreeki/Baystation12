@@ -7,8 +7,6 @@
 	if(player.current)
 		if(jobban_isbanned(player.current, id))
 			return "Player is banned from this antagonist role."
-		if(player.current.faction != MOB_FACTION_NEUTRAL)
-			return "Player is already assigned to a non-neutral faction ([player.current.faction])."
 
 	if(is_type_in_list(player.assigned_job, blacklisted_jobs))
 		return "Player's assigned job ([player.assigned_job]) is blacklisted from this antagonist role."
@@ -39,7 +37,7 @@
 	return 1
 
 /datum/antagonist/proc/get_antag_count()
-	return current_antagonists ? current_antagonists.len : 0
+	return current_antagonists ? length(current_antagonists) : 0
 
 /datum/antagonist/proc/get_active_antag_count()
 	var/active_antags = 0
@@ -75,6 +73,7 @@
 	return (flags & (ANTAG_OVERRIDE_MOB|ANTAG_OVERRIDE_JOB))
 
 /proc/all_random_antag_types()
+	RETURN_TYPE(/list)
 	// No caching as the ANTAG_RANDOM_EXCEPTED flag can be added/removed mid-round.
 	var/list/antag_candidates = GLOB.all_antag_types_.Copy()
 	for(var/datum/antagonist/antag in antag_candidates)

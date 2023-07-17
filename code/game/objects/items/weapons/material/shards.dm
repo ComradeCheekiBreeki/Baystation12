@@ -74,10 +74,10 @@
 			if( H.shoes || ( H.wear_suit && (H.wear_suit.body_parts_covered & FEET) ) )
 				return
 
-			to_chat(M, "<span class='danger'>You step on \the [src]!</span>")
+			to_chat(M, SPAN_DANGER("You step on \the [src]!"))
 
 			var/list/check = list(BP_L_FOOT, BP_R_FOOT)
-			while(check.len)
+			while(length(check))
 				var/picked = pick(check)
 				var/obj/item/organ/external/affecting = H.get_organ(picked)
 				if(affecting)
@@ -92,7 +92,7 @@
 			return
 
 
-/obj/item/material/shard/phoron/default_material = MATERIAL_PHORON_GLASS
+/obj/item/material/shard/phoron/default_material = MATERIAL_PHORON
 
 
 /obj/item/material/shard/shrapnel/name = "shrapnel"

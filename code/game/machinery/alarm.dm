@@ -1,4 +1,4 @@
-/decl/environment_data
+/singleton/environment_data
 	var/list/important_gasses = list(
 		GAS_OXYGEN =         TRUE,
 		GAS_NITROGEN =       TRUE,
@@ -101,20 +101,20 @@
 	var/co2_dangerlevel = 0
 	var/temperature_dangerlevel = 0
 	var/other_dangerlevel = 0
-	var/environment_type = /decl/environment_data
+	var/environment_type = /singleton/environment_data
 	var/report_danger_level = 1
 
 /obj/machinery/alarm/cold
 	target_temperature = T0C+4
 
-/decl/environment_data/finnish/Initialize()
+/singleton/environment_data/finnish/Initialize()
 	. = ..()
 	important_gasses[GAS_STEAM] = TRUE
 	dangerous_gasses -= GAS_STEAM
 
 /obj/machinery/alarm/warm
 	target_temperature = T0C+75
-	environment_type = /decl/environment_data/finnish
+	environment_type = /singleton/environment_data/finnish
 
 /obj/machinery/alarm/warm/Initialize()
 	. = ..()
@@ -167,7 +167,7 @@
 	TLV["temperature"] =	list(T0C-26, T0C, T0C+40, T0C+66) // K
 
 
-	var/decl/environment_data/env_info = decls_repository.get_decl(environment_type)
+	var/singleton/environment_data/env_info = GET_SINGLETON(environment_type)
 	for(var/g in gas_data.gases)
 		if(!env_info.important_gasses[g])
 			trace_gas += g
@@ -321,7 +321,7 @@
 //disables breach detection temporarily
 /obj/machinery/alarm/proc/breach_start_cooldown()
 	breach_cooldown = TRUE
-	addtimer(CALLBACK(src,/obj/machinery/alarm/proc/breach_end_cooldown), 10 MINUTES, TIMER_UNIQUE | TIMER_OVERRIDE)
+	addtimer(new Callback(src,/obj/machinery/alarm/proc/breach_end_cooldown), 10 MINUTES, TIMER_UNIQUE | TIMER_OVERRIDE)
 	return
 
 /obj/machinery/alarm/proc/get_danger_level(current_value, list/danger_levels)
@@ -332,6 +332,8 @@
 	return 0
 
 /obj/machinery/alarm/on_update_icon()
+	overlays.Cut()
+	icon_state = "alarmp"
 	if(wiresexposed)
 		icon_state = "alarmx"
 		set_light(0)
@@ -348,14 +350,12 @@
 	var/new_color = null
 	switch(icon_level)
 		if (0)
-			icon_state = "alarm0"
 			new_color = COLOR_LIME
 		if (1)
-			icon_state = "alarm2" //yes, alarm2 is yellow alarm
 			new_color = COLOR_SUN
 		if (2)
-			icon_state = "alarm1"
 			new_color = COLOR_RED_LIGHT
+	overlays  += overlay_image(icon, "alarm[icon_level]", plane = EFFECTS_ABOVE_LIGHTING_PLANE, layer = ABOVE_LIGHTING_LAYER)
 
 	pixel_x = 0
 	pixel_y = 0
@@ -398,10 +398,10 @@
 /obj/machinery/alarm/proc/register_env_machine(m_id, device_type)
 	var/new_name
 	if (device_type=="AVP")
-		new_name = "[alarm_area.name] Vent Pump #[alarm_area.air_vent_names.len+1]"
+		new_name = "[alarm_area.name] Vent Pump #[length(alarm_area.air_vent_names)+1]"
 		alarm_area.air_vent_names[m_id] = new_name
 	else if (device_type=="AScr")
-		new_name = "[alarm_area.name] Air Scrubber #[alarm_area.air_scrub_names.len+1]"
+		new_name = "[alarm_area.name] Air Scrubber #[length(alarm_area.air_scrub_names)+1]"
 		alarm_area.air_scrub_names[m_id] = new_name
 	send_signal(m_id, list("init" = new_name) )
 
@@ -533,10 +533,10 @@
 	data["has_environment"] = total
 	if(total)
 		var/pressure = environment.return_pressure()
-		environment_data[++environment_data.len] = list("name" = "Pressure", "value" = pressure, "unit" = "kPa", "danger_level" = pressure_dangerlevel)
-		var/decl/environment_data/env_info = decls_repository.get_decl(environment_type)
+		environment_data[LIST_PRE_INC(environment_data)] = list("name" = "Pressure", "value" = pressure, "unit" = "kPa", "danger_level" = pressure_dangerlevel)
+		var/singleton/environment_data/env_info = GET_SINGLETON(environment_type)
 		for(var/gas_id in env_info.important_gasses)
-			environment_data[++environment_data.len] = list(
+			environment_data[LIST_PRE_INC(environment_data)] = list(
 				"name" =  gas_data.name[gas_id],
 				"value" = environment.gas[gas_id] / total * 100,
 				"unit" = "%",
@@ -545,13 +545,13 @@
 		var/other_moles = 0
 		for(var/g in trace_gas)
 			other_moles += environment.gas[g]
-		environment_data[++environment_data.len] = list("name" = "Other Gases", "value" = other_moles / total * 100, "unit" = "%", "danger_level" = other_dangerlevel)
+		environment_data[LIST_PRE_INC(environment_data)] = list("name" = "Other Gases", "value" = other_moles / total * 100, "unit" = "%", "danger_level" = other_dangerlevel)
 
-		environment_data[++environment_data.len] = list("name" = "Temperature", "value" = environment.temperature, "unit" = "K ([round(environment.temperature - T0C, 0.1)]C)", "danger_level" = temperature_dangerlevel)
+		environment_data[LIST_PRE_INC(environment_data)] = list("name" = "Temperature", "value" = environment.temperature, "unit" = "K ([round(environment.temperature - T0C, 0.1)]C)", "danger_level" = temperature_dangerlevel)
 	data["total_danger"] = danger_level
 	data["environment"] = environment_data
 	data["atmos_alarm"] = alarm_area.atmosalm
-	data["fire_alarm"] = alarm_area.fire != null
+	data["fire_alarm"] = alarm_area.fire
 	data["target_temperature"] = "[target_temperature - T0C]C"
 
 /obj/machinery/alarm/proc/populate_controls(list/data)
@@ -565,7 +565,7 @@
 				var/list/info = alarm_area.air_vent_info[id_tag]
 				if(!info)
 					continue
-				vents[++vents.len] = list(
+				vents[LIST_PRE_INC(vents)] = list(
 						"id_tag"	= id_tag,
 						"long_name" = sanitize(long_name),
 						"power"		= info["power"],
@@ -581,7 +581,7 @@
 				var/list/info = alarm_area.air_scrub_info[id_tag]
 				if(!info)
 					continue
-				scrubbers[++scrubbers.len] = list(
+				scrubbers[LIST_PRE_INC(scrubbers)] = list(
 						"id_tag"	= id_tag,
 						"long_name" = sanitize(long_name),
 						"power"		= info["power"],
@@ -589,9 +589,9 @@
 						"panic"		= info["panic"],
 						"filters"	= list()
 					)
-				var/decl/environment_data/env_info = decls_repository.get_decl(environment_type)
+				var/singleton/environment_data/env_info = GET_SINGLETON(environment_type)
 				for(var/gas_id in env_info.filter_gasses)
-					scrubbers[scrubbers.len]["filters"] += list(
+					scrubbers[length(scrubbers)]["filters"] += list(
 						list(
 							"name" = gas_data.name[gas_id],
 							"id"   = gas_id,
@@ -602,12 +602,12 @@
 			data["scrubbers"] = scrubbers
 		if(AALARM_SCREEN_MODE)
 			var/modes[0]
-			modes[++modes.len] = list("name" = "Filtering - Scrubs out contaminants", 			"mode" = AALARM_MODE_SCRUBBING,		"selected" = mode == AALARM_MODE_SCRUBBING, 	"danger" = 0)
-			modes[++modes.len] = list("name" = "Replace Air - Siphons out air while replacing", "mode" = AALARM_MODE_REPLACEMENT,	"selected" = mode == AALARM_MODE_REPLACEMENT,	"danger" = 0)
-			modes[++modes.len] = list("name" = "Panic - Siphons air out of the room", 			"mode" = AALARM_MODE_PANIC,			"selected" = mode == AALARM_MODE_PANIC, 		"danger" = 1)
-			modes[++modes.len] = list("name" = "Cycle - Siphons air before replacing", 			"mode" = AALARM_MODE_CYCLE,			"selected" = mode == AALARM_MODE_CYCLE, 		"danger" = 1)
-			modes[++modes.len] = list("name" = "Fill - Shuts off scrubbers and opens vents", 	"mode" = AALARM_MODE_FILL,			"selected" = mode == AALARM_MODE_FILL, 			"danger" = 0)
-			modes[++modes.len] = list("name" = "Off - Shuts off vents and scrubbers", 			"mode" = AALARM_MODE_OFF,			"selected" = mode == AALARM_MODE_OFF, 			"danger" = 0)
+			modes[LIST_PRE_INC(modes)] = list("name" = "Filtering - Scrubs out contaminants", 			"mode" = AALARM_MODE_SCRUBBING,		"selected" = mode == AALARM_MODE_SCRUBBING, 	"danger" = 0)
+			modes[LIST_PRE_INC(modes)] = list("name" = "Replace Air - Siphons out air while replacing", "mode" = AALARM_MODE_REPLACEMENT,	"selected" = mode == AALARM_MODE_REPLACEMENT,	"danger" = 0)
+			modes[LIST_PRE_INC(modes)] = list("name" = "Panic - Siphons air out of the room", 			"mode" = AALARM_MODE_PANIC,			"selected" = mode == AALARM_MODE_PANIC, 		"danger" = 1)
+			modes[LIST_PRE_INC(modes)] = list("name" = "Cycle - Siphons air before replacing", 			"mode" = AALARM_MODE_CYCLE,			"selected" = mode == AALARM_MODE_CYCLE, 		"danger" = 1)
+			modes[LIST_PRE_INC(modes)] = list("name" = "Fill - Shuts off scrubbers and opens vents", 	"mode" = AALARM_MODE_FILL,			"selected" = mode == AALARM_MODE_FILL, 			"danger" = 0)
+			modes[LIST_PRE_INC(modes)] = list("name" = "Off - Shuts off vents and scrubbers", 			"mode" = AALARM_MODE_OFF,			"selected" = mode == AALARM_MODE_OFF, 			"danger" = 0)
 			data["modes"] = modes
 			data["mode"] = mode
 		if(AALARM_SCREEN_SENSORS)
@@ -622,20 +622,20 @@
 				GAS_CO2 = "CO<sub>2</sub>",
 				"other"          = "Other")
 			for (var/g in gas_names)
-				thresholds[++thresholds.len] = list("name" = gas_names[g], "settings" = list())
+				thresholds[LIST_PRE_INC(thresholds)] = list("name" = gas_names[g], "settings" = list())
 				selected = TLV[g]
 				for(var/i = 1, i <= 4, i++)
-					thresholds[thresholds.len]["settings"] += list(list("env" = g, "val" = i, "selected" = selected[i]))
+					thresholds[length(thresholds)]["settings"] += list(list("env" = g, "val" = i, "selected" = selected[i]))
 
 			selected = TLV["pressure"]
-			thresholds[++thresholds.len] = list("name" = "Pressure", "settings" = list())
+			thresholds[LIST_PRE_INC(thresholds)] = list("name" = "Pressure", "settings" = list())
 			for(var/i = 1, i <= 4, i++)
-				thresholds[thresholds.len]["settings"] += list(list("env" = "pressure", "val" = i, "selected" = selected[i]))
+				thresholds[length(thresholds)]["settings"] += list(list("env" = "pressure", "val" = i, "selected" = selected[i]))
 
 			selected = TLV["temperature"]
-			thresholds[++thresholds.len] = list("name" = "Temperature", "settings" = list())
+			thresholds[LIST_PRE_INC(thresholds)] = list("name" = "Temperature", "settings" = list())
 			for(var/i = 1, i <= 4, i++)
-				thresholds[thresholds.len]["settings"] += list(list("env" = "temperature", "val" = i, "selected" = selected[i]))
+				thresholds[length(thresholds)]["settings"] += list(list("env" = "temperature", "val" = i, "selected" = selected[i]))
 
 
 			data["thresholds"] = thresholds
@@ -645,7 +645,7 @@
 		return STATUS_CLOSE
 
 	if(aidisabled && isAI(user))
-		to_chat(user, "<span class='warning'>AI control for \the [src] interface has been disabled.</span>")
+		to_chat(user, SPAN_WARNING("AI control for \the [src] interface has been disabled."))
 		return STATUS_CLOSE
 
 	. = shorted ? STATUS_DISABLED : STATUS_INTERACTIVE
@@ -712,7 +712,7 @@
 					return TOPIC_REFRESH
 
 				if("set_scrub_gas")
-					var/decl/environment_data/env_info = decls_repository.get_decl(environment_type)
+					var/singleton/environment_data/env_info = GET_SINGLETON(environment_type)
 					if(env_info && (href_list["gas_id"] in env_info.filter_gasses))
 						send_signal(device_id, list(href_list["command"] = list(href_list["gas_id"] = text2num(href_list["val"]))) )
 					return TOPIC_REFRESH
@@ -819,7 +819,7 @@
 				return
 
 			if (wiresexposed && isWirecutter(W))
-				user.visible_message("<span class='warning'>[user] has cut the wires inside \the [src]!</span>", "You have cut the wires inside \the [src].")
+				user.visible_message(SPAN_WARNING("[user] has cut the wires inside \the [src]!"), "You have cut the wires inside \the [src].")
 				playsound(src.loc, 'sound/items/Wirecutter.ogg', 50, 1)
 				new/obj/item/stack/cable_coil(get_turf(src), 5)
 				buildstage = 1
@@ -833,27 +833,27 @@
 				else
 					if(allowed(usr) && !wires.IsIndexCut(AALARM_WIRE_IDSCAN))
 						locked = !locked
-						to_chat(user, "<span class='notice'>You [ locked ? "lock" : "unlock"] the Air Alarm interface.</span>")
+						to_chat(user, SPAN_NOTICE("You [ locked ? "lock" : "unlock"] the Air Alarm interface."))
 					else
-						to_chat(user, "<span class='warning'>Access denied.</span>")
+						to_chat(user, SPAN_WARNING("Access denied."))
 			return
 
 		if(1)
 			if(isCoil(W))
 				var/obj/item/stack/cable_coil/C = W
 				if (C.use(5))
-					to_chat(user, "<span class='notice'>You wire \the [src].</span>")
+					to_chat(user, SPAN_NOTICE("You wire \the [src]."))
 					buildstage = 2
 					update_icon()
 					return
 				else
-					to_chat(user, "<span class='warning'>You need 5 pieces of cable to do wire \the [src].</span>")
+					to_chat(user, SPAN_WARNING("You need 5 pieces of cable to do wire \the [src]."))
 					return
 
 			else if(isCrowbar(W))
 				to_chat(user, "You start prying out the circuit.")
 				playsound(src.loc, 'sound/items/Crowbar.ogg', 50, 1)
-				if(do_after(user, 2 SECONDS, src, DO_REPAIR_CONSTRUCT) && buildstage == 1)
+				if(do_after(user, (W.toolspeed * 2) SECONDS, src, DO_REPAIR_CONSTRUCT) && buildstage == 1)
 					to_chat(user, "You pry out the circuit!")
 					var/obj/item/airalarm_electronics/circuit = new /obj/item/airalarm_electronics()
 					circuit.dropInto(user.loc)
@@ -920,7 +920,7 @@ FIRE ALARM
 /obj/machinery/firealarm/examine(mob/user)
 	. = ..()
 	if(loc.z in GLOB.using_map.contact_levels)
-		var/decl/security_state/security_state = decls_repository.get_decl(GLOB.using_map.security_state)
+		var/singleton/security_state/security_state = GET_SINGLETON(GLOB.using_map.security_state)
 		to_chat(user, "The current alert level is [security_state.current_security_level.name].")
 
 /obj/machinery/firealarm/Initialize()
@@ -966,8 +966,8 @@ FIRE ALARM
 			overlays += get_cached_overlay("fire1")
 			set_light(0.25, 0.1, 1, 2, COLOR_RED)
 		else if(z in GLOB.using_map.contact_levels)
-			var/decl/security_state/security_state = decls_repository.get_decl(GLOB.using_map.security_state)
-			var/decl/security_level/sl = security_state.current_security_level
+			var/singleton/security_state/security_state = GET_SINGLETON(GLOB.using_map.security_state)
+			var/singleton/security_level/sl = security_state.current_security_level
 
 			set_light(sl.light_max_bright, sl.light_inner_range, sl.light_outer_range, 2, sl.light_color_alarm)
 			overlays += image(sl.icon, sl.overlay_alarm)
@@ -1000,11 +1000,11 @@ FIRE ALARM
 				if(isMultitool(W))
 					src.detecting = !( src.detecting )
 					if (src.detecting)
-						user.visible_message("<span class='notice'>\The [user] has reconnected [src]'s detecting unit!</span>", "<span class='notice'>You have reconnected [src]'s detecting unit.</span>")
+						user.visible_message(SPAN_NOTICE("\The [user] has reconnected [src]'s detecting unit!"), SPAN_NOTICE("You have reconnected [src]'s detecting unit."))
 					else
-						user.visible_message("<span class='notice'>\The [user] has disconnected [src]'s detecting unit!</span>", "<span class='notice'>You have disconnected [src]'s detecting unit.</span>")
+						user.visible_message(SPAN_NOTICE("\The [user] has disconnected [src]'s detecting unit!"), SPAN_NOTICE("You have disconnected [src]'s detecting unit."))
 				else if(isWirecutter(W))
-					user.visible_message("<span class='notice'>\The [user] has cut the wires inside \the [src]!</span>", "<span class='notice'>You have cut the wires inside \the [src].</span>")
+					user.visible_message(SPAN_NOTICE("\The [user] has cut the wires inside \the [src]!"), SPAN_NOTICE("You have cut the wires inside \the [src]."))
 					new/obj/item/stack/cable_coil(get_turf(src), 5)
 					playsound(src.loc, 'sound/items/Wirecutter.ogg', 50, 1)
 					buildstage = 1
@@ -1013,17 +1013,17 @@ FIRE ALARM
 				if(istype(W, /obj/item/stack/cable_coil))
 					var/obj/item/stack/cable_coil/C = W
 					if (C.use(5))
-						to_chat(user, "<span class='notice'>You wire \the [src].</span>")
+						to_chat(user, SPAN_NOTICE("You wire \the [src]."))
 						buildstage = 2
 						update_icon()
 						return
 					else
-						to_chat(user, "<span class='warning'>You need 5 pieces of cable to wire \the [src].</span>")
+						to_chat(user, SPAN_WARNING("You need 5 pieces of cable to wire \the [src]."))
 						return
 				else if(isCrowbar(W))
 					to_chat(user, "You start prying out the circuit.")
 					playsound(src.loc, 'sound/items/Crowbar.ogg', 50, 1)
-					if (do_after(user, 2 SECONDS, src, DO_REPAIR_CONSTRUCT))
+					if (do_after(user, (W.toolspeed * 2) SECONDS, src, DO_REPAIR_CONSTRUCT))
 						to_chat(user, "You pry out the circuit!")
 						var/obj/item/firealarm_electronics/circuit = new /obj/item/firealarm_electronics()
 						circuit.dropInto(user.loc)
@@ -1074,7 +1074,7 @@ FIRE ALARM
 	var/d1
 	var/d2
 
-	var/decl/security_state/security_state = decls_repository.get_decl(GLOB.using_map.security_state)
+	var/singleton/security_state/security_state = GET_SINGLETON(GLOB.using_map.security_state)
 	if (istype(user, /mob/living/carbon/human) || istype(user, /mob/living/silicon))
 		A = A.loc
 

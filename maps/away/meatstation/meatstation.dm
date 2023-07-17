@@ -4,7 +4,7 @@
 	name = "Unpowered Research Station"
 	desc = "An unpowered research station. A large quantity of nearby debris blocks more detail."
 	icon_state = "object"
-	known = FALSE
+
 	initial_generic_waypoints = list(
 		"nav_meatstation_1",
 		"nav_meatstation_2",
@@ -141,7 +141,7 @@
 	health = 60
 	natural_weapon = /obj/item/natural_weapon/wormguard
 	meat_amount = 3
-	projectilesound = 'sound/weapons/laser.ogg'
+	projectilesound = 'sound/weapons/Laser.ogg'
 	ranged = 1
 	projectiletype = /obj/item/projectile/beam/meatstation
 

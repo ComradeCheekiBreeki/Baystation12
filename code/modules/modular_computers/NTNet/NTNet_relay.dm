@@ -1,6 +1,6 @@
 // Relays don't handle any actual communication. Global NTNet datum does that, relays only tell the datum if it should or shouldn't work.
 /obj/machinery/ntnet_relay
-	name = "NTNet Quantum Relay"
+	name = "\improper NTNet quantum relay"
 	desc = "A very complex router and transmitter capable of connecting electronic devices together. Looks fragile."
 	use_power = POWER_USE_ACTIVE
 	active_power_usage = 20000 //20kW, apropriate for machine that keeps massive cross-Zlevel wireless network operational.
@@ -8,7 +8,7 @@
 	icon_state = "bus"
 	anchored = TRUE
 	density = TRUE
-	construct_state = /decl/machine_construction/default/panel_closed
+	construct_state = /singleton/machine_construction/default/panel_closed
 	uncreated_component_parts = null
 	stat_immune = 0
 	machine_name = "\improper NTNet quantum relay"
@@ -111,13 +111,13 @@
 	if(ntnet_global)
 		ntnet_global.relays.Add(src)
 		NTNet = ntnet_global
-		ntnet_global.add_log("New Quantum Relay ([uid]) activated. Current amount of linked relays: [NTNet.relays.len]")
+		ntnet_global.add_log("New Quantum Relay ([uid]) activated. Current amount of linked relays: [length(NTNet.relays)]")
 	..()
 
 /obj/machinery/ntnet_relay/Destroy()
 	if(ntnet_global)
 		ntnet_global.relays.Remove(src)
-		ntnet_global.add_log("Quantum Relay ([uid]) connection severed. Current amount of linked relays: [NTNet.relays.len]")
+		ntnet_global.add_log("Quantum Relay ([uid]) connection severed. Current amount of linked relays: [length(NTNet.relays)]")
 		NTNet = null
 	for(var/datum/computer_file/program/ntnet_dos/D in dos_sources)
 		D.target = null

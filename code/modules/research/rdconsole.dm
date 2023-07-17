@@ -144,10 +144,10 @@ won't update every console in existence) but it's more of a hassle to do. Also, 
 		else if (istype(D, /obj/item/disk/design_disk))
 			d_disk = D
 		else
-			to_chat(user, "<span class='notice'>Machine cannot accept disks in that format.</span>")
+			to_chat(user, SPAN_NOTICE("Machine cannot accept disks in that format."))
 			return
 		user.drop_from_inventory(D, src)
-		to_chat(user, "<span class='notice'>You add \the [D] to the machine.</span>")
+		to_chat(user, SPAN_NOTICE("You add \the [D] to the machine."))
 	else
 		//The construction/deconstruction of the console code.
 		..()
@@ -160,7 +160,7 @@ won't update every console in existence) but it's more of a hassle to do. Also, 
 		playsound(src.loc, 'sound/effects/sparks4.ogg', 75, 1)
 		emagged = TRUE
 		req_access.Cut()
-		to_chat(user, "<span class='notice'>You you disable the security protocols.</span>")
+		to_chat(user, SPAN_NOTICE("You you disable the security protocols."))
 		return 1
 
 /obj/machinery/computer/rdconsole/CanUseTopic(mob/user, datum/topic_state/state, href_list)
@@ -257,7 +257,7 @@ won't update every console in existence) but it's more of a hassle to do. Also, 
 		. = TOPIC_REFRESH
 		CHECK_DESTROY
 		if(linked_destroy.busy)
-			to_chat(usr, "<span class='notice'>The destructive analyzer is busy at the moment.</span>")
+			to_chat(usr, SPAN_NOTICE("The destructive analyzer is busy at the moment."))
 
 		else if(linked_destroy.loaded_item)
 			linked_destroy.loaded_item.dropInto(linked_destroy.loc)
@@ -269,7 +269,7 @@ won't update every console in existence) but it's more of a hassle to do. Also, 
 		. = TOPIC_REFRESH
 		CHECK_DESTROY
 		if(linked_destroy.busy)
-			to_chat(usr, "<span class='notice'>The destructive analyzer is busy at the moment.</span>")
+			to_chat(usr, SPAN_NOTICE("The destructive analyzer is busy at the moment."))
 			return TOPIC_HANDLED
 		if(alert("Proceeding will destroy loaded item. Continue?", "Destructive analyzer confirmation", "Yes", "No") == "No")
 			return TOPIC_HANDLED
@@ -286,7 +286,7 @@ won't update every console in existence) but it's more of a hassle to do. Also, 
 	else if(href_list["sync"]) //Sync the research holder with all the R&D consoles in the game that aren't sync protected.
 		screen = 0.0
 		if(!sync)
-			to_chat(usr, "<span class='notice'>You must connect to the network first.</span>")
+			to_chat(usr, SPAN_NOTICE("You must connect to the network first."))
 		else
 			. = TOPIC_HANDLED
 			spawn(30)
@@ -482,14 +482,14 @@ won't update every console in existence) but it's more of a hassle to do. Also, 
 	if (!quick_deconstruct)
 		screen = 0.1
 	flick("d_analyzer_process", linked_destroy)
-	addtimer(CALLBACK(src, .proc/finish_deconstruct, W), 24)
+	addtimer(new Callback(src, .proc/finish_deconstruct, W), 24)
 
 /obj/machinery/computer/rdconsole/proc/finish_deconstruct(weakref/W)
 	CHECK_DESTROY
 	var/mob/user = W.resolve()
 	linked_destroy.busy = 0
 	if(!linked_destroy.loaded_item)
-		to_chat(user, "<span class='notice'>The destructive analyzer appears to be empty.</span>")
+		to_chat(user, SPAN_NOTICE("The destructive analyzer appears to be empty."))
 		screen = 1.0
 		return
 	for(var/T in linked_destroy.loaded_item.origin_tech)
@@ -772,7 +772,7 @@ won't update every console in existence) but it's more of a hassle to do. Also, 
 			dat += "<A href='?src=\ref[src];protolathe_show_tech=1'>Show Recipe Tech Levels: [protolathe_show_tech ? "YES" : "NO"]</A>"
 			dat += "<A href='?src=\ref[src];protolathe_search=1'>Search</A>"
 			dat += "<A href='?src=\ref[src];protolathe_reset_search=1'>Reset Search</A><BR>"
-			dat += "[FONT_COLORED(COLOR_GREEN, "Green")] = Tech level higher than current<HR>"
+			dat += "[SPAN_COLOR(COLOR_GREEN, "Green")] = Tech level higher than current<HR>"
 			dat += "<B>Material Amount:</B> [linked_lathe.TotalMaterials()] cm<sup>3</sup> (MAX: [linked_lathe.max_material_storage])<BR>"
 			dat += "<B>Chemical Volume:</B> [linked_lathe.reagents.total_volume] (MAX: [linked_lathe.reagents.maximum_volume])<HR>"
 			dat += "<UL>"
@@ -787,7 +787,7 @@ won't update every console in existence) but it's more of a hassle to do. Also, 
 
 				var/temp_dat
 				for(var/M in D.materials)
-					temp_dat += ", [D.materials[M]] [CallMaterialName(M)]"
+					temp_dat += ", [D.materials[M]*(linked_lathe ? linked_lathe.mat_efficiency : 1)] [CallMaterialName(M)]"
 				for(var/T in D.chemicals)
 					temp_dat += ", [D.chemicals[T]*(linked_imprinter ? linked_imprinter.mat_efficiency : 1)] [CallReagentName(T)]"
 				if(temp_dat)
@@ -813,7 +813,7 @@ won't update every console in existence) but it's more of a hassle to do. Also, 
 						for (var/datum/tech/F in files.known_tech)
 							if (F.name == CallTechName(T))
 								if (F.level <= origin_tech[T])
-									dat += FONT_COLORED(COLOR_GREEN, " [F.name] = [origin_tech[T]] ")
+									dat += SPAN_COLOR(COLOR_GREEN, " [F.name] = [origin_tech[T]] ")
 								else
 									dat += " [F.name] = [origin_tech[T]] "
 								break
@@ -854,7 +854,7 @@ won't update every console in existence) but it's more of a hassle to do. Also, 
 			dat += "<A href='?src=\ref[src];menu=1.0'>Main Menu</A> || "
 			dat += "<A href='?src=\ref[src];menu=3.1'>Protolathe Menu</A><HR>"
 			dat += "Queue<BR><HR>"
-			if(!linked_lathe.queue.len)
+			if(!length(linked_lathe.queue))
 				dat += "Empty"
 			else
 				var/tmp = 1
@@ -883,7 +883,7 @@ won't update every console in existence) but it's more of a hassle to do. Also, 
 			dat += "<A href='?src=\ref[src];imprinter_show_tech=1'>Show Recipe Tech Levels: [imprinter_show_tech ? "YES" : "NO"]</A>"
 			dat += "<A href='?src=\ref[src];imprinter_search=1'>Search</A>"
 			dat += "<A href='?src=\ref[src];imprinter_reset_search=1'>Reset Search</A><BR>"
-			dat += "[FONT_COLORED(COLOR_GREEN, "Green")] = Tech level higher than current<HR>"
+			dat += "[SPAN_COLOR(COLOR_GREEN, "Green")] = Tech level higher than current<HR>"
 			dat += "Material Amount: [linked_imprinter.TotalMaterials()] cm<sup>3</sup><BR>"
 			dat += "Chemical Volume: [linked_imprinter.reagents.total_volume]<HR>"
 			dat += "<UL>"
@@ -922,7 +922,7 @@ won't update every console in existence) but it's more of a hassle to do. Also, 
 						for (var/datum/tech/F in files.known_tech)
 							if (F.name == CallTechName(T))
 								if (F.level <= origin_tech[T] )
-									dat += FONT_COLORED(COLOR_GREEN, " [F.name] = [origin_tech[T]] ")
+									dat += SPAN_COLOR(COLOR_GREEN, " [F.name] = [origin_tech[T]] ")
 								else
 									dat += " [F.name] = [origin_tech[T]] "
 								break
@@ -963,7 +963,7 @@ won't update every console in existence) but it's more of a hassle to do. Also, 
 			dat += "<A href='?src=\ref[src];menu=1.0'>Main Menu</A> || "
 			dat += "<A href='?src=\ref[src];menu=4.1'>Circuit Imprinter Menu</A><HR>"
 			dat += "Queue<BR><HR>"
-			if(linked_imprinter.queue.len == 0)
+			if(length(linked_imprinter.queue) == 0)
 				dat += "Empty"
 			else
 				var/tmp = 1

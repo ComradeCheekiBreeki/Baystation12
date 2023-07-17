@@ -1508,7 +1508,7 @@
 /turf/simulated/floor/tiled/white,
 /area/map_template/oldlab/station/xenobio)
 "yW" = (
-/obj/structure/bed/roller,
+/obj/structure/roller_bed,
 /turf/simulated/floor/tiled/white,
 /area/map_template/oldlab/station/xenobio)
 "za" = (
@@ -1830,7 +1830,7 @@
 /obj/machinery/atmospherics/pipe/simple/hidden/supply{
 	dir = 5
 	},
-/obj/structure/iv_drip,
+/obj/structure/iv_stand,
 /turf/simulated/floor/tiled/white,
 /area/map_template/oldlab/station/xenobio)
 "EE" = (
@@ -2408,7 +2408,7 @@
 /area/map_template/oldlab/solars)
 "NB" = (
 /obj/structure/table/rack,
-/obj/item/stack/cable_coil/random,
+/obj/random/single/color/cable_coil,
 /obj/item/material/twohanded/jack,
 /turf/simulated/floor/tiled/techfloor/grid,
 /area/map_template/oldlab/station/southairlock)
@@ -2667,7 +2667,6 @@
 /area/map_template/oldlab/station/hall)
 "SB" = (
 /obj/structure/table/steel,
-/obj/machinery/reagent_temperature/cooler,
 /turf/simulated/floor/tiled/white,
 /area/map_template/oldlab/station/chem)
 "SL" = (

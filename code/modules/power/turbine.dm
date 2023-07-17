@@ -28,7 +28,7 @@
 	var/lastgen
 
 /obj/machinery/computer/turbine_computer
-	name = "Gas turbine control computer"
+	name = "gas turbine control computer"
 	desc = "A computer to remotely control a gas turbine."
 	icon = 'icons/obj/computer.dmi'
 	icon_keyboard = "tech_key"
@@ -232,7 +232,7 @@
 		\n<BR>
 		\n"}
 	else
-		dat += "<span class='danger'>No compatible attached compressor found.</span>"
+		dat += SPAN_DANGER("No compatible attached compressor found.")
 
 	show_browser(user, dat, "window=computer;size=400x500")
 	onclose(user, "computer")

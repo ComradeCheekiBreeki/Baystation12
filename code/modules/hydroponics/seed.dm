@@ -128,23 +128,23 @@
 	var/obj/item/organ/external/affecting = target.get_organ(target_limb)
 
 	if((target.species && target.species.species_flags & (SPECIES_FLAG_NO_EMBED|SPECIES_FLAG_NO_MINOR_CUT)))
-		to_chat(target, "<span class='danger'>\The [fruit]'s thorns scratch against the armour on your [affecting.name]!</span>")
+		to_chat(target, SPAN_DANGER("\The [fruit]'s thorns scratch against the armour on your [affecting.name]!"))
 		return
 
 	var/damage = 0
 	var/has_edge = 0
 	if(get_trait(TRAIT_CARNIVOROUS) >= 2)
 		if(affecting)
-			to_chat(target, "<span class='danger'>\The [fruit]'s thorns pierce your [affecting.name] greedily!</span>")
+			to_chat(target, SPAN_DANGER("\The [fruit]'s thorns pierce your [affecting.name] greedily!"))
 		else
-			to_chat(target, "<span class='danger'>\The [fruit]'s thorns pierce your flesh greedily!</span>")
+			to_chat(target, SPAN_DANGER("\The [fruit]'s thorns pierce your flesh greedily!"))
 		damage = max(5, round(15*get_trait(TRAIT_POTENCY)/100, 1))
 		has_edge = prob(get_trait(TRAIT_POTENCY)/2)
 	else
 		if(affecting)
-			to_chat(target, "<span class='danger'>\The [fruit]'s thorns dig deeply into your [affecting.name]!</span>")
+			to_chat(target, SPAN_DANGER("\The [fruit]'s thorns dig deeply into your [affecting.name]!"))
 		else
-			to_chat(target, "<span class='danger'>\The [fruit]'s thorns dig deeply into your flesh!</span>")
+			to_chat(target, SPAN_DANGER("\The [fruit]'s thorns dig deeply into your flesh!"))
 		damage = max(1, round(5*get_trait(TRAIT_POTENCY)/100, 1))
 		has_edge = prob(get_trait(TRAIT_POTENCY)/5)
 
@@ -171,12 +171,12 @@
 			affecting = null
 
 		if(affecting)
-			to_chat(target, "<span class='danger'>You are stung by \the [fruit] in your [affecting.name]!</span>")
+			to_chat(target, SPAN_DANGER("You are stung by \the [fruit] in your [affecting.name]!"))
 			for(var/rid in chems)
 				var/injecting = min(5,max(1,get_trait(TRAIT_POTENCY)/5))
 				target.reagents.add_reagent(rid,injecting)
 		else
-			to_chat(target, "<span class='danger'>Sharp spines scrape against your armour!</span>")
+			to_chat(target, SPAN_DANGER("Sharp spines scrape against your armour!"))
 
 /datum/seed/proc/do_photosynthesis(turf/current_turf, datum/gas_mixture/environment, light_supplied)
 	// Photosynthesis - *very* simplified process.
@@ -245,7 +245,7 @@
 		open_turfs |= origin_turf
 
 		// Flood fill to get affected turfs.
-		while(open_turfs.len)
+		while(length(open_turfs))
 			var/turf/T = pick(open_turfs)
 			open_turfs -= T
 			closed_turfs |= T
@@ -278,7 +278,7 @@
 				apply_special_effect(M)
 			splatter(T,thrown)
 		if(origin_turf)
-			origin_turf.visible_message("<span class='danger'>The [thrown.name] explodes!</span>")
+			origin_turf.visible_message(SPAN_DANGER("The [thrown.name] explodes!"))
 		qdel(thrown)
 		return
 
@@ -292,14 +292,14 @@
 	if(get_trait(TRAIT_JUICY) && splatted)
 		splatter(origin_turf,thrown)
 		if(origin_turf)
-			origin_turf.visible_message("<span class='danger'>The [thrown.name] splatters against [target]!</span>")
+			origin_turf.visible_message(SPAN_DANGER("The [thrown.name] splatters against [target]!"))
 		qdel(thrown)
 
 /datum/seed/proc/handle_environment(turf/current_turf, datum/gas_mixture/environment, light_supplied, check_only)
 
 	var/health_change = 0
 	// Handle gas consumption.
-	if(consume_gasses && consume_gasses.len)
+	if(consume_gasses && length(consume_gasses))
 		var/missing_gas = 0
 		for(var/gas in consume_gasses)
 			if(environment && environment.gas && environment.gas[gas] && \
@@ -321,9 +321,9 @@
 		health_change += rand(1,3) * HYDRO_SPEED_MULTIPLIER
 
 	// Handle gas production.
-	if(exude_gasses && exude_gasses.len && !check_only)
+	if(exude_gasses && length(exude_gasses) && !check_only)
 		for(var/gas in exude_gasses)
-			environment.adjust_gas(gas, max(1,round((exude_gasses[gas]*(get_trait(TRAIT_POTENCY)/5))/exude_gasses.len)))
+			environment.adjust_gas(gas, max(1,round((exude_gasses[gas]*(get_trait(TRAIT_POTENCY)/5))/length(exude_gasses))))
 
 	//Handle temperature change.
 	if(get_trait(TRAIT_ALTER_TEMP) != 0 && !check_only)
@@ -558,7 +558,7 @@
 
 //Returns a key corresponding to an entry in the global seed list.
 /datum/seed/proc/get_mutant_variant()
-	if(!mutants || !mutants.len || get_trait(TRAIT_IMMUTABLE) > 0) return 0
+	if(!mutants || !length(mutants) || get_trait(TRAIT_IMMUTABLE) > 0) return 0
 	return pick(mutants)
 
 //Mutates the plant overall (randomly).
@@ -566,7 +566,7 @@
 
 	if(!degree || get_trait(TRAIT_IMMUTABLE) > 0) return
 
-	source_turf.visible_message("<span class='notice'>\The [display_name] quivers!</span>")
+	source_turf.visible_message(SPAN_NOTICE("\The [display_name] quivers!"))
 
 	//This looks like shit, but it's a lot easier to read/change this way.
 	var/total_mutations = rand(1,1+degree)
@@ -574,7 +574,7 @@
 		switch(rand(0,11))
 			if(0) //Plant cancer!
 				set_trait(TRAIT_ENDURANCE,get_trait(TRAIT_ENDURANCE)-rand(10,20),null,0)
-				source_turf.visible_message("<span class='danger'>\The [display_name] withers rapidly!</span>")
+				source_turf.visible_message(SPAN_DANGER("\The [display_name] withers rapidly!"))
 			if(1)
 				set_trait(TRAIT_NUTRIENT_CONSUMPTION,get_trait(TRAIT_NUTRIENT_CONSUMPTION)+rand(-(degree*0.1),(degree*0.1)),5,0)
 				set_trait(TRAIT_WATER_CONSUMPTION,   get_trait(TRAIT_WATER_CONSUMPTION)   +rand(-degree,degree),50,0)
@@ -596,7 +596,7 @@
 				if(prob(degree*5))
 					set_trait(TRAIT_CARNIVOROUS,     get_trait(TRAIT_CARNIVOROUS)+rand(-degree,degree),2, 0)
 					if(get_trait(TRAIT_CARNIVOROUS))
-						source_turf.visible_message("<span class='notice'>\The [display_name] shudders hungrily.</span>")
+						source_turf.visible_message(SPAN_NOTICE("\The [display_name] shudders hungrily."))
 			if(6)
 				set_trait(TRAIT_WEED_TOLERANCE,      get_trait(TRAIT_WEED_TOLERANCE)+(rand(-2,2)*degree),10, 0)
 				if(prob(degree*5))
@@ -610,7 +610,7 @@
 				set_trait(TRAIT_POTENCY,             get_trait(TRAIT_POTENCY)+(rand(-20,20)*degree),200, 0)
 				if(prob(degree*5))
 					set_trait(TRAIT_SPREAD,          get_trait(TRAIT_SPREAD)+rand(-1,1),2, 0)
-					source_turf.visible_message("<span class='notice'>\The [display_name] spasms visibly, shifting in the tray.</span>")
+					source_turf.visible_message(SPAN_NOTICE("\The [display_name] spasms visibly, shifting in the tray."))
 			if(9)
 				set_trait(TRAIT_MATURATION,          get_trait(TRAIT_MATURATION)+(rand(-1,1)*degree),30, 0)
 				if(prob(degree*5))
@@ -619,12 +619,12 @@
 				if(prob(degree*2))
 					set_trait(TRAIT_BIOLUM,         !get_trait(TRAIT_BIOLUM))
 					if(get_trait(TRAIT_BIOLUM))
-						source_turf.visible_message("<span class='notice'>\The [display_name] begins to glow!</span>")
+						source_turf.visible_message(SPAN_NOTICE("\The [display_name] begins to glow!"))
 						if(prob(degree*2))
 							set_trait(TRAIT_BIOLUM_COLOUR,get_random_colour(0,75,190))
-							source_turf.visible_message("<span class='notice'>\The [display_name]'s glow </span><font color='[get_trait(TRAIT_BIOLUM_COLOUR)]'>changes colour</font>!")
+							source_turf.visible_message("[SPAN_NOTICE("\The [display_name]'s glow ")][SPAN_COLOR(get_trait(TRAIT_BIOLUM_COLOUR), "changes colour")]!")
 					else
-						source_turf.visible_message("<span class='notice'>\The [display_name]'s glow dims...</span>")
+						source_turf.visible_message(SPAN_NOTICE("\The [display_name]'s glow dims..."))
 			if(11)
 				set_trait(TRAIT_TELEPORTING,1)
 
@@ -653,7 +653,7 @@
 					chems[rid] = gene_chem.Copy()
 					continue
 
-				for(var/i=1;i<=gene_chem.len;i++)
+				for(var/i=1;i<=length(gene_chem);i++)
 
 					if(isnull(gene_chem[i])) gene_chem[i] = 0
 
@@ -736,12 +736,12 @@
 		return
 
 	if(!force_amount && get_trait(TRAIT_YIELD) == 0 && !harvest_sample)
-		if(istype(user)) to_chat(user, "<span class='danger'>You fail to harvest anything useful.</span>")
+		if(istype(user)) to_chat(user, SPAN_DANGER("You fail to harvest anything useful."))
 	else
 		if(istype(user)) to_chat(user, "You [harvest_sample ? "take a sample" : "harvest"] from the [display_name].")
 		//This may be a new line. Update the global if it is.
 		if(name == "new line" || !(name in SSplants.seeds))
-			uid = SSplants.seeds.len + 1
+			uid = length(SSplants.seeds) + 1
 			name = "[uid]"
 			SSplants.seeds[name] = src
 

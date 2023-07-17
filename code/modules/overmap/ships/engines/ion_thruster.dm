@@ -42,7 +42,7 @@
 	power_channel = ENVIRON
 	idle_power_usage = 100
 	anchored = TRUE
-	construct_state = /decl/machine_construction/default/panel_closed
+	construct_state = /singleton/machine_construction/default/panel_closed
 	var/datum/ship_engine/ion/controller
 	var/thrust_limit = 1
 	var/on = 1
@@ -75,7 +75,7 @@
 	return thrust_limit * generated_thrust * on
 
 /obj/item/stock_parts/circuitboard/engine/ion
-	name = T_BOARD("ion propulsion device")
+	name = "circuit board (ion propulsion device)"
 	board_type = "machine"
 	icon_state = "mcontroller"
 	build_path = /obj/machinery/ion_engine

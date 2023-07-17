@@ -76,7 +76,7 @@
 	return TRUE
 
 /obj/structure/railing/on_death()
-	visible_message("<span class='danger'>\The [src] [material.destruction_desc]!</span>")
+	visible_message(SPAN_DANGER("\The [src] [material.destruction_desc]!"))
 	playsound(loc, 'sound/effects/grillehit.ogg', 50, 1)
 	material.place_shard(get_turf(usr))
 	qdel(src)
@@ -172,11 +172,11 @@
 		return 0
 
 	if(anchored)
-		to_chat(usr, "<span class='warning'>It is fastened to the floor and cannot be flipped.</span>")
+		to_chat(usr, SPAN_WARNING("It is fastened to the floor and cannot be flipped."))
 		return 0
 
 	if(!turf_is_crowded())
-		to_chat(usr, "<span class='warning'>You can't flip \the [src] - something is in the way.</span>")
+		to_chat(usr, SPAN_WARNING("You can't flip \the [src] - something is in the way."))
 		return 0
 
 	forceMove(get_step(src, src.dir))
@@ -192,97 +192,135 @@
 		return 0
 	return 1
 
-/obj/structure/railing/attackby(obj/item/W, mob/user)
-	if (user.a_intent == I_HURT)
-		..()
-		return
 
-	// Handle harm intent grabbing/tabling.
-	if(istype(W, /obj/item/grab) && get_dist(src,user)<2)
-		var/obj/item/grab/G = W
-		if(istype(G.affecting, /mob/living/carbon/human))
-			var/obj/occupied = turf_is_crowded()
-			if(occupied)
-				to_chat(user, "<span class='danger'>There's \a [occupied] in the way.</span>")
-				return
+/obj/structure/railing/use_grab(obj/item/grab/grab, list/click_params)
+	var/obj/occupied = turf_is_crowded()
+	if (occupied)
+		USE_FEEDBACK_GRAB_FAILURE(SPAN_WARNING("There's \a [occupied] blocking \the [src]."))
+		return TRUE
 
-			if(G.force_danger())
-				if(user.a_intent == I_HURT)
-					visible_message("<span class='danger'>[G.assailant] slams [G.affecting]'s face against \the [src]!</span>")
-					playsound(loc, 'sound/effects/grillehit.ogg', 50, 1)
-					var/blocked = G.affecting.get_blocked_ratio(BP_HEAD, DAMAGE_BRUTE, damage = 8)
-					if (prob(30 * (1 - blocked)))
-						G.affecting.Weaken(5)
-					G.affecting.apply_damage(8, DAMAGE_BRUTE, BP_HEAD)
-				else
-					if (get_turf(G.affecting) == get_turf(src))
-						G.affecting.forceMove(get_step(src, src.dir))
-					else
-						G.affecting.dropInto(loc)
-					G.affecting.Weaken(5)
-					visible_message("<span class='danger'>[G.assailant] throws \the [G.affecting] over \the [src].</span>")
-			else
-				to_chat(user, "<span class='danger'>You need a better grip to do that!</span>")
-		return
+	if (!grab.force_danger())
+		var/action = grab.assailant.a_intent == I_HURT ? "to slam them against \the [src]" : "to throw them over \the [src]"
+		USE_FEEDBACK_GRAB_MUST_UPGRADE(action)
+		return TRUE
 
-	// Dismantle
-	if(isWrench(W))
-		if(!anchored)
-			playsound(src.loc, 'sound/items/Ratchet.ogg', 50, 1)
-			if(do_after(user, 2 SECONDS, src, DO_REPAIR_CONSTRUCT))
-				if(anchored)
-					return
-				user.visible_message("<span class='notice'>\The [user] dismantles \the [src].</span>", "<span class='notice'>You dismantle \the [src].</span>")
-				material.place_sheet(loc, 2)
-				qdel(src)
-	// Wrench Open
-		else
-			playsound(src.loc, 'sound/items/Ratchet.ogg', 50, 1)
-			if(density)
-				user.visible_message("<span class='notice'>\The [user] wrenches \the [src] open.</span>", "<span class='notice'>You wrench \the [src] open.</span>")
-				set_density(FALSE)
-			else
-				user.visible_message("<span class='notice'>\The [user] wrenches \the [src] closed.</span>", "<span class='notice'>You wrench \the [src] closed.</span>")
-				set_density(TRUE)
+	// Harm intent - Face slamming
+	if (grab.assailant.a_intent == I_HURT)
+		var/blocked = grab.affecting.get_blocked_ratio(BP_HEAD, DAMAGE_BRUTE, damage = 8)
+		if (prob(30 * (1 - blocked)))
+			grab.affecting.Weaken(5)
+		grab.affecting.apply_damage(8, DAMAGE_BRUTE, BP_HEAD)
+		playsound(src, 'sound/effects/grillehit.ogg', 50, 1)
+		grab.assailant.visible_message(
+			SPAN_WARNING("\The [grab.assailant] slams \the [grab.affecting]'s face against \the [src]!"),
+			SPAN_DANGER("You slam \the [grab.affecting]'s face against \the [src]!")
+		)
+		return TRUE
+
+	if (get_turf(grab.affecting) == get_turf(src))
+		grab.affecting.forceMove(get_step(src, dir))
+	else
+		grab.affecting.dropInto(loc)
+	grab.affecting.Weaken(5)
+	grab.assailant.visible_message(
+		SPAN_WARNING("\The [grab.assailant] throws \the [grab.affecting] over \the [src]."),
+		SPAN_WARNING("You throw \the [grab.affecting] over \the [src]."),
+	)
+	return TRUE
+
+
+/obj/structure/railing/use_tool(obj/item/tool, mob/user, list/click_params)
+	// Welding Tool - Repair
+	if (isWelder(tool))
+		if (!health_damaged())
+			USE_FEEDBACK_FAILURE("\The [src] doesn't require repairs.")
+			return TRUE
+		playsound(src, 'sound/items/Welder.ogg', 50, TRUE)
+		user.visible_message(
+			SPAN_NOTICE("\The [user] starts repairing \the [src] with \a [tool]."),
+			SPAN_NOTICE("You start repairing \the [src] with \the [tool].")
+		)
+		if (!user.do_skilled((tool.toolspeed * 2) SECONDS, SKILL_CONSTRUCTION, src, do_flags = DO_REPAIR_CONSTRUCT) || !user.use_sanity_check(src, tool))
+			return TRUE
+		if (!health_damaged())
+			USE_FEEDBACK_FAILURE("\The [src] doesn't require repairs.")
+			return TRUE
+		playsound(src, 'sound/items/Welder.ogg', 50, TRUE)
+		restore_health(get_max_health() / 5)
+		user.visible_message(
+			SPAN_NOTICE("\The [user] repairs \the [src] with \a [tool]."),
+			SPAN_NOTICE("You repair \the [src] with \the [tool].")
+		)
+		return TRUE
+
+	// Wrench
+	// - Dismantle (Unanchored)
+	// - Toggle Density (Anchored)
+	if (isWrench(tool))
+		// Toggle
+		if (anchored)
+			playsound(src, 'sound/items/Ratchet.ogg', 50, TRUE)
+			set_density(!density)
 			update_icon()
-		return
+			user.visible_message(
+				SPAN_NOTICE("\The [user] [density ? "closes" : "opens"] \the [src] with \a [tool]."),
+				SPAN_NOTICE("You [density ? "close" : "open"] \the [src] with \the [tool].")
+			)
+			return TRUE
+		// Dismantle
+		playsound(src, 'sound/items/Ratchet.ogg', 50, TRUE)
+		user.visible_message(
+			SPAN_NOTICE("\The [user] starts dismantling \the [src] with \a [tool]."),
+			SPAN_NOTICE("You start dismantling \the [src] with \the [tool].")
+		)
+		if (!user.do_skilled((tool.toolspeed * 2) SECONDS, SKILL_CONSTRUCTION, src, do_flags = DO_REPAIR_CONSTRUCT) || !user.use_sanity_check(src, tool))
+			return TRUE
+		if (anchored)
+			USE_FEEDBACK_FAILURE("\The [src]'s state has changed.")
+			return TRUE
+		playsound(src, 'sound/items/Ratchet.ogg', 50, TRUE)
+		var/obj/new_sheet = material.place_sheet(loc, 2)
+		transfer_fingerprints_to(new_sheet)
+		user.visible_message(
+			SPAN_NOTICE("\The [user] dismantles \the [src] with \a [tool]."),
+			SPAN_NOTICE("You dismantle \the [src] with \the [tool].")
+		)
+		qdel_self()
+		return TRUE
 
-	// Repair
-	if(isWelder(W))
-		var/obj/item/weldingtool/F = W
-		if(F.isOn())
-			if(!health_damaged())
-				to_chat(user, "<span class='warning'>\The [src] does not need repairs.</span>")
-				return
-			playsound(src.loc, 'sound/items/Welder.ogg', 50, 1)
-			if(do_after(user, 2 SECONDS, src, DO_REPAIR_CONSTRUCT))
-				if(!health_damaged())
-					return
-				user.visible_message("<span class='notice'>\The [user] repairs some damage to \the [src].</span>", "<span class='notice'>You repair some damage to \the [src].</span>")
-				restore_health(get_max_health() / 5)
-		return
+	// Screwdriver - Toggle Anchored
+	if (isScrewdriver(tool))
+		if (!density)
+			USE_FEEDBACK_FAILURE("\The [src] needs to be closed before you can unanchor it.")
+			return TRUE
+		playsound(loc, 'sound/items/Screwdriver.ogg', 50, TRUE)
+		user.visible_message(
+			SPAN_NOTICE("\The [user] starts [anchored ? "un" : null]fastening \the [src] [anchored ? "from" : "to"] the floor with \a [tool]."),
+			SPAN_NOTICE("You start [anchored ? "un" : null]fastening \the [src] [anchored ? "from" : "to"] the floor with \the [tool].")
+		)
+		if (!user.do_skilled((tool.toolspeed * 1) SECONDS, SKILL_CONSTRUCTION, src, do_flags = DO_REPAIR_CONSTRUCT) || !user.use_sanity_check(src, tool))
+			return TRUE
+		if (!density)
+			USE_FEEDBACK_FAILURE("\The [src] needs to be closed before you can unanchor it.")
+			return TRUE
+		playsound(loc, 'sound/items/Screwdriver.ogg', 50, TRUE)
+		user.visible_message(
+			SPAN_NOTICE("\The [user] [anchored ? "un" : null]fastens \the [src] [anchored ? "from" : "to"] the floor with \a [tool]."),
+			SPAN_NOTICE("You [anchored ? "un" : null]fasten \the [src] [anchored ? "from" : "to"] the floor with \the [tool].")
+		)
+		anchored = !anchored
+		update_icon()
+		return TRUE
 
-	// Install
-	if(isScrewdriver(W))
-		if(!density)
-			to_chat(user, "<span class='notice'>You need to wrench \the [src] from back into place first.</span>")
-			return
-		user.visible_message(anchored ? "<span class='notice'>\The [user] begins unscrew \the [src].</span>" : "<span class='notice'>\The [user] begins fasten \the [src].</span>" )
-		playsound(loc, 'sound/items/Screwdriver.ogg', 75, 1)
-		if(do_after(user, 1 SECOND, src, DO_REPAIR_CONSTRUCT) && density)
-			to_chat(user, (anchored ? "<span class='notice'>You have unfastened \the [src] from the floor.</span>" : "<span class='notice'>You have fastened \the [src] to the floor.</span>"))
-			anchored = !anchored
-			update_icon()
-		return
+	return ..()
 
-	..()
 
 /obj/structure/railing/can_climb(mob/living/user, post_climb_check=FALSE, check_silicon=TRUE)
 	. = ..()
 	if (. && get_turf(user) == get_turf(src))
 		var/turf/T = get_step(src, src.dir)
 		if (T.density || T.turf_is_crowded(user))
-			to_chat(user, "<span class='warning'>You can't climb there, the way is blocked.</span>")
+			to_chat(user, SPAN_WARNING("You can't climb there, the way is blocked."))
 			return 0
 
 /obj/structure/railing/do_climb(mob/living/user)
@@ -292,7 +330,7 @@
 			kill_health() // Fatboy
 
 		user.jump_layer_shift()
-		addtimer(CALLBACK(user, /mob/living/proc/jump_layer_shift_end), 2)
+		addtimer(new Callback(user, /mob/living/proc/jump_layer_shift_end), 2)
 
 /obj/structure/railing/slam_into(mob/living/L)
 	var/turf/target_turf = get_turf(src)

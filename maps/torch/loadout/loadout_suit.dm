@@ -20,7 +20,6 @@
 	allowed_branches = CIVILIAN_BRANCHES
 
 /datum/gear/suit/poncho
-	allowed_roles = CASUAL_ROLES
 	allowed_branches = CIVILIAN_BRANCHES
 
 /datum/gear/suit/security_poncho
@@ -202,3 +201,9 @@
 		/datum/mil_branch/solgov
 	)
 	flags = GEAR_HAS_NO_CUSTOMIZATION
+
+/datum/gear/suit/chest_rig/New()
+	allowed_roles = TECHNICAL_ROLES + SECURITY_ROLES + list(
+		/datum/job/doctor
+	)
+	..()

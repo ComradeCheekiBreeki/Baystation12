@@ -5,7 +5,7 @@
 	anchored = TRUE
 	unacidable = TRUE
 	simulated = FALSE
-	invisibility = 101
+	invisibility = INVISIBILITY_ABSTRACT
 	var/delete_me = 0
 
 /obj/effect/landmark/New()
@@ -83,7 +83,7 @@
 	icon = 'icons/mob/screen1.dmi'
 	icon_state = "x"
 	anchored = TRUE
-	invisibility = 101
+	invisibility = INVISIBILITY_ABSTRACT
 
 /obj/effect/landmark/start/New()
 	..()
@@ -92,9 +92,9 @@
 
 //Costume spawner landmarks
 /obj/effect/landmark/costume/New() //costume spawner, selects a random subclass and disappears
-
+	SHOULD_CALL_PARENT(FALSE) // TODO: Replace this entire set of New() overrides with Initialize() and qdel hints
 	var/list/options = typesof(/obj/effect/landmark/costume)
-	var/PICK= options[rand(1,options.len)]
+	var/PICK= options[rand(1,length(options))]
 	new PICK(src.loc)
 	delete_me = 1
 
@@ -135,7 +135,7 @@
 	delete_me = 1
 
 /obj/effect/landmark/costume/maid/New()
-	new /obj/item/clothing/under/blackskirt(src.loc)
+	new /obj/item/clothing/under/skirt(src.loc)
 	var/CHOICE = pick( /obj/item/clothing/head/beret , /obj/item/clothing/head/rabbitears )
 	new CHOICE(src.loc)
 	new /obj/item/clothing/glasses/blindfold(src.loc)

@@ -4,7 +4,7 @@
 	death(1)
 	ADD_TRANSFORMATION_MOVEMENT_HANDLER(src)
 	icon = null
-	set_invisibility(101)
+	set_invisibility(INVISIBILITY_ABSTRACT)
 	UpdateLyingBuckledAndVerbStatus()
 	remove_from_dead_mob_list()
 
@@ -15,7 +15,7 @@
 	flick(anim, animation)
 	if(do_gibs) gibs(loc, dna)
 
-	addtimer(CALLBACK(src, .proc/check_delete, animation), 15)
+	addtimer(new Callback(src, .proc/check_delete, animation), 15)
 
 /mob/proc/check_delete(atom/movable/overlay/animation)
 	if(animation)	qdel(animation)
@@ -33,7 +33,7 @@
 	var/atom/movable/overlay/animation = null
 	ADD_TRANSFORMATION_MOVEMENT_HANDLER(src)
 	icon = null
-	set_invisibility(101)
+	set_invisibility(INVISIBILITY_ABSTRACT)
 
 	animation = new(loc)
 	animation.icon_state = "blank"
@@ -44,7 +44,7 @@
 	new remains(loc)
 
 	remove_from_dead_mob_list()
-	addtimer(CALLBACK(src, .proc/check_delete, animation), 15)
+	addtimer(new Callback(src, .proc/check_delete, animation), 15)
 
 
 /mob/proc/death(gibbed,deathmessage="seizes up and falls limp...", show_dead_message = "You have died.")
@@ -86,12 +86,12 @@
 
 	timeofdeath = world.time
 	if(mind)
-		mind.StoreMemory("Time of death: [stationtime2text()]", /decl/memory_options/system)
+		mind.StoreMemory("Time of death: [stationtime2text()]", /singleton/memory_options/system)
 	switch_from_living_to_dead_mob_list()
 
 	update_icon()
 
 	if(SSticker.mode)
 		SSticker.mode.check_win()
-	to_chat(src,"<span class='deadsay'>[show_dead_message]</span>")
+	to_chat(src,SPAN_CLASS("deadsay", "[show_dead_message]"))
 	return 1

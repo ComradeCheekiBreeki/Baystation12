@@ -50,7 +50,7 @@
 
 /datum/preferences/proc/setup()
 	if(!length(GLOB.skills))
-		decls_repository.get_decl(/decl/hierarchy/skill)
+		GET_SINGLETON(/singleton/hierarchy/skill)
 	player_setup = new(src)
 	gender = pick(MALE, FEMALE)
 	real_name = random_name(gender,species)
@@ -174,7 +174,7 @@
 		if(config.forum_url)
 			send_link(user, config.forum_url)
 		else
-			to_chat(user, "<span class='danger'>The forum URL is not set in the server configuration.</span>")
+			to_chat(user, SPAN_DANGER("The forum URL is not set in the server configuration."))
 			return
 	update_setup_window(usr)
 	return 1
@@ -230,6 +230,7 @@
 	character.fully_replace_character_name(real_name)
 
 	character.gender = gender
+	character.pronouns = pronouns
 	character.age = age
 	character.b_type = b_type
 
@@ -437,7 +438,7 @@
 		priority = selected_jobs_assoc(priority)
 	for (var/title in priority)
 		var/datum/job/job = priority[title]
-		.[title] = callback.Invoke(job)
+		.[title] = invoke(callback, job)
 
 /datum/preferences/proc/for_each_selected_job_multi(list/callbacks, priority = JOB_PRIORITY_LIKELY)
 	. = list()
@@ -452,7 +453,7 @@
 		priority = selected_branches_assoc(priority)
 	for (var/name in priority)
 		var/datum/mil_branch/branch = priority[name]
-		.[name] = callback.Invoke(branch)
+		.[name] = invoke(callback, branch)
 
 /datum/preferences/proc/for_each_selected_branch_multi(list/callbacks, priority = JOB_PRIORITY_LIKELY)
 	. = list()

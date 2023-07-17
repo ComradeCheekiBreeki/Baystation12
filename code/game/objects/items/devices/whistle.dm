@@ -24,7 +24,7 @@
 	if(!new_message || new_message == "")
 		use_message = "Halt! Security!"
 	else
-		use_message = capitalize(copytext(sanitize(new_message), 1, MAX_MESSAGE_LEN))
+		use_message = capitalize(copytext(sanitize(new_message), 1, MAX_LNAME_LEN))
 
 	to_chat(usr, "You configure the hailer to shout \"[use_message]\".")
 
@@ -34,9 +34,13 @@
 
 	if(isnull(insults))
 		playsound(get_turf(src), 'sound/voice/halt.ogg', 100, 1, vary = 0)
-		user.audible_message("<span class='warning'>[user]'s [name] rasps, \"[use_message]\"</span>", null, "<span class='warning'>\The [user] holds up \the [name].</span>")
+		user.audible_message(
+			SPAN_WARNING("[user]'s [name] rasps, \"[use_message]\""),
+			null,
+			SPAN_WARNING("\The [user] holds up \the [name].")
+		)
 	else
-		to_chat(user, "<span class='danger'>*BZZZZZZZZT*</span>")
+		to_chat(user, SPAN_DANGER("*BZZZZZZZZT*"))
 
 	spamcheck = 1
 	spawn(20)
@@ -44,7 +48,7 @@
 
 /obj/item/device/hailer/emag_act(remaining_charges, mob/user)
 	if(isnull(insults))
-		to_chat(user, "<span class='danger'>You overload \the [src]'s voice synthesizer.</span>")
+		to_chat(user, SPAN_DANGER("You overload \the [src]'s voice synthesizer."))
 		insults = rand(1, 3)//to prevent dickflooding
 		return 1
 	else

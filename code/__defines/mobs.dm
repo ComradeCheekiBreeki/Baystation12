@@ -104,10 +104,15 @@
 #define APPEARANCE_ALL_HAIR (APPEARANCE_HEAD | APPEARANCE_HEAD_COLOR | APPEARANCE_FACE | APPEARANCE_FACE_COLOR)
 #define APPEARANCE_EYES FLAG(8)
 #define APPEARANCE_LANG FLAG(9)
-#define APPEARANCE_LANG_ANY_NUMBER FLAG(10)
-#define APPEARANCE_LANG_ANY_ORIGIN FLAG(11)
+#define APPEARANCE_PRONOUNS	FLAG(10)
 
-#define APPEARANCE_COMMON (APPEARANCE_DNA2|APPEARANCE_RACE|APPEARANCE_GENDER|APPEARANCE_SKIN|APPEARANCE_ALL_HAIR|APPEARANCE_EYES|APPEARANCE_LANG)
+#define APPEARANCE_LANG_ANY_NUMBER FLAG(21)
+#define APPEARANCE_LANG_ANY_ORIGIN FLAG(22)
+#define APPEARANCE_SKIP_ALLOW_LIST_CHECK FLAG(23)
+#define APPEARANCE_SKIP_RESTRICTED_CHECK FLAG(24)
+
+#define APPEARANCE_BASIC (APPEARANCE_GENDER|APPEARANCE_SKIN|APPEARANCE_ALL_HAIR|APPEARANCE_EYES|APPEARANCE_PRONOUNS)
+#define APPEARANCE_COMMON (APPEARANCE_BASIC|APPEARANCE_DNA2|APPEARANCE_RACE|APPEARANCE_LANG)
 
 
 // /sprite_accessory flags
@@ -388,11 +393,20 @@
 #define STASIS_CRYOBAG  "cryobag"
 #define STASIS_COLD     "cold"
 
-#define AURA_CANCEL 1
-#define AURA_FALSE  2
+// Aura check result flags for `/obj/aura/proc/aura_check_*()`.
+/// Halts further checking of any other auras on the mob.
+#define AURA_CANCEL FLAG(0)
+/// Causes the calling `aura_check()` proc to return `FALSE`.
+#define AURA_FALSE  FLAG(1)
+
+// Aura type options for `/mob/living/proc/aura_check()`.
+/// Aura checks for projectile impacts. Generally called by `/obj/item/projectile/proc/attack_mob()`. Results in `/obj/aura/proc/aura_check_bullet()`.
 #define AURA_TYPE_BULLET "Bullet"
+/// Aura checks for physical weapon attacks. Generally called by `/obj/item/proc/attack()`. Results in `/obj/aura/proc/aura_check_weapon()`.
 #define AURA_TYPE_WEAPON "Weapon"
+/// Aura checks for thrown atom impacts. Generally called by `/mob/living/hitby()`. Results in `/obj/aura/proc/aura_check_thrown()`.
 #define AURA_TYPE_THROWN "Thrown"
+/// Aura checks during mob life. Generally called by `/mob/living/Life()`. Results in `/obj/aura/proc/aura_check_life()`.
 #define AURA_TYPE_LIFE   "Life"
 
 #define SPECIES_BLOOD_DEFAULT 560
@@ -408,6 +422,7 @@
 #define MOB_CLIMB_TIME_MEDIUM (5 SECONDS)
 
 #define MOB_FACTION_NEUTRAL "neutral"
+#define MOB_FACTION_CREW	"crew"
 
 #define ROBOT_MODULE_TYPE_GROUNDED "grounded"
 #define ROBOT_MODULE_TYPE_FLYING   "flying"
@@ -482,3 +497,12 @@
 #define DO_INCAPACITATED     (-3)
 
 #define FAKE_INVIS_ALPHA_THRESHOLD 127 // If something's alpha var is at or below this number, certain things will pretend it is invisible.
+
+#define PRONOUNS_THEY_THEM	"they/them"
+#define PRONOUNS_HE_HIM		"he/his"
+#define PRONOUNS_SHE_HER	"she/her"
+#define PRONOUNS_IT_ITS		"it/its"
+#define PRONOUNS_HE_THEY	"he/they"
+#define PRONOUNS_SHE_THEY	"she/they"
+
+#define PRONOUNS_ALL list(PRONOUNS_THEY_THEM, PRONOUNS_HE_HIM, PRONOUNS_SHE_HER, PRONOUNS_HE_THEY, PRONOUNS_SHE_THEY, PRONOUNS_IT_ITS)
