@@ -278,7 +278,7 @@
 //Deck box
 /obj/item/deck/holder
 	name = "deck box"
-	desc = "A small leather deck box for cards, to show just how classy you are compared to everyone else."
+	desc = "A small leather deck box for cards, to show just how classy you are."
 	icon_state = "card_holder"
 
 /obj/item/deck/holder/verb/dump_out_box()

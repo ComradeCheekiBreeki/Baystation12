@@ -45,7 +45,7 @@
 		"menace hitter",
 		"power hitter",
 		"multi-position hitter",
-		"infield rover",
+		"technical infielder",
 		"defensive baseman",
 		"specialist catcher",
 		"starting pitcher",
@@ -136,6 +136,6 @@
 
 /datum/playingcard/adcard/cigarettes
 	name = "cigarette advertisement"
-	desc = "An advertisement for some crappy cigarette brand. There's big text at the top that says, \"NOT FOR INDIVIDUALS UNDER 18,\" and a huge paragraph underneath about cancer."
+	desc = "An advertisement for a cheap cigarette brand. There's big text at the top that says, \"NOT FOR INDIVIDUALS UNDER 18,\" and a huge paragraph about cancer."
 	card_icon = "card_ad_cigs"
 	back_icon = "card_back_ad_cigs"
