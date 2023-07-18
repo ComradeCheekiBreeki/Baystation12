@@ -1,9 +1,9 @@
-//Keeping the name "spaceball" for now, may change it later
+//Keeping the name "spaceball" for now
 /obj/item/pack/spaceball
 	name = "\improper spaceball card pack"
 	desc = "Officially licensed by the Interplanetary Baseball League to take your money."
 	var/list/teams = list(
-		//Some of these are locations in lore, some I just made up. They generally follow a pretty consistent theme
+		//Some of these are locations in lore, some I just made up. Some are inspired by actual baseball teams
 		"Olympus Black J's",
 		"New Hamburg Gunners",
 		"Hamilton White J's",

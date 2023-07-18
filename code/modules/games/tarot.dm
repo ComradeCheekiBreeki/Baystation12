@@ -1,17 +1,17 @@
 
-//This is specifically a generic version of the Tarot of Marseille as it can be used for both playing and diviniation
-//Modern styles are usually intended for one specific purpose and often forsake the other (like the Rider-Waite deck not having a consistent pip card setup for tarot games)
+//These are intended to be genericized tarot cards, so you can divine with them or play tarot games
+//The "alt" names are the original and *technically* correct names of the cards, the current ones are the modern ones created in the 1900s (after tarot games stopped being popular)
 /obj/item/deck/tarot
 	name = "tarot deck"
 	desc = "A classical-style tarot deck."
 	icon_state = "deck_tarot"
 	var/list/trumps = list(
 		"The Fool",
-		"The Magician (I)", //Alt. "The Juggler"
-		"The Popess (II)", //Alt. "The High Priestess"
+		"The Juggler (I)", //Alt. "The Magician"
+		"The High Priestess (II)", //Alt. "The Popess"
 		"The Empress (III)",
 		"The Emperor (IV)",
-		"The Pope (V)", //Alt. "The Hierophant"
+		"The Hierophant (V)", //Alt. "The Pope"
 		"The Lover (VI)",
 		"The Chariot (VII)",
 		"Justice (VIII)",
@@ -22,7 +22,7 @@
 		"Death (XIII)",
 		"Temperance (XIIII)",
 		"The Devil (XV)",
-		"The House of God (XVI)", //Alt. "The Tower"
+		"The Tower (XVI)", //Alt. "The House of God"
 		"The Star (XVII)",
 		"The Moon (XVIII)",
 		"The Sun (XVIIII)",

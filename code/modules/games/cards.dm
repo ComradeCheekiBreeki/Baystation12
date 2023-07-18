@@ -104,13 +104,14 @@
 			return
 
 		// See before - prevents deck from getting stuck in players' pockets
-		if(!user.IsHolding(src))
-			return
-
-		draw_from_deck(user)
+		if(user.IsHolding(src))
+			draw_from_deck(user)
+		else
+			..()
 	else
 		..()
 
+/*
 /obj/item/deck/verb/draw_card()
 
 	set category = "Object"
@@ -123,6 +124,7 @@
 
 	var/mob/living/carbon/user = usr
 	draw_from_deck(user)
+*/
 
 //Handles the actual drawing from the deck part
 /obj/item/deck/proc/draw_from_deck(mob/user)
@@ -130,7 +132,7 @@
 		return
 
 	if(!length(cards))
-		to_chat(usr, SPAN_WARNING("There are no cards left in \the [src]."))
+		to_chat(usr, SPAN_WARNING("\The src is empty."))
 		return
 
 	var/obj/item/hand/H = user.IsHolding(/obj/item/hand)
@@ -144,6 +146,7 @@
 	var/datum/playingcard/P = cards[1]
 	H.cards += P
 	cards -= P
+	H.concealed = 1
 	H.update_icon()
 	user.visible_message(
 		SPAN_NOTICE("\The [user] draws a card."),
@@ -162,7 +165,7 @@
 	if(usr.stat || !Adjacent(usr)) return
 
 	if(!length(cards))
-		to_chat(usr, SPAN_WARNING("There are no cards left in \the [src]."))
+		to_chat(usr, SPAN_WARNING("\The src is empty."))
 		return
 
 	var/list/players = list()
@@ -170,7 +173,7 @@
 		if(!player.stat)
 			players += player
 
-	var/mob/living/M = input("Who do you want to deal to?") as null|anything in players
+	var/mob/living/M = input("Whom do you want to deal to?") as null|anything in players
 	if(!usr || !src || !M)
 		return
 	var/numcards = input("How many cards do you want to deal?") as num
@@ -184,12 +187,14 @@
 
 /obj/item/deck/proc/deal_at(mob/user, mob/target, numcards)
 	var/i
+
+	if()
 	var/obj/item/hand/H = new(get_step(user, user.dir))
 
 	for(i = 1, i <= numcards, i++)
 		// A bit cringe, but because we're removing cards from the deck we can just access the top card each time since it'll always be different
-		H.cards += cards[0]
-		cards -= cards[0]
+		H.cards += cards[1]
+		cards -= cards[1]
 		H.concealed = 1
 		H.update_icon()
 
